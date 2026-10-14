@@ -308,12 +308,13 @@ html.lowfx .card .holo{animation:none;mix-blend-mode:normal;opacity:.25}
 .bqHead .who{display:flex;align-items:center;gap:4px;background:#fff;border-radius:10px;padding:2px 8px}
 .bqHead img{width:28px;height:28px;image-rendering:pixelated}
 /* 리그 */
+.gymScoutGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.gymScout{border:2px solid var(--line);border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;background:#fff}.gymScout img{width:64px;height:64px;object-fit:contain;image-rendering:pixelated}.gymScout small{font-size:11px}.gymScout.secret{background:#eef0f7;justify-content:center;min-height:162px}.gymScout.secret>b{font-size:36px}.gymScout.secret>span{font-size:12px}
 .gyms{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
 .gym{background:#fff;border:3px solid var(--line);border-radius:20px;padding:12px;display:flex;gap:10px;align-items:center;cursor:pointer;box-shadow:0 5px 0 var(--line);position:relative}
 .gym .gi{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
 .gym .gi img{width:60px;height:60px;image-rendering:pixelated}
 .gym .gn{font-family:'Jua';font-size:18px}.gym .gd{font-size:12px;color:var(--mut);line-height:1.35}
-.gym.lock{opacity:.5;filter:grayscale(.8);cursor:default}
+.gym.lock{opacity:.5;cursor:default}
 .gym.won::after{content:'';position:absolute;right:10px;top:10px;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,#fff6b0 0 30%,#ffc93c 31% 100%);box-shadow:0 0 0 3px #e0a400}
 /* 덱 */
 .deckBar{display:flex;gap:6px;flex-wrap:wrap;min-height:70px;background:#fff;border:3px dashed var(--line);border-radius:16px;padding:8px}
@@ -561,7 +562,7 @@ function defaultMeta(){return{ver:SAVE_VER,name:'',code:'',gs:'',cls:'',focus:nu
  xp:0,coins:0,candy:0,packs:0,dust:0,pity:{p4:0,p5:0},col:{},seen:{},dexSeen:{},deck:[],
  sk:{},days:{},hist:[],train:{last:'',best:0,count:0,lastRes:null,daily:''},
  badges:{},gyms:{},battles:{w:0,l:0},stats:{q:0,c:0,streak:0,bestCombo:0,bestStreak:0,guessWrong:0,guessAlert:0,careful:0,lowerStar:0,shardDone:0,crafted:0,foundDone:0,superEff:0,gymTry:0,retryOk:0,bounce:0,fast:0,better:0,perfect:0,quickTrain:0,practice:0,comeback:0,flawless:0,defOk:0,candyAll:0,evolved:0,opened:0},
- unl:{},unlNew:{},ach:{},partner:0,bond:{},stoneSeen:null,card:null,uMaxAt:'',shard:{},dust:0,season:null,seasons:[],bsave:null,thist:[],first20:null,first20t:null,found:{},endless:{best:0,total:0,runs:0},pvp:{n:0,w:0,l:0,gg:0,foes:{},last:0},tod:{m:0,a:0,e:0},firstPlay:0,settings:{anim:'calm',sound:true,lowfx:false,safe:'auto',zoom:'auto',fit:'auto',imgs:true,defq:true}};}
+ mathEnergy:0,unl:{},unlNew:{},ach:{},partner:0,bond:{},stoneSeen:null,card:null,uMaxAt:'',shard:{},dust:0,season:null,seasons:[],bsave:null,thist:[],first20:null,first20t:null,found:{},endless:{best:0,total:0,runs:0},pvp:{n:0,w:0,l:0,gg:0,foes:{},last:0},tod:{m:0,a:0,e:0},firstPlay:0,settings:{battleMode:'reserve',anim:'calm',sound:true,lowfx:false,safe:'auto',zoom:'auto',fit:'auto',imgs:true,defq:true}};}
 function mergeMeta(m){const d=defaultMeta();if(!m||typeof m!=='object')return d;for(const k in d){if(!(k in m))continue;if(d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k]))d[k]=Object.assign(d[k],m[k]);else d[k]=m[k];}return d;}
 function upgradeMeta(m){
  // v1 → v2: 처음 20문제 기록·개념별 최근 기록이 생겼어요. 옛 기록에서 알 수 있는 만큼 채워요.
@@ -1356,29 +1357,47 @@ function renderDeck(keep){S.screen='deck';const me=S.meta;if(!keep)ensureDeck();
  $('#view').innerHTML=hudHTML()+`<div class=wrap><div class=panel><div class=row style="align-items:center"><h2 style="margin:0">${I('cards')} 내 덱 (${me.deck.length}/${DECK_N})</h2><span class=hudSp></span><button class="btn blue sm" id=dAuto>자동으로 짜기</button></div>
   <p class=mut style="font-size:13px;margin:6px 0">덱 카드를 누르면 빠지고, 아래 카드를 누르면 들어가요. 같은 카드는 2장까지. 비용이 낮은 카드가 많아야 처음부터 싸울 수 있어요.</p>
   <div class=row style="align-items:flex-end;gap:16px;margin-bottom:18px"><div><div class=mut style="font-size:12px">비용별 장수</div><div class=curve>${curve.map((n,i)=>`<div style="height:${n*8+2}px"><span>${i+1}</span></div>`).join('')}</div></div></div>
+  ${deckGym!=null?`<div class=explain>${esc(GYMS[deckGym].n)} 도전 준비 <button class="btn gold sm" id=dGym ${me.deck.length===DECK_N?'':'disabled'}>수정 완료 · 도전 준비로</button></div>`:''}
   <div class=deckBar id=deckBar>${me.deck.map((id,i)=>cardHTML(id,{size:'sm',noHolo:1}).replace('class="card','data-di="'+i+'" class="card')).join('')}</div>
   <h3>가진 카드</h3><div class=colGrid>${owned.map(id=>{const inD=counts[id]||0,lim=deckLim(id);return cardHTML(id,{size:'sm',cnt:me.col[id],noHolo:1,cls:inD>=lim?'locked':''});}).join('')}</div></div></div>`;
  bindHud();
+ if($('#dGym'))$('#dGym').onclick=()=>previewGym(deckGym);
  $('#dAuto').onclick=()=>{sfx('tap');me.deck=autoDeck();autoSave();renderDeck();};
  $('#deckBar').querySelectorAll('.card').forEach(c=>c.onclick=()=>{sfx('tap');me.deck.splice(+c.dataset.di,1);autoSave();renderDeckKeep();});
  $('.colGrid').querySelectorAll('.card').forEach(c=>c.onclick=()=>{const id=+c.dataset.id;const inD=me.deck.filter(x=>x===id).length;if(me.deck.length>=DECK_N){toast('덱이 꽉 찼어요. 위에서 한 장을 빼 주세요');return;}if(inD>=deckLim(id)){toast('같은 카드는 가진 만큼, 최대 2장까지예요');return;}sfx('tap');me.deck.push(id);autoSave();renderDeckKeep();});}
 function renderDeckKeep(){const y=$('#view').scrollTop;renderDeck(true);$('#view').scrollTop=y;}
 
 // ===== 카드 배틀 (하스스톤을 아이들에 맞게 줄인 규칙) =====
-// 트레이너 체력 15 · 필드 3칸 · 덱 12장 · 에너지 최대 6 · 공격할 때마다 수학 문제(정답=제대로 공격, 오답=약하게)
+// 트레이너 체력 20 · 필드 3칸 · 덱 12장 · 소환 에너지 최대 6 · 학습 에너지 비축/즉석 문제 선택
+// roster의 마지막 hidden장은 비공개 핵심 카드. 구성은 고정하고 뽑는 순서만 섞는다.
 const GYMS=[
- {n:'바위 체육관',ldr:'관장 단단',types:[12,8],lv:1,av:74,c:'#c8b48e',d:'바위 벽 포켓몬이 길을 막아요'},
- {n:'물결 체육관',ldr:'관장 이슬비',types:[2,5],lv:3,av:120,c:'#7fc8ff',d:'물결로 서로를 돌봐요'},
- {n:'번개 체육관',ldr:'관장 찌릿',types:[4,9],lv:6,av:100,c:'#ffe066',d:'나오자마자 공격해요!'},
- {n:'숲 체육관',ldr:'관장 새싹',types:[3,11],lv:9,av:43,c:'#8be08b',d:'광합성과 성장으로 버텨요'},
- {n:'안개 체육관',ldr:'관장 보라',types:[7,13],lv:13,av:92,c:'#c79bff',hpAdj:-2,d:'독과 유령을 조심해요'},
- {n:'환상 체육관',ldr:'관장 미르',types:[10,17],lv:17,av:63,c:'#ffc2e6',d:'카드를 더 뽑고 회복해요'},
- {n:'불꽃 체육관',ldr:'관장 화르륵',types:[1,6],lv:21,av:58,c:'#ffb37a',d:'불씨와 격투로 몰아쳐요'},
- {n:'용의 체육관',ldr:'관장 비늘',types:[14,16,15],lv:25,av:147,c:'#a99bff',hpAdj:-4,d:'용의 기세와 강철 갑옷'},
- {n:'챔피언 리그',ldr:'챔피언 하늘',types:null,lv:30,av:149,c:'#ffd23f',d:'모든 타입의 최강 트레이너'}];
+ {n:'바위 체육관',ldr:'관장 단단',types:[12,8],lv:1,av:74,c:'#c8b48e',hp:14,hidden:3,collect:12,d:'바위와 땅 · 상성 첫걸음',tip:'물·풀·땅 공격을 준비해요. 처음 받은 모래두지도 도움이 돼요.',roster:[74,74,246,246,27,27,50,50,138,75,95,185]},
+ {n:'물결 체육관',ldr:'관장 이슬비',types:[2],lv:3,av:120,c:'#7fc8ff',hp:16,hidden:3,collect:20,d:'물 · 유리한 타입 모으기',tip:'풀·전기로 물결을 공략해요. 에너지 1~2 카드도 충분히 넣어요.',roster:[60,60,116,116,7,7,54,98,120,8,61,117]},
+ {n:'번개 체육관',ldr:'관장 찌릿',types:[4],lv:6,av:100,c:'#ffe066',hp:18,hidden:3,collect:30,d:'전기 · 빠른 공격에 대비',tip:'땅 공격이 유리해요. 모래두지·디그다처럼 일찍 낼 카드를 모아요.',roster:[172,172,179,179,25,100,180,239,239,26,82,181]},
+ {n:'숲 체육관',ldr:'관장 새싹',types:[3,11],lv:9,av:43,c:'#8be08b',hp:20,hidden:3,collect:45,d:'풀과 벌레 · 성장하기 전에 공격',tip:'불꽃·비행 공격이 좋아요. 회복과 벌레의 성장이 쌓이기 전에 공략해요.',roster:[69,191,10,1,43,152,46,2,70,45,71,182]},
+ {n:'안개 체육관',ldr:'관장 보라',types:[7,13],lv:13,av:23,c:'#c79bff',hp:21,hidden:4,collect:65,d:'독과 고스트 · 두 가지 상성 준비',tip:'독에는 땅·에스퍼, 고스트에는 악 공격을 준비해요. 유령은 첫 공격을 피해요.',roster:[13,43,69,1,41,23,88,109,92,30,2,93]},
+ {n:'환상 체육관',ldr:'관장 미르',types:[10,17],lv:17,av:63,c:'#ffc2e6',hp:22,hidden:4,collect:90,d:'에스퍼와 페어리 · 역할 나누기',tip:'에스퍼에는 악·벌레, 페어리에는 독·강철을 준비해요. 한 타입에만 의지하지 마세요.',roster:[173,175,35,39,63,96,64,202,65,36,40,176]},
+ {n:'불꽃 체육관',ldr:'관장 화르륵',types:[1,6],lv:21,av:58,c:'#ffb37a',hp:23,hidden:4,collect:120,d:'불꽃과 격투 · 진화 덱 도전',tip:'불꽃에는 물·땅, 격투에는 비행·에스퍼가 유리해요. 진화 카드와 가벼운 카드를 섞어요.',roster:[37,218,4,58,66,5,77,67,38,68,6,59]},
+ {n:'용의 체육관',ldr:'관장 비늘',types:[14,16],lv:25,av:147,c:'#a99bff',hp:24,hidden:4,collect:160,d:'드래곤과 강철 · 균형 잡힌 덱',tip:'드래곤에는 얼음·페어리, 강철에는 불꽃·땅·격투를 준비해요. 두 번 공격하는 용을 조심해요.',roster:[436,436,374,304,599,878,81,305,148,707,227,705]},
+ {n:'챔피언 리그',ldr:'챔피언 하늘',types:null,lv:30,av:149,c:'#ffd23f',hp:26,hidden:4,collect:200,d:'모든 타입 · 수집과 전략의 마지막 도전',tip:'공개된 상대를 보고 여러 상성을 준비해요. 전설 카드 없이도 도전할 수 있어요!',roster:[25,7,37,1,64,75,67,148,6,9,376,149]}];
 let B=null;
+// 소환 에너지와 별개인 학습 비축 에너지. 사용분은 자동 저장한다.
+const MATH_ENERGY_MAX=30;
+let deckGym=null,chargingMath=false;
+function mathEnergy(){return clamp(Math.floor(Number(S.meta.mathEnergy)||0),0,MATH_ENERGY_MAX);}
+function reserveBattle(){return B&&!B.pvp&&B.mathMode==='reserve';}
+function spendMathEnergy(){const n=mathEnergy();if(n<1)return false;S.meta.mathEnergy=n-1;autoSave();return true;}
+function gainMathEnergy(ok){S.meta.mathEnergy=Math.min(MATH_ENERGY_MAX,mathEnergy()+(ok?3:0));autoSave();}
+function energyPrepHTML(){return `<div class=explain><b>학습 에너지 ${mathEnergy()}/${MATH_ENERGY_MAX}</b><br>정답 1개로 +3 · 공격/자동 막기에 1 사용(막기는 상대 차례당 한 번). 소환 에너지와 따로예요.<br>에너지가 없으면 약한 공격, 자동 막기는 쉬어요. 문제는 자동으로 뜨지 않아요.</div><div class=mbtns><button class="btn green" data-a=charge>문제 5개로 충전</button></div>`;}
+async function chargeMathEnergy(done){if(chargingMath)return;if(B&&(B.busy||B.side!=='me'||B.pvp))return;if(mathEnergy()>=MATH_ENERGY_MAX){toast('학습 에너지가 가득 찼어요!');return;}chargingMath=true;const battle=B;if(battle)battle.busy=true;let stop=false,answered=0,correct=0;
+ try{for(let i=0;i<5&&!stop&&mathEnergy()<MATH_ENERGY_MAX;i++){const q=pickQ();if(!q)break;
+ M(`<h2>학습 에너지 충전 · ${i+1}/5</h2><p>현재 ${mathEnergy()}/${MATH_ENERGY_MAX} · 정답이면 +3</p><div id=chargeQuestion></div><div class=mbtns><button class="btn ghost" data-a=stop>이 문제까지만 풀기</button></div>`,{stop:b=>{stop=true;b.disabled=true;b.textContent='이 문제를 마치면 돌아가요';}});
+ const r=await askQ($('#chargeQuestion'),q,{noRetry:true});recordAnswer(q,r.ok,r.ms,{choice:r.choice,guess:r.guess});answered++;if(r.ok)correct++;gainMathEnergy(r.ok);
+ }}finally{chargingMath=false;if(battle&&B===battle)battle.busy=false;closeM();if(battle&&B===battle)renderBattle();else if(done)done();}
+ toast(`${answered}문제 중 ${correct}개 정답 · 학습 에너지 ${mathEnergy()}`);}
 const HERO_HP=20;const foeHP=d=>Math.round(13+d*1.3);
-function gymDeck(g,diff){ // 상대 덱: 체육관 타입 + 난이도에 맞는 비용
+function gymDeck(g,diff){
+ if(g&&g.roster)return shuffle(g.roster.slice()); // 상대 덱: 체육관 타입 + 난이도에 맞는 비용
  const pool=MON_IDS.filter(id=>{const m=MON[id];if(m.rar===5&&diff<9)return false;if(g&&g.types&&!m.types.some(t=>g.types.includes(t)))return false;return m.cost<=Math.min(6,2+Math.ceil(diff/2));});
  const d=[];const want=diff<=2?{1:4,2:5,3:3}:diff<=5?{1:3,2:4,3:3,4:2}:{1:2,2:3,3:3,4:2,5:1,6:1};
  for(const c in want){const p=shuffle(pool.filter(id=>MON[id].cost===+c));for(let k=0;k<want[c];k++)if(p.length)d.push(p[k%p.length]);}
@@ -1389,13 +1408,13 @@ const brand=()=>B&&B.rng?B.rng():rnd();
 function mkPlayer(name,deck,hp,av,keep){return{name,hp,max:hp,mana:0,maxMana:0,deck:keep?deck.slice():shuffle(deck.slice()),hand:[],board:[null,null,null],av,fat:0};}
 function mkUnit(id){const m=MON[id];const kw=kwOf(m).k;return{id,atk:m.atk,hp:m.hp,max:m.hp,kw,att:kw==='rush'?1:0,frozen:0,dodge:kw==='dodge'?1:0,tough:kw==='tough'?1:0,grow:0,fresh:1};}
 const isTaunt=u=>u&&(u.kw==='taunt'||u.kw==='armor');
-function startBattle(gi){const me=S.meta;if(gi>=0&&!window.__sim)me.stats.gymTry=(me.stats.gymTry||0)+1;if(!ensureDeck()){toast('덱에 카드가 12장 있어야 해요. 카드팩을 더 열어 봐요!');return;}
+function startBattle(gi){const me=S.meta;if(gi>=0&&!window.__sim&&!gymOpen(gi)){toast('앞 체육관 승리와 트레이너 레벨을 확인해요.');return;}if(gi>=0&&!window.__sim)me.stats.gymTry=(me.stats.gymTry||0)+1;if(!ensureDeck()){toast('덱에 카드가 12장 있어야 해요. 카드팩을 더 열어 봐요!');return;}
  const g=gi>=0?GYMS[gi]:null;const diff=g?gi+1:clamp(Math.ceil(lvOf(me.xp).lv/2),1,7);
  const wildT=rint(0,17);const wild=g?null:{n:'연습 대전',ldr:'떠돌이 트레이너',types:[wildT,rint(0,17)],c:TYPE_COL[wildT]};
  const G=g||wild;
- B={gi,g:G,diff,turn:0,round:0,side:'me',me:mkPlayer(me.name,SIM.deck||me.deck,HERO_HP,partnerId()),foe:mkPlayer(G.ldr,gymDeck(G,diff),foeHP(diff)+(G.hpAdj||0),g?g.av:rpick(MON_IDS.filter(id=>MON[id].types.includes(wildT)))),
-  sel:-1,pick:-1,busy:false,combo:0,qn:0,qc:0,defUsed:false,over:false,powerUsed:false};
- for(let i=0;i<3;i++)draw(B.me,true);for(let i=0;i<4;i++)draw(B.foe,true);
+ B={gi,g:G,diff,turn:0,round:0,side:'me',me:mkPlayer(me.name,SIM.deck||me.deck,HERO_HP,partnerId()),foe:mkPlayer(G.ldr,gymDeck(G,diff),G.hp||foeHP(diff),g?g.av:rpick(MON_IDS.filter(id=>MON[id].types.includes(wildT)))),
+  mathMode:window.__sim?'classic':(me.settings.battleMode||'reserve'),sel:-1,pick:-1,busy:false,combo:0,qn:0,qc:0,defUsed:false,over:false,powerUsed:false};
+ for(let i=0;i<3;i++)draw(B.me,true);for(let i=0;i<(g&&gi<3?3:4);i++)draw(B.foe,true);
  S.screen='battle';$('#view').innerHTML='';$('#battle').classList.add('on');
  renderBattle();
  if(window.__sim)return startTurn('me');
@@ -1404,7 +1423,7 @@ function startBattle(gi){const me=S.meta;if(gi>=0&&!window.__sim)me.stats.gymTry
    {h:'카드 배틀',ic:'cards',t:'상대 트레이너의 <b>체력을 0</b>으로 만들면 이겨요!'},
    {el:'.bBot .mana',h:'에너지',ic:'bolt',t:'차례마다 에너지가 1씩 늘어요(최대 6). 카드 왼쪽 위 숫자만큼 에너지를 써서 포켓몬을 내보내요.'},
    {el:'.hand',h:'손에 든 카드',ic:'cards',t:'카드를 <b>한 번 누르면 고르고</b>, 한 번 더 누르면 필드에 나가요.'},
-   {el:'#myLane',h:'공격',ic:'sword',t:'초록빛 포켓몬을 누른 뒤 상대 포켓몬이나 트레이너를 누르면 <b>수학 문제</b>가 나와요. <b>맞히면 제대로 공격</b>, 틀리면 약하게 공격해요.'},
+   {el:'#myLane',h:'공격',ic:'sword',t:B.mathMode==='reserve'?'미리 문제를 풀어 학습 에너지를 채워요. 공격할 때 1씩 사용하며, 없으면 약하게 공격해요. 내 차례에 충전할 수도 있어요.':'공격할 때 문제를 맞히면 제대로 공격하고, 틀리면 약하게 공격해요.'},
    {el:'#bEnd',h:'차례 끝',ic:'check',t:'할 일을 다 했으면 차례 끝을 눌러요. 상대 차례가 시작돼요.'}]);
   startTurn('me');})();}
 function draw(P,quiet){if(!P.deck.length){P.fat++;P.hp-=P.fat;if(!quiet&&B)fx(heroEl(P),`-${P.fat}`,'');return;}const id=P.deck.pop();if(P.hand.length>=6){if(!quiet)toast('손이 꽉 차서 카드 한 장이 사라졌어요');return;}P.hand.push(id);}
@@ -1433,10 +1452,10 @@ function renderBattle(){if(!B||window.__sim)return;const me=B.me,fo=B.foe;const 
   <div class=bTop><div class="hero${valid.hero?' tgt':''}" id=heroFoe>${valid.hero&&me.board[B.sel]?`<div class=tbadge style="top:-12px"><b class=dmgp>-${me.board[B.sel].atk+(me.board[B.sel].kw==='quake'?1:0)}</b></div>`:''}<div class=av style="background:${B.g.c}">${monImg(fo.av,'front')}</div><div><div class=hn>${esc(fo.name)}</div><div class=hhp>${I('heart')}${fo.hp}</div></div></div>
    <span class=pill>${I('cards')} ${fo.hand.length}</span><span class=pill title="남은 덱">${I('book')} ${fo.deck.length}</span><span class=hudSp></span>${mana(fo)}<button class="btn ghost sm" id=bMenu>메뉴</button></div>
   <div class=lane id=foeLane>${fo.board.map((u,i)=>`<div class=slot data-i="${i}">${unitH(u,fo,i)}</div>`).join('')}</div>
-  <div class=mid><div class=msg id=bMsg></div>${B.combo>=2?`<span class=pill style="color:#ff7a00">${I('flame')} ${B.combo}연속</span>`:''}</div>
+  <div class=mid>${reserveBattle()?`<button class="btn green sm" id=bCharge ${my?'':'disabled'}>학습 에너지 ${mathEnergy()}/30 · 충전</button>`:''}<div class=msg id=bMsg></div>${B.combo>=2?`<span class=pill style="color:#ff7a00">${I('flame')} ${B.combo}연속</span>`:''}</div>
   <div class=lane id=myLane>${me.board.map((u,i)=>`<div class="slot${B.pick>=0&&!u?' can':''}" data-i="${i}">${unitH(u,me,i)}</div>`).join('')}</div>
   <div class=bBot><div class=hero id=heroMe><div class=av>${monImg(me.av,'front')}</div><div><div class=hn>${esc(me.name)}</div><div class=hhp>${I('heart')}${me.hp}</div></div></div>${mana(me)}
-   <button class="btn purple sm" id=bPower ${my&&!B.powerUsed&&me.mana>=2?'':'disabled'} title="에너지 2: 문제를 맞히면 카드 1장">${I('book')} 공부 기술 <small style="font-size:11px">2</small></button>
+   <button class="btn purple sm" id=bPower ${my&&!B.powerUsed&&me.mana>=2?'':'disabled'} title="${reserveBattle()?'소환 에너지 2 + 학습 에너지 1: 카드 1장':'에너지 2: 문제를 맞히면 카드 1장'}">${I('book')} ${reserveBattle()?'카드 뽑기':'공부 기술'} <small style="font-size:11px">2</small></button>
    <span class=hudSp></span><span class=pill>${I('book')} ${me.deck.length}</span><button class="btn red endBtn" id=bEnd ${my?'':'disabled'}>차례 끝</button></div>
   <div id=bInfoSlot></div><div class=hand style="--hw:min(96px,calc((100vw - ${document.documentElement.classList.contains('safe')?92:24}px) / ${Math.max(4,me.hand.length)} - 6px))">${me.hand.map((id,i)=>{const can=my&&MON[id].cost<=me.mana&&me.board.includes(null);return cardHTML(id,{size:'sm',noHolo:1,cls:(can?'':'cant')+(B.pick===i?' pick':'')}).replace('class="card','data-h="'+i+'" class="card');}).join('')}</div>`;
  if(!my)msg(B.side==='foe'?`${esc(fo.name)}의 차례…${B.pvp?' (친구가 생각 중이에요)':''}`:'');
@@ -1448,6 +1467,7 @@ function bindBattle(){const me=B.me;
  $('#bMenu').onclick=()=>{sfx('tap');battleMenu();};
  $('#bEnd').onclick=()=>{if(B.busy||B.side!=='me')return;sfx('tap');B.sel=-1;B.pick=-1;if(B.pvp)pvpSend({t:'end'});endTurn();};
  $('#bPower').onclick=()=>usePower();
+ if($('#bCharge'))$('#bCharge').onclick=()=>chargeMathEnergy();
  $('#battle').querySelectorAll('.hand .card').forEach(c=>c.onclick=()=>{if(B.busy||B.side!=='me')return;const i=+c.dataset.h,id=me.hand[i];
   const can=MON[id].cost<=me.mana&&me.board.includes(null);
   if(B.pick===i&&can){closeInfo();const sl=me.board.indexOf(null);if(B.pvp)pvpSend({t:'sum',h:i,s:sl});summon(me,i,sl);return;}
@@ -1515,10 +1535,10 @@ function lunge(fromEl,toEl){if(!fromEl||!toEl||S.meta.settings.lowfx||window.__s
 function shakeBoard(){const b=$('#battle');if(S.meta.settings.lowfx||window.__sim)return;b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');}
 // 내 공격: 문제 → 결과
 async function playerAttack(si,tg){const me=B.me,fo=B.foe;const a=me.board[si];if(!a)return;B.busy=true;B.sel=-1;renderBattle();
- const q=pickQ();let ok=true;
+ const prepaid=reserveBattle();const q=prepaid?null:pickQ();let ok=prepaid?spendMathEnergy():true;
  if(q){const r=await battleQ(q,{who:a.id,what:tg.hero?`${esc(fo.name)}에게 공격!`:`${esc(MON[fo.board[tg.u].id].name)}에게 공격!`});ok=r.ok;}
  if(!B)return;
- let cb=false;if(ok){B.combo++;B.qc++;cb=B.combo>=3;}else B.combo=0;
+ let cb=false;if(!prepaid){if(ok){B.combo++;B.qc++;cb=B.combo>=3;}else B.combo=0;}
  if(B.pvp)pvpSend({t:'atk',si,tg,ok,cb});
  await resolveAttack(me,fo,si,tg,ok,cb);B.busy=false;renderBattle();}
 // 공격 결과 (내 공격·친구의 공격이 같은 규칙) — ok: 문제를 맞혔나, cb: 3연속 콤보
@@ -1538,9 +1558,9 @@ async function resolveAttack(A,D,si,tg,ok,cb){const a=A.board[si];if(!a)return;
   if(note)fx(unitEl(A,si),note,'txt');}
  cleanup();renderBattle();checkEnd();}
 // 공부 기술: 에너지 2 → 문제 맞히면 카드 1장, 틀려도 설명을 보고 다시
-async function usePower(){const me=B.me;if(B.busy||B.powerUsed||me.mana<2)return;B.busy=true;me.mana-=2;B.powerUsed=true;renderBattle();
- const q=pickQ();const r=q?await battleQ(q,{who:me.av,what:'공부 기술: 맞히면 카드 1장!'}):{ok:true};
- if(r.ok){B.qc++;B.combo++;draw(me);fx($('.hand'),'카드 +1','txt');}else{B.combo=0;}
+async function usePower(){const me=B.me;if(B.busy||B.side!=='me'||B.powerUsed||me.mana<2)return;if(reserveBattle()&&mathEnergy()<1){toast('학습 에너지를 먼저 충전해요.');return;}B.busy=true;me.mana-=2;B.powerUsed=true;renderBattle();
+ const prepaid=reserveBattle();const q=prepaid?null:pickQ();const r=prepaid?{ok:spendMathEnergy()}:q?await battleQ(q,{who:me.av,what:'공부 기술: 맞히면 카드 1장!'}):{ok:true};
+ if(r.ok){if(!prepaid){B.qc++;B.combo++;}draw(me);fx($('.hand'),'카드 +1','txt');}else{B.combo=0;}
  if(B.pvp)pvpSend({t:'pow',ok:r.ok});
  B.busy=false;renderBattle();}
 // 배틀 문제 창
@@ -1581,14 +1601,14 @@ async function foeAttack(i,tg){const fo=B.foe,me=B.me;const a=fo.board[i];if(!a)
  let dmg=a.atk;
  if(tg.hero){if(a.kw==='quake')dmg+=1;
   // 막기 문제: 상대 차례에 한 번, 내 트레이너가 맞을 때
-  if(S.meta.settings.defq&&!B.defUsed&&dmg>=2){B.defUsed=true;renderBattle();const q=pickQ();if(q){const r=await battleQ(q,{who:me.av,what:`막기! ${esc(MON[a.id].name)}의 공격을 막아요`});if(r.ok){B.qc++;B.combo++;S.meta.stats.defOk=(S.meta.stats.defOk||0)+1;dmg=Math.max(0,dmg-2);fx(heroEl(me),'막았다!','txt');}else B.combo=0;}}
+  if(S.meta.settings.defq&&!B.defUsed&&dmg>=2){B.defUsed=true;renderBattle();if(reserveBattle()){if(spendMathEnergy()){dmg=Math.max(0,dmg-2);fx(heroEl(me),'에너지로 막기','txt');}}else{const q=pickQ();if(q){const r=await battleQ(q,{who:me.av,what:`막기! ${esc(MON[a.id].name)}의 공격을 막아요`});if(r.ok){B.qc++;B.combo++;S.meta.stats.defOk=(S.meta.stats.defOk||0)+1;dmg=Math.max(0,dmg-2);fx(heroEl(me),'막았다!','txt');}else B.combo=0;}}}
   await lunge(unitEl(fo,i),heroEl(me));me.hp-=dmg;if(dmg){impact(heroEl(me),dmg,{hero:1,col:'#ff5a5f'});fx(heroEl(me),'-'+dmg,dmg>=4?'big':'');}}
  else{const d=me.board[tg.u];if(!d)return;if(a.kw==='fight')dmg+=1;const k=typeMul(a.id,d.id);dmg=applyType(dmg,k);
   await lunge(unitEl(fo,i),unitEl(me,tg.u));if(k>=2)fx(unitEl(me,tg.u),'효과가 굉장했다!','txt');
   await dealUnit(me,tg.u,dmg);if(a.kw==='freeze'&&me.board[tg.u])me.board[tg.u].frozen=1;if(a.kw==='poison'&&me.board[tg.u])me.board[tg.u].atk=Math.max(0,me.board[tg.u].atk-1);
   const cd=applyType(d.atk,typeMul(d.id,a.id));if(cd>0){await wait(200);await dealUnit(fo,i,cd);}}
  cleanup();renderBattle();checkEnd();}
-function battleMenu(){M(`<h2>배틀 메뉴</h2><div class=explain style="font-size:14px">${Object.values(KW).filter((v,i,a)=>a.findIndex(x=>x.n===v.n)===i).map(k=>`${I(k.ic)} <b>${k.n}</b> ${k.d}`).join('<br>')}<br><br><b>타입 상성</b>: 상성이 좋으면 피해 ×1.5(효과가 굉장했다!), 나쁘면 −1. 공격받은 포켓몬은 반격해요.<br>10번째 차례부터는 두 트레이너 모두 조금씩 지쳐요.</div>
+function battleMenu(){M(`<h2>배틀 메뉴</h2>${reserveBattle()?'<p>학습 에너지: 공격 1 · 자동 막기 1(상대 차례당 한 번, 피해 −2) · 카드 뽑기 1. 막기 설정을 끄면 자동 막기도 꺼져요.</p>':''}<div class=explain style="font-size:14px">${Object.values(KW).filter((v,i,a)=>a.findIndex(x=>x.n===v.n)===i).map(k=>`${I(k.ic)} <b>${k.n}</b> ${k.d}`).join('<br>')}<br><br><b>타입 상성</b>: 상성이 좋으면 피해 ×1.5(효과가 굉장했다!), 나쁘면 −1. 공격받은 포켓몬은 반격해요.<br>10번째 차례부터는 두 트레이너 모두 조금씩 지쳐요.</div>
  <div class=mbtns><button class="btn gold" data-a=x>계속하기</button>${B.pvp?'':`<button class="btn green" data-a=sv>${I('disk')} 저장하고 나가기</button>`}<button class="btn ghost" data-a=q>포기하기</button></div>`,{x:()=>closeM(),_close:()=>closeM(),sv:()=>{if(B.busy||B.side!=='me'){toast('내 차례일 때 저장할 수 있어요');return;}const o=Object.assign({},B,{busy:false,sel:-1,pick:-1});delete o.rng;S.meta.bsave=JSON.stringify(o);saveLocal();closeM();B=null;$('#battle').classList.remove('on');$('#battle').innerHTML='';renderLeague();toast('배틀을 저장했어요! 지금 꺼도 다음에 이어서 할 수 있어요');},q:async()=>{if(await confirmBox('배틀을 포기할까요? 푼 문제는 기록에 남아요.','포기','계속')){closeM();if(B.pvp)pvpSend({t:'quit'});B.over=true;endBattle(false);}}});}
 async function endBattle(win){if(B&&B.pvp)return pvpEnd(win);const me=S.meta,g=B.g,gi=B.gi;const first=gi>=0&&win&&!me.gyms[gi];
  let coins=win?30+B.diff*10:10,candy=B.qc,packs=0,legend=0;
@@ -1602,27 +1622,43 @@ async function endBattle(win){if(B&&B.pvp)return pvpEnd(win);const me=S.meta,g=B
  $('#bq').classList.remove('on');
  M(`<div style="text-align:center"><h2 style="font-size:34px">${win?'승리!':'아쉬워요…'}</h2>
   <div style="display:flex;justify-content:center">${monImg(win?me.starter||25:B.foe.av,'anim')}</div>
-  <p style="margin:6px 0">배틀에서 푼 문제 <b>${B.qn}</b>개 중 <b>${B.qc}</b>개 정답!</p>
+  <p style="margin:6px 0">${reserveBattle()?`미리 충전한 에너지로 배틀했어요! 남은 학습 에너지 <b>${mathEnergy()}</b><br>충전할 때 푼 문제는 성장 기록에 저장돼요.`:`배틀에서 푼 문제 <b>${B.qn}</b>개 중 <b>${B.qc}</b>개 정답!`}</p>
   ${first?`<div class=explain style="text-align:center"><b>${esc(g.n)} 배지</b>를 얻었어요!${legend?`<br>챔피언 기념 전설 카드: <b>${esc(MON[legend].name)}</b>`:''}</div>`:''}
   <div class=row style="justify-content:center;gap:8px;margin-top:8px"><span class=pill>${I('coin')} +${coins}</span><span class=pill>${I('candy')} +${candy}</span>${packs?`<span class=pill>${I('ball')} 카드팩 +${packs}</span>`:''}</div>
-  ${win?'':`<p class=mut style="margin-top:8px">문제를 더 맞히면 공격이 세져요. 오늘의 훈련으로 실력을 키우고 다시 도전해요!</p>`}
+  ${win?'':`<p class=mut style="margin-top:8px">학습 에너지를 충전하거나 상성에 맞게 덱을 바꾸고 다시 도전해요!</p>`}
   <div class=mbtns><button class="btn gold big" data-a=x>확인</button></div></div>`,{x:()=>{closeM();B=null;$('#battle').classList.remove('on');$('#battle').innerHTML='';if(S.lvUp)levelUpFx();renderLeague();},_close:()=>{}});}
 // ---- 리그 화면 ----
 function gymNeed(i){return GYMS[i].lv;}
 function gymOpen(i){const me=S.meta;return (i===0||me.gyms[i-1])&&lvOf(me.xp).lv>=gymNeed(i);}
-function renderLeague(){S.screen='league';const me=S.meta;const L=lvOf(me.xp).lv;
+// 추천은 공개 카드만 기준으로 계산해서 비공개 포켓몬의 정체를 유출하지 않는다.
+function gymCounters(g){const visible=g.roster.slice(0,-g.hidden);return MON_IDS.filter(id=>S.meta.col[id]>0).map(id=>({id,hits:visible.filter(foe=>typeMul(id,foe)>=2).length})).filter(x=>x.hits>0).sort((a,b)=>b.hits-a.hits||MON[a.id].cost-MON[b.id].cost||a.id-b.id).slice(0,6);}
+function gymPreviewCards(g){return g.roster.map((id,i)=>i>=g.roster.length-g.hidden?
+ '<div class="gymScout secret"><b>??</b><span>비공개 핵심 포켓몬</span><small>배틀에서 만나요</small></div>':
+ `<div class=gymScout>${monImg(id,'front')}<b>${esc(MON[id].name)}</b><span>${typeChips(MON[id])}</span><small>에너지 ${MON[id].cost} · 공격 ${MON[id].atk} · 체력 ${MON[id].hp}</small><small>${esc(kwOf(MON[id]).n)}</small></div>`).join('');}
+function previewGym(i){if(!GYMS[i]||!gymOpen(i)){toast('레벨을 올리고 앞 체육관을 먼저 이겨요.');return;}deckGym=i;const g=GYMS[i],op=gymOpen(i),owned=Object.keys(S.meta.col).filter(id=>S.meta.col[id]>0).length,recs=gymCounters(g);
+ M(`<h2>${i+1}단계 · ${esc(g.n)}</h2><p>${esc(g.d)} · 관장 체력 <b>${g.hp}</b></p>
+ <div class=explain>${esc(g.tip)}<br>도감 수집 목표 <b>${g.collect}종</b> · 현재 ${owned}종 <small>(도전 필수 조건은 아니에요)</small></div>
+ <p>관장 덱 12장 중 ${12-g.hidden}장 공개 · 핵심 ${g.hidden}장은 <b>??</b><br><small class=mut>재도전해도 같은 덱이에요. 카드를 뽑는 순서만 달라져요.</small></p>
+ <div class=gymScoutGrid>${gymPreviewCards(g)}</div>
+ <p><b>내 도감에서 준비할 카드</b><br>${recs.length?recs.map(x=>esc(MON[x.id].name)).join(' · '):'아직 유리한 카드가 없어요. 카드팩·진화·도감에서 데려오기로 준비해요.'}<br><small class=mut>공개 카드에 유리한 공격 기준이에요. 덱의 에너지 균형도 살펴봐요.</small></p>
+ <p>${op?'준비가 되면 도전해요!':`도전 조건: Lv.${g.lv}${i>0?' · 앞 체육관 승리':''} (지금 Lv.${lvOf(S.meta.xp).lv})`}</p>
+ ${S.meta.settings.battleMode!=='classic'?energyPrepHTML():''}<div class=mbtns><button class="btn ghost" data-a=back>돌아가기</button><button class="btn green" data-a=deck>내 덱 준비</button><button class="btn gold" data-a=fight ${op?'':'disabled'}>관장 도전</button></div>`,{charge:()=>chargeMathEnergy(()=>previewGym(i)),back:()=>closeM(),deck:()=>{closeM();renderDeck();},fight:()=>{if(!gymOpen(i))return;closeM();startBattle(i);}},{wide:true});}
+function renderLeague(){deckGym=null;S.screen='league';const me=S.meta;const L=lvOf(me.xp).lv;
  $('#view').innerHTML=hudHTML()+`<div class=wrap><div class=panel><div class=row style="align-items:center"><h2 style="margin:0">${I('trophy')} 배틀 리그</h2><span class=hudSp></span><span class=pill>${I('medal')} 배지 ${Object.keys(me.gyms).length}/9</span><span class=pill>${me.battles.w}승 ${me.battles.l}패</span></div>
   <p class=mut style="font-size:13px;margin:6px 0 12px">체육관은 앞 체육관을 이기고 <b>트레이너 레벨</b>이 되어야 열려요. 레벨은 문제를 풀수록 올라가요!</p>
+  <div class=explain><label>문제 푸는 방식 <select id=gMathMode><option value=reserve ${me.settings.battleMode!=='classic'?'selected':''}>미리 충전하기</option><option value=classic ${me.settings.battleMode==='classic'?'selected':''}>공격할 때 풀기</option></select></label><p>학습 에너지 ${mathEnergy()}/30 · 정답 1개 = +3<br><small>공격·자동 막기에 1 사용. 0이면 약한 공격만 해요. 친구 대전은 기존 문제 방식을 사용해요.</small></p><button class="btn green sm" id=gCharge>문제 5개로 충전</button></div>
   ${me.bsave?`<div class=explain style="margin-bottom:10px;display:flex;align-items:center;gap:10px">${I('disk')} 저장해 둔 배틀이 있어요 <span class=hudSp></span><button class="btn green sm" id=gResume>이어서 배틀하기</button><button class="btn ghost sm" id=gDrop>그만두기</button></div>`:''}
   <div class=gyms><div class=gym id=gWild><div class=gi style="background:#e9f7ff">${I('map')}</div><div><div class=gn>연습 대전</div><div class=gd>아무 때나 할 수 있어요. 코인·사탕을 모아요.</div></div></div>
-  ${GYMS.map((g,i)=>{const op=gymOpen(i);return `<div class="gym${op?'':' lock'}${me.gyms[i]?' won':''}" data-g="${i}"><div class=gi style="background:${g.c}">${op||me.gyms[i]?monImg(g.av,'front'):I('lock')}</div><div><div class=gn>${esc(g.n)}</div><div class=gd>${esc(g.ldr)} · ${esc(g.d)}<br>${op?'도전할 수 있어요!':`Lv.${g.lv} 필요${i>0&&!me.gyms[i-1]?' · 앞 체육관 승리':''}`}</div></div></div>`;}).join('')}</div>
+  ${GYMS.map((g,i)=>{const op=gymOpen(i);return `<div class="gym${op?'':' lock'}${me.gyms[i]?' won':''}" data-g="${i}"><div class=gi style="background:${g.c}">${op||me.gyms[i]?monImg(g.av,'front'):I('lock')}</div><div><div class=gn>${esc(g.n)}</div><div class=gd>${esc(g.ldr)} · ${esc(g.d)}<br>${op?'덱 확인하고 도전':`Lv.${g.lv} 필요${i>0&&!me.gyms[i-1]?' · 앞 체육관 승리':''}`}</div></div></div>`;}).join('')}</div>
   <div class=mbtns><button class="btn ghost" id=gDeck>${I('cards')} 덱 고치기</button></div></div></div>`;
  bindHud();
+ $('#gMathMode').onchange=e=>{me.settings.battleMode=e.target.value;autoSave();};
+ $('#gCharge').onclick=()=>chargeMathEnergy(()=>renderLeague());
  $('#gWild').onclick=()=>{sfx('tap');startBattle(-1);};
  if($('#gResume'))$('#gResume').onclick=()=>{sfx('tap');try{B=JSON.parse(me.bsave);}catch(e){B=null;}me.bsave=null;autoSave();if(!B){toast('저장한 배틀을 불러오지 못했어요');renderLeague();return;}B.busy=false;S.screen='battle';$('#view').innerHTML='';$('#battle').classList.add('on');renderBattle();banner('이어서 배틀!','',1200);};
  if($('#gDrop'))$('#gDrop').onclick=async()=>{if(await confirmBox('저장한 배틀을 그만둘까요?','그만두기','아니요')){me.bsave=null;me.battles.l++;autoSave();renderLeague();}};
  $('#gDeck').onclick=()=>{sfx('tap');renderDeck();};
- $('#view').querySelectorAll('[data-g]').forEach(e=>e.onclick=()=>{const i=+e.dataset.g;if(!gymOpen(i)){toast(lvOf(me.xp).lv<gymNeed(i)?`트레이너 Lv.${gymNeed(i)}이 되면 열려요 (지금 Lv.${L})`:'앞 체육관을 먼저 이겨요');return;}sfx('tap');startBattle(i);});}
+ $('#view').querySelectorAll('[data-g]').forEach(e=>e.onclick=()=>{sfx('tap');previewGym(+e.dataset.g);});}
 
 // ---- 밸런스 모의 실험 (개발자 콘솔: await SIM.run(체육관번호, 정답률, 판수)) ----
 const SIM={p:.8,deck:null,
@@ -2113,7 +2149,7 @@ function bindHud(){const h=$('#hHome');if(h)h.onclick=()=>{sfx('tap');renderHub(
 const FEAT=[
  {k:'pack',n:'카드팩',ic:'ball',how:'첫 훈련을 마치면',ok:m=>m.train.count>0||m.stats.opened>0,ds:'훈련으로 받은 카드팩을 열어 포켓몬 카드를 모아요!'},
  {k:'dex',n:'도감',ic:'book',how:'카드팩을 처음 열면',ok:m=>m.stats.opened>0,ds:'모은 카드를 보고, 사탕으로 진화시켜요.'},
- {k:'league',n:'배틀 리그',ic:'trophy',how:'카드팩을 처음 열면',ok:m=>m.stats.opened>0,ds:'카드로 배틀! 공격할 때마다 수학 문제를 풀어요.'},
+ {k:'league',n:'배틀 리그',ic:'trophy',how:'카드팩을 처음 열면',ok:m=>m.stats.opened>0,ds:'문제로 에너지를 미리 채우고 카드로 배틀해요! 공격할 때 푸는 방식도 고를 수 있어요.'},
  {k:'grow',n:'나의 학습 기록',ic:'chart',how:'첫 훈련을 마치면',ok:m=>m.train.count>0,ds:'처음의 나와 지금의 나를 비교하고, 단원 지도·공부 달력으로 내 공부를 살펴봐요.'},
  {k:'endless',n:'끝없는 도전',ic:'flame',how:'첫 훈련을 마치면',ok:m=>m.train.count>0,ds:'끝이 없는 기초 연산 연습! 10문제마다 보상을 받아요.'},
  {k:'pvp',n:'친구 대전',ic:'teacher',how:'배틀을 한 번 이기면',ok:m=>m.battles.w>0,ds:'같은 와이파이의 친구와 내가 키운 카드로 대전해요. 한 판에 코인이 들어요.'},
@@ -2231,7 +2267,7 @@ function showSettings(){const st=S.meta.settings;const seg=(k,opts)=>`<div class
   <div class=setRow><span><b>포켓몬 움직임</b><br><span class=mut style="font-size:12px">움직이는 그림은 PC에서 빠르게 보일 수 있어요</span></span>${seg('anim',[['calm','부드럽게'],['gif','움직이는 그림']])}</div>
   <div class=setRow><span><b>가벼운 화면</b><br><span class=mut style="font-size:12px">느린 기기에서 반짝임·흔들림을 줄여요</span></span>${seg('lowfx',[[false,'보통'],[true,'가볍게']])}</div>
   <div class=setRow><span><b>포켓몬 그림 불러오기</b><br><span class=mut style="font-size:12px">인터넷이 막힌 곳에서는 '끄기'</span></span>${seg('imgs',[[true,'켜기'],[false,'끄기']])}</div>
-  <div class=setRow><span><b>막기 문제</b><br><span class=mut style="font-size:12px">상대 차례에도 문제 한 개</span></span>${seg('defq',[[true,'켜기'],[false,'끄기']])}</div>
+  <div class=setRow><span><b>막기</b><br><span class=mut style="font-size:12px">충전 방식: 에너지로 자동 막기 · 기존 방식: 막기 문제</span></span>${seg('defq',[[true,'켜기'],[false,'끄기']])}</div>
   <div class=setRow><span><b>화면 크기</b></span>${seg('zoom',[['auto','자동'],['0.7','70%'],['0.85','85%'],['1','100%']])}</div>
   <div class=setRow><span><b>사이트 버튼 피하기(ⓘ)</b></span>${seg('safe',[['auto','자동'],['on','켜기'],['off','끄기']])}</div>
   <div class=setRow><span><b>보이는 부분에 맞추기</b></span>${seg('fit',[['auto','자동'],['off','끄기']])}</div>
