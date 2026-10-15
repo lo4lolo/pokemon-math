@@ -379,7 +379,7 @@ html.safe .hand{padding-left:72px}
 html.safe .bBot{padding-left:72px}
 @media(max-width:560px){.bTop,.bBot{flex-wrap:wrap;gap:5px;padding:4px 8px}.mana i{width:11px;height:11px;border-width:1.5px}.mana b{font-size:13px}.hero .av{width:36px;height:36px}.hero .av img{width:32px;height:32px}.hero{padding:2px 8px 2px 2px;gap:5px}.hero .hhp{font-size:18px}.hero .hn{font-size:13px}#bPower{font-size:12px;padding:6px 8px}.bTop .pill,.bBot .pill{font-size:13px;padding:2px 7px}.mid{min-height:28px}.mid .msg{font-size:14px}}
 @media(max-width:520px){.card.sm{width:76px}.hand{gap:4px}.slot{width:clamp(84px,29vw,120px)}.tiles{grid-template-columns:repeat(2,1fr)}.tile.main{flex-direction:column;text-align:center}}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01s!important}}
 /* ===== 2026-10-15: 여러 팩 · 진화 계보 · 메가진화 · 금빛 카드 · 덱 상성 · 정원 ===== */
 /* 카드팩 여러 개 */
 .packPick{display:flex;flex-direction:column;gap:10px;margin-top:10px}.packPick .btn{justify-content:flex-start;gap:14px;text-align:left}
@@ -516,9 +516,9 @@ svg.egg.big{width:110px}
 .gEx{position:absolute;right:6%;top:0;background:#ff5a5f;color:#fff;font-family:'Black Han Sans';border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 0 rgba(0,0,0,.2)}
 @keyframes visitHop{50%{transform:translateX(-50%) translateY(-8px)}}
 .gMon{position:absolute;width:clamp(64px,13vw,96px);transform:translate(-50%,-100%);transition:left 2.4s ease-in-out,top 2.4s ease-in-out;cursor:pointer}
-.gMon .gSp{transition:transform .3s}.gMon img{width:100%;image-rendering:pixelated;display:block;filter:drop-shadow(0 4px 2px rgba(0,0,0,.2));animation:idleBreath 2.6s ease-in-out infinite}
+.gMon .gSp{transition:transform .3s}.gMon img{width:100%;image-rendering:pixelated;display:block;filter:drop-shadow(0 4px 2px rgba(0,0,0,.2));animation:gIdle 2.6s ease-in-out infinite}
 .gMon.sleep img{filter:brightness(.7) drop-shadow(0 4px 2px rgba(0,0,0,.2));animation:sleepB 3.4s ease-in-out infinite}
-@keyframes idleBreath{50%{transform:scale(1,.95) translateY(3%)}}@keyframes sleepB{50%{transform:scale(1.03,.92) translateY(5%)}}
+@keyframes gIdle{50%{transform:scale(1,.97) translateY(2%)}}@keyframes sleepB{50%{transform:scale(1.03,.92) translateY(5%)}}
 .gMon .zz{position:absolute;right:0;top:0;font-family:'Jua';color:#fff;font-size:16px;text-shadow:0 1px 2px #000;animation:twinkle 1.6s ease-in-out infinite alternate}
 .gMon .gH{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);font-family:'Jua';font-size:11px;background:rgba(255,255,255,.9);border-radius:8px;padding:0 5px;display:flex;align-items:center;gap:2px;white-space:nowrap}.gMon .gH .ic{width:11px;height:11px}
 .feedMode .gMon{filter:drop-shadow(0 0 6px #fff)}.feedMode .gMon::before{content:'';position:absolute;inset:10% 10% 0;border-radius:50%;border:3px dashed #fff;animation:tgtP 1s infinite}
