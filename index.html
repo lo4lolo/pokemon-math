@@ -547,6 +547,26 @@ svg.egg.big{width:110px}
 .albumCell img{width:64px;height:64px;image-rendering:pixelated;background:#e9f7ff;border-radius:6px}.albumCell b{font-family:'Jua';font-size:13px}.albumCell small{color:var(--mut)}
 .hatchBox{width:200px;height:200px;display:flex;align-items:center;justify-content:center}
 @media(max-width:520px){.gBtns .btn{font-size:13px;padding:6px 8px}.muFoe{width:84px}}
+/* 이로치 · 거다이맥스 (움직임 없이 색과 테두리로만 — 2026-10-16 어지러움 의견) */
+.card.shiny .shyMark{position:absolute;top:4px;right:6px;z-index:3;font-size:18px;color:#ffb321;text-shadow:0 0 4px #fff,0 0 8px #ffd23f}
+.card .art{position:relative}
+.newB.shyB{background:linear-gradient(90deg,#ffb321,#ff6fb5);top:-26px}
+.pkRow.multi .newB.shyB{top:-20px}
+.dexCell.shiny{border-color:#ffb321;border-width:3px}
+.dexCell.shiny .nm::before{content:'✦ ';color:#ffb321}
+.dexCell.canGmax::before{content:'G';position:absolute;left:4px;bottom:4px;font-family:'Black Han Sans';font-size:11px;color:#fff;background:linear-gradient(135deg,#ff4d6d,#c2185b);border-radius:6px;padding:0 4px;z-index:2}
+.shinyBox{background:linear-gradient(160deg,#fff8e1,#fff0f6);border-color:#ffd27a}
+.gmaxBox{background:linear-gradient(160deg,#fff0f2,#fff6e8);border-color:#ff9fb0}
+.gmaxBox .megaForm img{filter:drop-shadow(0 0 8px rgba(255,77,109,.8))}
+.shinyBox .megaForm img{filter:drop-shadow(0 0 8px rgba(255,200,60,.8))}
+.shinyBox .megaForm img.sil,.gmaxBox .megaForm img.sil{filter:brightness(0);opacity:.35}
+.unit.shiny .un{box-shadow:inset 0 0 0 2px #ffcf5a}
+.unit.shiny .un::before{content:'✦';color:#ffb321;margin-right:2px}
+.unit.gmax{box-shadow:0 0 0 3px #ff4d6d,0 0 18px 4px rgba(255,77,109,.55)}
+.unit.gmax .sp img{transform:scale(1.7)}
+.unit.gmax .un{background:linear-gradient(90deg,#ffd6dd,#ffe7c2);color:#b0123a}
+.megaTag.gTag{background:linear-gradient(135deg,#ff4d6d,#c2185b)}
+.gTurn{position:absolute;top:2px;left:2px;z-index:6;min-width:22px;height:22px;border-radius:11px;background:#ff4d6d;color:#fff;font-family:'Black Han Sans';font-size:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff}
 </style>
 </head>
 <body>
@@ -724,34 +744,49 @@ function codeValid(){const c=S.meta.code&&parseCode(S.meta.code);return !!(c&&!c
 
 // ===== 상태 =====
 const SAVE_KEY=GAME.id+'-v1';
-const SAVE_VER=3; // 저장 형식이 바뀌면 올리고 upgradeMeta에 변환을 한 단계 추가해요(옛 저장도 이어서 하기)
+const SAVE_VER=4; // 저장 형식이 바뀌면 올리고 upgradeMeta에 변환을 한 단계 추가해요(옛 저장도 이어서 하기)
 function defaultMeta(){return{ver:SAVE_VER,name:'',code:'',gs:'',cls:'',focus:null,uMax:null,misc:{},starter:0,created:0,
  xp:0,coins:0,candy:0,packs:0,dust:0,pity:{p4:0,p5:0},col:{},seen:{},dexSeen:{},deck:[],
  sk:{},days:{},hist:[],train:{last:'',best:0,count:0,lastRes:null,daily:''},
  badges:{},gyms:{},battles:{w:0,l:0},stats:{q:0,c:0,streak:0,bestCombo:0,bestStreak:0,guessWrong:0,guessAlert:0,careful:0,lowerStar:0,shardDone:0,crafted:0,foundDone:0,superEff:0,gymTry:0,retryOk:0,bounce:0,fast:0,better:0,perfect:0,quickTrain:0,practice:0,comeback:0,flawless:0,defOk:0,candyAll:0,evolved:0,opened:0},
- mathEnergy:0,gold:{},mega:{xtal:0,stones:{},seen:{},n:0},garden:{res:[],deco:{},own:{},plots:[null,null,null],berry:{},plate:null,visit:null,vd:{d:'',n:0},eggs:[],album:[],heart:{},hday:{},breath:'',first:0},unl:{},unlNew:{},ach:{},partner:0,bond:{},stoneSeen:null,card:null,uMaxAt:'',shard:{},dust:0,season:null,seasons:[],bsave:null,thist:[],first20:null,first20t:null,found:{},endless:{best:0,total:0,runs:0},pvp:{n:0,w:0,l:0,gg:0,foes:{},last:0},tod:{m:0,a:0,e:0},firstPlay:0,settings:{battleMode:'reserve',anim:'still',sound:true,lowfx:false,safe:'auto',zoom:'auto',fit:'auto',imgs:true,defq:true}};}
+ mathEnergy:0,gold:{},shiny:{},shine:0,dmax:{mush:0,soup:{},seen:{},n:0},tamper:0,clockMax:'',gymLoss:{},mega:{xtal:0,stones:{},seen:{},n:0},garden:{res:[],deco:{},own:{},plots:[null,null,null],berry:{},plate:null,visit:null,vd:{d:'',n:0},eggs:[],album:[],heart:{},hday:{},breath:'',first:0},unl:{},unlNew:{},ach:{},partner:0,bond:{},stoneSeen:null,card:null,uMaxAt:'',shard:{},dust:0,season:null,seasons:[],bsave:null,thist:[],first20:null,first20t:null,found:{},endless:{best:0,total:0,runs:0},pvp:{n:0,w:0,l:0,gg:0,foes:{},last:0},tod:{m:0,a:0,e:0},firstPlay:0,settings:{battleMode:'reserve',anim:'still',sound:true,lowfx:false,safe:'auto',zoom:'auto',fit:'auto',imgs:true,defq:true}};}
 function mergeMeta(m){const d=defaultMeta();if(!m||typeof m!=='object')return d;for(const k in d){if(!(k in m))continue;if(d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k]))d[k]=Object.assign(d[k],m[k]);else d[k]=m[k];}return d;}
 function upgradeMeta(m){
  // v1 → v2: 처음 20문제 기록·개념별 최근 기록이 생겼어요. 옛 기록에서 알 수 있는 만큼 채워요.
  if((m.ver||1)<2){if(!m.first20&&m.hist&&m.hist.length>=20)m.first20=m.hist.slice(0,20);for(const id in m.sk){const v=m.sk[id];if(v.r==null)v.r='';}m.ver=2;}
  // v2 → v3: 포켓몬 숨쉬기가 PC에서 흔들려 보여 어지럽다는 의견 → 기본은 멈춤. 예전 기본값 '부드럽게'(calm)도 멈춤으로
  if((m.ver||1)<3){if(m.settings&&(m.settings.anim==='calm'||!m.settings.anim))m.settings.anim='still';m.ver=3;}
+ // v3 → v4: 이로치·거다이맥스가 생겼어요. 이미 하던 학생에게는 업데이트 선물(이로치 1번 · 다이수프 1번 만들 만큼)
+ if((m.ver||1)<4){if(m.name){m.shine=(m.shine||0)+15;if(m.dmax)m.dmax.mush=(m.dmax.mush||0)+8;m.gift4=1;}m.ver=4;}
  m.ver=SAVE_VER;return m;}
 const S={meta:defaultMeta(),screen:'title',busy:false};
+// 저장 서명: 저장 파일·코드·브라우저 저장을 게임 밖에서 고치면(코인 숫자 바꾸기 등) 알아챌 수 있게 해요.
+// 공개된 정적 파일이라 완벽한 보안은 아니지만, 메모장으로 숫자를 고치는 장난은 막아요. 옛 형식(v3 이하)은 그대로 읽어요.
+const SIG_SALT='SSC-pkmath-sig-2026';
+function cyrb(str){let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<str.length;i++){const ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}
+ h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return (h2>>>0).toString(36)+'.'+(h1>>>0).toString(36);}
+const sigOf=json=>cyrb(SIG_SALT+json);
+// 'ok' 서명 맞음 · 'old' 서명 없는 옛 형식 · 'bad' 바뀐 흔적
+function sigState(o){if(!o||!o.meta||typeof o.meta!=='object')return 'bad';if(o.sig)return o.sig===sigOf(JSON.stringify(o.meta))?'ok':'bad';return (Number(o.meta.ver)||1)<=3?'old':'bad';}
+const SIG_BAD_MSG='이 기록은 게임 밖에서 고친 흔적이 있어서 불러올 수 없어요. 처음 만든 저장 코드나 파일을 써 주세요.';
+// 기기 시계를 앞뒤로 돌려 하루 보상을 여러 번 받는 것을 막아요: 지금까지 본 가장 늦은 날짜보다 앞이면 하루 보상은 쉬어요
+function clockOk(){const m=S.meta,t=today();if(!m.clockMax||t>m.clockMax){m.clockMax=t;return true;}return t>=m.clockMax;}
 
 // ===== 저장 · 불러오기 =====
 const STORE_OK=(()=>{try{const k='__pm';localStorage.setItem(k,'1');const ok=localStorage.getItem(k)==='1';localStorage.removeItem(k);return ok;}catch(e){return false;}})();
-function saveLocal(){if(window.__sim)return;try{localStorage.setItem(SAVE_KEY,JSON.stringify({meta:S.meta}));}catch(e){}}
-function loadLocal(){try{const s=localStorage.getItem(SAVE_KEY);if(!s)return;const o=JSON.parse(s);S.meta=upgradeMeta(mergeMeta(o.meta));}catch(e){}}
+function saveLocal(){if(window.__sim)return;try{const js=JSON.stringify(S.meta);localStorage.setItem(SAVE_KEY,'{"meta":'+js+',"sig":"'+sigOf(js)+'"}');}catch(e){}}
+// 브라우저 저장이 바뀐 흔적이 있어도 학생 기록은 지키고(불러옴), 선생님 화면에 표시해요
+function loadLocal(){try{const s=localStorage.getItem(SAVE_KEY);if(!s)return;const o=JSON.parse(s);const st=sigState(o);S.meta=upgradeMeta(mergeMeta(o.meta));if(st==='bad'){const m=S.meta;m.tamper=(Number(m.tamper)||0)+1;m.coins=0;m.packs=0;m.dust=0;m.candy=0;m.mathEnergy=0;m.shine=0;if(m.dmax)m.dmax.mush=0;m.mega&&(m.mega.xtal=0);saveLocal();S.tamperMsg=1;}}catch(e){}}
+// 바뀐 흔적이 있으면: 공부 기록·카드는 그대로, 재화(코인·카드팩·별가루·사탕·결정·가루·버섯·학습 에너지)만 0으로. 선생님 표에도 남아요
 let _asT=0;function autoSave(){clearTimeout(_asT);_asT=setTimeout(()=>{saveLocal();if(typeof achCheck==='function')achCheck();},300);}
 const slotKey=i=>GAME.id+'-slot'+i;
 function slotGet(i){try{const s=localStorage.getItem(slotKey(i));return s?JSON.parse(s):null;}catch(e){return null;}}
 function saveSummary(){const m=S.meta;return `${semName(m.gs)} · Lv.${lvOf(m.xp).lv} · 카드 ${Object.keys(m.col).length}종`;}
-function slotSave(i){try{localStorage.setItem(slotKey(i),JSON.stringify({t:Date.now(),sum:saveSummary(),name:S.meta.name,meta:S.meta}));return true;}catch(e){return false;}}
+function slotSave(i){try{const js=JSON.stringify(S.meta);localStorage.setItem(slotKey(i),JSON.stringify({t:Date.now(),sum:saveSummary(),name:S.meta.name,meta:S.meta,sig:sigOf(js)}));return true;}catch(e){return false;}}
 function fmtWhen(t){const d=new Date(t);return `${d.getMonth()+1}월 ${d.getDate()}일 ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;}
 function b64u(u){let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function ub64u(t){t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';const b=atob(t);const u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
-async function makeCode(){let b=new TextEncoder().encode(JSON.stringify({game:GAME.id,v:1,meta:S.meta})),tag='A';
+async function makeCode(){let b=new TextEncoder().encode(JSON.stringify({game:GAME.id,v:1,meta:S.meta,sig:sigOf(JSON.stringify(S.meta))})),tag='A';
  if(window.CompressionStream){try{b=new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer());tag='Z';}catch(e){}}
  return 'PKMT'+tag+':'+b64u(b);}
 async function readAny(text){text=String(text||'').trim();if(!text)throw new Error('코드를 붙여 넣어 주세요');
@@ -759,14 +794,14 @@ async function readAny(text){text=String(text||'').trim();if(!text)throw new Err
  const m=text.replace(/\s+/g,'').match(/PKMT([AZ]):([A-Za-z0-9_-]+)/);if(!m)throw new Error('저장 코드 모양이 아니에요 (PKMT로 시작해요)');
  let b=ub64u(m[2]);if(m[1]==='Z'){if(!window.DecompressionStream)throw new Error('이 브라우저는 이 코드를 읽지 못해요');b=new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer());}
  const o=JSON.parse(new TextDecoder().decode(b));if(o.game!==GAME.id)throw new Error(GAME.title+' 코드가 아니에요');return o;}
-function applyLoaded(o,msg){S.meta=upgradeMeta(mergeMeta(o.meta));saveLocal();applySafe();closeM();closeM(1);toast(msg||'불러왔어요!');goStart();}
+function applyLoaded(o,msg){if(sigState(o)==='bad'){toast(SIG_BAD_MSG);return;}S.meta=upgradeMeta(mergeMeta(o.meta));saveLocal();applySafe();closeM();closeM(1);toast(msg||'불러왔어요!');goStart();}
 async function copyText(t,ta){try{await navigator.clipboard.writeText(t);toast('복사했어요! 메모장이나 채팅방에 붙여 두세요');return;}catch(e){}
  try{if(ta){ta.focus();ta.select();ta.setSelectionRange(0,t.length);}if(document.execCommand('copy')){toast('복사했어요! 메모장이나 채팅방에 붙여 두세요');return;}}catch(e){}
  if(ta){ta.focus();ta.select();}toast('자동 복사가 막혀 있어요. 칸 안의 글자를 길게 눌러 직접 복사해 주세요');}
 function buildMD(){const m=S.meta,L=lvOf(m.xp);const d=new Date();
  const days=Object.keys(m.days).sort().slice(-14).map(k=>{const v=m.days[k];return `| ${k} | ${v.n} | ${v.c} | ${v.n?Math.round(v.c/v.n*100):0}% | ${v.c?(v.ms/v.c/1000).toFixed(1):'-'}초 |`;}).join('\n');
  const sks=Object.keys(m.sk).map(id=>{const s=SKM[id];const v=m.sk[id];return s?`| ${s.s} | ${esc(s.n)} | ${'★'.repeat(v.st||0)} | ${v.c}/${v.c+v.x} |`:'';}).filter(Boolean).join('\n');
- return `# ${GAME.title} 기록 — ${m.name}\n\n> 이 파일을 게임 화면에 끌어다 놓거나 「저장 · 불러오기 → .md 불러오기」로 이어서 할 수 있어요. 맨 아래 저장 데이터 블록은 고치지 마세요.\n\n| 항목 | 값 |\n|---|---|\n| 닉네임 | ${m.name} |\n| 학년·학기 | ${semName(m.gs)} |\n| 저장 시각 | ${d.toLocaleString('ko-KR')} |\n| 트레이너 레벨 | Lv.${L.lv} (${L.title}) |\n| 푼 문제 / 맞힌 문제 | ${m.stats.q} / ${m.stats.c} |\n| 모은 카드 | ${Object.keys(m.col).length}종 |\n| 체육관 배지 | ${Object.keys(m.gyms).length}개 |\n| 도전 과제 배지 | ${ACH.reduce((s,a)=>s+((m.ach[a.k]&&m.ach[a.k].t)||0),0)}개 |\n| 나의 강점 | ${strengths(m).slice(0,2).map(x=>STR[x.k].t).join(', ')||'찾는 중'} |\n| 플레이 스타일 | ${playStyle(m).map(t=>'#'+t[0]).join(' ')||'-'} |\n\n## 최근 공부 기록\n| 날짜 | 푼 문제 | 맞힌 문제 | 정답률 | 문제당 시간 |\n|---|---|---|---|---|\n${days||'| - | - | - | - | - |'}\n\n## 개념별 별\n| 학기 | 개념 | 별 | 맞힘/전체 |\n|---|---|---|---|\n${sks||'| - | - | - | - |'}\n\n> 석산초 SUCCESS 모델의 지원을 받아 제작되었어요.\n\n## 저장 데이터\n\`\`\`json\n${JSON.stringify({game:GAME.id,v:1,saved:Date.now(),meta:m})}\n\`\`\`\n`;}
+ return `# ${GAME.title} 기록 — ${m.name}\n\n> 이 파일을 게임 화면에 끌어다 놓거나 「저장 · 불러오기 → .md 불러오기」로 이어서 할 수 있어요. 맨 아래 저장 데이터 블록은 고치지 마세요.\n\n| 항목 | 값 |\n|---|---|\n| 닉네임 | ${m.name} |\n| 학년·학기 | ${semName(m.gs)} |\n| 저장 시각 | ${d.toLocaleString('ko-KR')} |\n| 트레이너 레벨 | Lv.${L.lv} (${L.title}) |\n| 푼 문제 / 맞힌 문제 | ${m.stats.q} / ${m.stats.c} |\n| 모은 카드 | ${Object.keys(m.col).length}종 |\n| 체육관 배지 | ${Object.keys(m.gyms).length}개 |\n| 도전 과제 배지 | ${ACH.reduce((s,a)=>s+((m.ach[a.k]&&m.ach[a.k].t)||0),0)}개 |\n| 나의 강점 | ${strengths(m).slice(0,2).map(x=>STR[x.k].t).join(', ')||'찾는 중'} |\n| 플레이 스타일 | ${playStyle(m).map(t=>'#'+t[0]).join(' ')||'-'} |\n\n## 최근 공부 기록\n| 날짜 | 푼 문제 | 맞힌 문제 | 정답률 | 문제당 시간 |\n|---|---|---|---|---|\n${days||'| - | - | - | - | - |'}\n\n## 개념별 별\n| 학기 | 개념 | 별 | 맞힘/전체 |\n|---|---|---|---|\n${sks||'| - | - | - | - |'}\n\n> 석산초 SUCCESS 모델의 지원을 받아 제작되었어요.\n\n## 저장 데이터\n\`\`\`json\n${JSON.stringify({game:GAME.id,v:1,saved:Date.now(),meta:m,sig:sigOf(JSON.stringify(m))})}\n\`\`\`\n`;}
 async function saveMD(){const md=buildMD();const nm=(S.meta.name||'트레이너').replace(/[\\/:*?"<>|\s]/g,'');const d=new Date();
  const fn=`${GAME.file}_${nm}_${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}_${pad2(d.getHours())}${pad2(d.getMinutes())}.md`;
  if(window.showSaveFilePicker&&window.self===window.top){try{const h=await showSaveFilePicker({suggestedName:fn,types:[{description:'마크다운 기록',accept:{'text/markdown':['.md']}}]});const w=await h.createWritable();await w.write(md);await w.close();toast('저장했어요: '+esc(h.name));return;}catch(e){if(e&&e.name==='AbortError')return;}}
@@ -1141,7 +1176,7 @@ function recordAnswer(q,ok,ms,opt={}){const m=S.meta,v=skState(q.sk),d=dayRec();
  if(!opt.retry){m.stats.q++;d.n++;v.c+=ok?1:0;v.x+=ok?0:1;}
  d.tt=(d.tt||0)+Math.min(ms,90000);
  if(ok){m.stats.c+=opt.retry?0:1;if(!opt.retry){d.c++;d.ms+=Math.min(ms,60000);}v.run++;v.w=Math.max(0,v.w-1);
-  if(v.run>=3&&v.st<5){v.run=0;v.st++;S.newStars=(S.newStars||[]);S.newStars.push(q.sk);if(typeof megaGain==='function')megaGain(1);
+  if(v.run>=3&&v.st<5){v.run=0;v.st++;S.newStars=(S.newStars||[]);S.newStars.push(q.sk);if(typeof megaGain==='function')megaGain(1);if(typeof shineGain==='function')shineGain(1);
    if(semIdx(SKM[q.sk].s)<semIdx(m.gs)){m.coins+=15;m.candy+=5;m.stats.lowerStar=(m.stats.lowerStar||0)+1;S.foundMsg=`아래 학년 「${esc(SKM[q.sk].n)}」 별 획득! 기초 보상 코인 +15 · 사탕 +5`;}}
   m.stats.streak++;m.stats.bestCombo=Math.max(m.stats.bestCombo,m.stats.streak);}
  else{v.run=0;v.w=Math.min(3,v.w+1);m.stats.streak=0;if(q.mis&&q.mis[opt.choice]){m.misc=m.misc||{};const id=q.mis[opt.choice];m.misc[id]=(m.misc[id]||0)+1;}}
@@ -1159,7 +1194,7 @@ function recordAnswer(q,ok,ms,opt={}){const m=S.meta,v=skState(q.sk),d=dayRec();
  m.stats.bestStreak=Math.max(m.stats.bestStreak||0,streakDays());
  checkBadges();autoSave();}
 function unitsWithSkills(){const map={};allowedSkills().forEach(s=>{const k=unitKey(s.s,s.u);(map[k]=map[k]||[]).push(s);});return map;}
-function checkBadges(){const m=S.meta,map=unitsWithSkills();for(const k in map){if(m.badges[k])continue;if(map[k].every(s=>(m.sk[s.id]&&m.sk[s.id].st>=3))){m.badges[k]=today();m.packs+=1;gainXP(100);if(typeof megaGain==='function')megaGain(3);if(semIdx(k.split('|')[0])<semIdx(m.gs))m.coins+=100;S.newBadges=(S.newBadges||[]);S.newBadges.push(k);}}}
+function checkBadges(){const m=S.meta,map=unitsWithSkills();for(const k in map){if(m.badges[k])continue;if(map[k].every(s=>(m.sk[s.id]&&m.sk[s.id].st>=3))){m.badges[k]=today();m.packs+=1;gainXP(100);if(typeof megaGain==='function')megaGain(3);if(typeof shineGain==='function')shineGain(3);if(semIdx(k.split('|')[0])<semIdx(m.gs))m.coins+=100;S.newBadges=(S.newBadges||[]);S.newBadges.push(k);}}}
 function streakDays(){const m=S.meta;let n=0;let d=new Date();if(!m.days[today(d)]){d.setDate(d.getDate()-1);}while(m.days[today(d)]&&m.days[today(d)].n>0){n++;d.setDate(d.getDate()-1);}return n;}
 
 // ---- 배운 만큼 말하기: 평균·백분율·소수를 배웠는지에 따라 성장 이야기가 달라져요 ----
@@ -1235,7 +1270,7 @@ async function startTraining(opt={}){
  S.screen='train';S.newStars=[];S.newBadges=[];S.lvUp=0;S.foundMsg='';
  const endless=!!opt.endless;const N=endless?Infinity:(opt.n||trainN());const CK=trainN();const ghost=(opt.pool||endless)?null:lastTrain();
  const v=$('#view');
- let idx=0,correct=0,combo=0,maxCombo=0,candy=0,rt=0,gw=0;const retryQ=[];
+ let idx=0,correct=0,combo=0,maxCombo=0,candy=0,rt=0,gw=0,blockC=0;const retryQ=[];
  const startT=performance.now();let ghT=0;let stop=null;const stopP=new Promise(r=>stop=r);
  v.innerHTML=`<div class=qWrap><div class=qTop><button class="btn ghost sm" id=tQuit>${endless?'그만하기':'그만'}</button><button class="btn green sm" id=tSave>${I('disk')} 저장·쉬기</button><div class=prog title="맞힌 문제"><div class=me style="width:0%;background:linear-gradient(90deg,#8be08b,#3cc47c)"></div>${ghost?`<div class=gh style="left:${ghost.c/ghost.n*100}%"><img src="${spriteURL(partnerId(),'front')}" alt=""><div class=gl>어제의 나 ${ghost.c}개</div></div>`:''}</div><div class=comboTag id=tCombo>${endless?'0문제':''}</div></div><div class=buddy><div class=bimg>${monImg(partnerId(),'anim')}</div><div class=bubble id=tBub>${esc(MON[partnerId()].name)}: ${endless?'끝까지 같이 가자!':'같이 해 보자!'}</div></div><div id=qHost></div></div>`;
  v.scrollTop=0;
@@ -1263,23 +1298,24 @@ async function startTraining(opt={}){
    }
   else{combo=0;if(!retry||rnd()<.5)retryQ.push({q:Object.assign({},q,{retry:false}),at:idx+2});}
   if(!retry){idx++;}prog();if(!retry){
-   if(endless&&idx%CK===0){m.candy+=3;m.coins+=10;const go=await endlessCheck(idx,correct);if(!go)break;}}
+   if(endless&&idx%CK===0){const bc=correct-blockC;blockC=correct;const rw=endlessReward(bc);const go=await endlessCheck(idx,correct,rw);if(!go)break;}}
  }
  clearInterval(ghT);
  if(quit){S.screen='hub';if(S.savedRest){S.savedRest=0;saveLocal();renderHub();M(`<div style="text-align:center"><h2>저장했어요!</h2><div style="display:flex;justify-content:center;height:90px">${monImg(partnerId(),'anim')}</div><p>지금까지 푼 문제는 모두 기록됐어요.<br><b>지금 꺼도 괜찮아요.</b> 다음에 이어서 해요!</p><div class=mbtns><button class="btn gold big" data-a=x>알겠어요</button></div></div>`,{x:()=>closeM(),_close:()=>closeM()});return;}renderHub();return;}
  const elapsed=performance.now()-startT;
  const res={d:today(),n:endless?idx:N,c:correct,ms:Math.round(elapsed),combo:maxCombo,rt,gw};
  if(endless&&!idx){S.screen='hub';renderHub();return;}
- const first=!opt.pool&&!endless&&m.train.daily!==today();
+ const first=!opt.pool&&!endless&&m.train.daily!==today()&&clockOk();
  if(!opt.pool&&!endless){m.train.hist=(m.train.hist||[]);m.train.hist.push(res);if(m.train.hist.length>60)m.train.hist.shift();m.train.daily=today();m.train.count=(m.train.count||0)+1;dayRec().t++;}
- if(endless){m.endless=m.endless||{best:0,total:0,runs:0};m.endless.best=Math.max(m.endless.best,idx);m.endless.total+=idx;m.endless.runs++;}
+ if(endless){m.endless=m.endless||{best:0,total:0,runs:0};m.endless.best=Math.max(m.endless.best,correct);m.endless.total+=correct;m.endless.runs++;}
  if(ghost&&(res.c>ghost.c||(res.c===res.n&&ghost.c===ghost.n&&res.ms/res.n<ghost.ms/ghost.n-500)))m.stats.better=(m.stats.better||0)+1;
  if(!opt.pool&&!endless&&res.c>=res.n-1&&!res.gw)m.stats.careful=(m.stats.careful||0)+1;
- if(!opt.pool&&!endless&&res.c===res.n){m.stats.perfect=(m.stats.perfect||0)+1;if(typeof megaGain==='function')megaGain(2);}
+ if(!opt.pool&&!endless&&res.c===res.n){m.stats.perfect=(m.stats.perfect||0)+1;if(typeof megaGain==='function')megaGain(2);if(typeof shineGain==='function')shineGain(2);}
+ if(!opt.pool&&!endless&&res.n&&res.c>=res.n*.8&&typeof mushGain==='function')mushGain(1);
  if(!endless&&res.c===res.n&&res.ms/res.n<6000)m.stats.quickTrain=(m.stats.quickTrain||0)+1;
  if(opt.pool)m.stats.practice=(m.stats.practice||0)+1;
  m.stats.candyAll=(m.stats.candyAll||0)+candy;
- m.candy+=candy;const coins=correct*5;m.coins+=coins;gainXP(endless?Math.min(60,idx*2):30);if(first)m.packs+=1;
+ m.candy+=candy;const coins=correct*5;m.coins+=coins;gainXP(endless?Math.min(60,correct*2):Math.round(30*correct/Math.max(1,N)));if(first)m.packs+=1;
  if(!m.firstPlay)m.firstPlay=Date.now();
  autoSave();
  showTrainResult(res,ghost,{candy,coins,first,pool:!!opt.pool,endless});}
@@ -1288,9 +1324,12 @@ function partnerReact(kind){const b=$('.buddy .bimg');if(!b)return;b.classList.r
  if(S.meta.settings.lowfx)return;const ic=kind==='hug'?['heart','heart']:kind==='party'?['star','sparkleS','star','heart']:['star','star'];
  ic.forEach((n,i)=>{const d=document.createElement('div');d.className='bfx';d.innerHTML=I(n==='sparkleS'?'star':n);d.style.left=(30+(i-ic.length/2)*14)+'px';d.style.top='10px';d.style.setProperty('--dx',((i-(ic.length-1)/2)*26)+'px');d.style.animationDelay=(i*.08)+'s';b.appendChild(d);setTimeout(()=>d.remove(),1400);});
  if(kind==='hug')tone(520,.12,'sine',.05,.05,640);else tone(1040,.06,'triangle',.05,.12,1320);}
-function endlessCheck(n,c){return new Promise(res=>{sfx('level');
+// 끝없는 도전 10문제 보상: 맞힌 문제 1개 = 코인 1 · 7개 이상이면 사탕 3 · 8개 이상이면 다이 버섯 1
+function endlessReward(bc){const m=S.meta;const coin=bc,candy=bc>=7?3:bc>=4?1:0,mush=bc>=8?1:0;m.coins+=coin;m.candy+=candy;if(mush&&typeof mushGain==='function')mushGain(mush);
+ return [coin?`코인 +${coin}`:'',candy?`사탕 +${candy}`:'',mush?'다이 버섯 +1':''].filter(Boolean).join(' · ')||'이번 10문제는 보상이 없어요. 천천히 맞혀 봐요!';}
+function endlessCheck(n,c,rw){return new Promise(res=>{sfx('level');
  M(`<div style="text-align:center"><h2>${n}문제 돌파!</h2><div style="display:flex;justify-content:center;height:90px">${monImg(partnerId(),'anim')}</div>
-  <p style="font-size:17px">지금까지 <b>${n}문제</b> 중 <b>${c}개</b> 정답! 사탕 +3 · 코인 +10</p>
+  <p style="font-size:17px">지금까지 <b>${n}문제</b> 중 <b>${c}개</b> 정답!<br>${rw||''}</p>
   <div class=explain style="font-size:15px;text-align:left">${growthTalk().slice(0,2).join('<br>')}</div>
   <div class=mbtns><button class="btn gold big" data-a=go>계속 도전!</button><button class="btn ghost" data-a=st>여기까지</button></div></div>`,{go:()=>{closeM();res(true);},st:()=>{closeM();res(false);},_close:()=>{}});});}
 function cmpLine(label,me,yd,better,unit,fmtv=v=>v){
@@ -1340,6 +1379,16 @@ const MEGA=[[3,10033],[6,10034,'X'],[6,10035,'Y'],[9,10036],[15,10090],[18,10073
 const MEGA_OF={},MEGA_BY={};MEGA.forEach(x=>{(MEGA_OF[x.base]=MEGA_OF[x.base]||[]).push(x);MEGA_BY[x.sid]=x;});
 const MEGA_XTAL=20,MEGA_LV=8; // 메가스톤 1개 = 메가 결정 20개, 키스톤은 트레이너 Lv.8
 const MEGA_BOOST={atk:2,hp:2};
+// 거다이맥스: 다이맥스 밴드(체육관 배지 4개) + 그 포켓몬의 다이수프가 있으면, 배틀마다 한 번(메가진화와 둘 중 하나)
+// 문제를 맞혀 3차례 동안 거대해져요. 변신할 때 거다이 기술로 상대 포켓몬 모두에게 1 피해. [기본 번호, PokeAPI 그림 번호, 꼬리말]
+const GMAX=[[3,10195],[6,10196],[9,10197],[12,10198],[25,10199],[52,10200],[68,10201],[94,10202],[99,10203],[131,10204],[133,10205],[143,10206],[569,10207],[809,10208],[812,10209],[815,10210],[818,10211],[823,10212],[826,10213],[834,10214],[839,10215],[841,10216],[842,10217],[844,10218],[849,10219,' 하이'],[849,10228,' 로우'],[851,10220],[858,10221],[861,10222],[869,10223],[879,10224],[884,10225],[892,10226,' 일격'],[892,10227,' 연격']]
+ .filter(r=>MON[r[0]]).map(([base,sid,suf])=>({base,sid,kind:'gmax',name:'거다이맥스 '+MON[base].name+(suf||'')}));
+const GMAX_OF={},GMAX_BY={};GMAX.forEach(x=>{(GMAX_OF[x.base]=GMAX_OF[x.base]||[]).push(x);GMAX_BY[x.sid]=x;});
+const GMAX_SOUP=8,GMAX_BADGES=4,GMAX_TURNS=3;const GMAX_BOOST={atk:3,hp:3,wave:1};
+// 이로치: 색이 다른 희귀한 모습. 능력은 똑같아요(꾸미기). 카드팩에서 장마다 1/64 확률, 또는 반짝 가루 15개로 가진 카드 하나를 이로치로.
+// 반짝 가루는 메가 결정처럼 공부로 모아요: 개념 별 +1 · 완벽한 훈련 +2 · 단원 배지 +3 · 체육관 첫 승리 +3
+const SHINY_RATE=1/64,SHINY_COST=15;
+const formOf=id=>MEGA_BY[id]||GMAX_BY[id]||null;
 // 단짝 진화: 원래 친밀도로 진화하는 포켓몬은 파트너로 함께 문제를 풀면 사탕 없이도 진화해요
 const FRIEND_EVO={172:[25],173:[35],174:[39],175:[176],42:[169],113:[242],133:[196,197,700],298:[183],406:[315],427:[428],433:[358],446:[143],447:[448],527:[528],541:[542]};
 const FRIEND_NEED=30;
@@ -1371,26 +1420,28 @@ const KW={
 function kwOf(mon){let t=mon.types[0];if(t===0&&mon.types[1]!=null)t=mon.types[1];return KW[t];}
 // 그림: PokeAPI 스프라이트(인터넷). 막혀 있으면 타입 색 공 그림으로 대신해요.
 const SPR_BASE='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
-function spriteURL(id,kind='front'){if(!S.meta.settings.imgs)return fallbackSprite(id);
- if(kind==='art')return SPR_BASE+'other/official-artwork/'+id+'.png';
+function spriteURL(id,kind='front',sh){if(!S.meta.settings.imgs)return fallbackSprite(id);const sy=sh?'shiny/':'';
+ if(kind==='art')return SPR_BASE+'other/official-artwork/'+sy+id+'.png';
  // 움직이는 GIF는 프레임 간격이 아주 짧아 PC 브라우저에서 너무 빨리 움직여요 → 기본은 도트 그림 + 숨쉬기 움직임(설정에서 GIF 선택 가능)
  const gif=S.meta.settings.anim==='gif';
- if(kind==='anim')return gif?SPR_BASE+'other/showdown/'+id+'.gif':SPR_BASE+id+'.png';
- if(kind==='back')return gif?SPR_BASE+'other/showdown/back/'+id+'.gif':SPR_BASE+'back/'+id+'.png';
- return SPR_BASE+id+'.png';}
+ if(kind==='anim')return gif?SPR_BASE+'other/showdown/'+sy+id+'.gif':SPR_BASE+sy+id+'.png';
+ if(kind==='back')return gif?SPR_BASE+'other/showdown/back/'+sy+id+'.gif':SPR_BASE+'back/'+sy+id+'.png';
+ return SPR_BASE+sy+id+'.png';}
 const FB={};
-function fallbackSprite(id){if(FB[id])return FB[id];const m=MON[id]||(MEGA_BY[id]&&MON[MEGA_BY[id].base]);const c=m?TYPE_COL[m.types[0]]:'#aaa';const c2=m&&m.types[1]!=null?TYPE_COL[m.types[1]]:c;
+function fallbackSprite(id){if(FB[id])return FB[id];const m=MON[id]||(formOf(id)&&MON[formOf(id).base]);const c=m?TYPE_COL[m.types[0]]:'#aaa';const c2=m&&m.types[1]!=null?TYPE_COL[m.types[1]]:c;
  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><circle cx="48" cy="52" r="30" fill="${c}" stroke="#3a2e3f" stroke-width="4"/><path d="M18 52a30 30 0 0 1 60 0z" fill="${c2}" opacity=".6"/><circle cx="38" cy="48" r="4" fill="#3a2e3f"/><circle cx="58" cy="48" r="4" fill="#3a2e3f"/><path d="M42 60q6 5 12 0" stroke="#3a2e3f" stroke-width="3" fill="none"/><text x="48" y="92" font-size="12" text-anchor="middle" fill="#3a2e3f">${m?m.id:''}</text></svg>`;
  return FB[id]='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);}
-function imgFail(el){const id=+el.dataset.id;if(el.dataset.f==='1'){el.src=fallbackSprite(id);el.dataset.f='2';return;}
+function imgFail(el){const id=+el.dataset.id;if(el.dataset.s==='1'){el.dataset.s='0';el.src=spriteURL(id,el.dataset.k||'front');return;} // 이로치 그림이 없으면 원래 색
+ if(el.dataset.f==='1'){el.src=fallbackSprite(id);el.dataset.f='2';return;}
  if(el.dataset.k&&el.dataset.k!=='front'){el.dataset.f='1';el.src=SPR_BASE+id+'.png';return;}el.dataset.f='2';el.src=fallbackSprite(id);}
-function monImg(id,kind='front',cls=''){if((kind==='anim'||kind==='back')&&S.meta.settings.anim==='breath')cls=(cls?cls+' ':'')+'idle';return `<img class="${cls}" style="--d:${(id%7)*.17}s" src="${spriteURL(id,kind)}" data-id="${id}" data-k="${kind}" alt="" loading="lazy" draggable="false" onerror="imgFail(this)">`;}
+// sh: 이로치로 그릴지. 안 주면 내가 가진 이로치는 이로치로(상대 포켓몬을 그릴 때는 false를 줘요)
+function monImg(id,kind='front',cls='',sh){if(sh==null)sh=shinyOf(id);sh=!!sh&&S.meta.settings.imgs;if((kind==='anim'||kind==='back')&&S.meta.settings.anim==='breath')cls=(cls?cls+' ':'')+'idle';return `<img class="${cls}" style="--d:${(id%7)*.17}s" src="${spriteURL(id,kind,sh)}" data-id="${id}" data-k="${kind}"${sh?' data-s="1"':''} alt="" loading="lazy" draggable="false" onerror="imgFail(this)">`;}
 function typeChips(m){return m.types.map(t=>`<span class=tchip style="background:${TYPE_COL[t]}">${TYPE_KO[t]}</span>`).join('');}
 function cardHTML(id,opt={}){const m=MON[id];const kw=kwOf(m);const t=m.types[0],t2=m.types[1]!=null?m.types[1]:t;
- const lg=opt.size==='lg';const gl=opt.plain?0:(opt.gold!=null?opt.gold:goldOf(id));
- return `<div class="card ${opt.size||''} r${m.rar} ${gl?'gold'+gl:''} ${opt.cls||''}" data-id="${id}" style="--tc:${TYPE_COL[t]};--tc2:${shade(TYPE_COL[t2],1.45)}">
+ const lg=opt.size==='lg';const gl=opt.plain?0:(opt.gold!=null?opt.gold:goldOf(id));const sh=opt.shiny!=null?!!opt.shiny:(!opt.plain&&shinyOf(id));
+ return `<div class="card ${opt.size||''} r${m.rar} ${gl?'gold'+gl:''}${sh?' shiny':''} ${opt.cls||''}" data-id="${id}" style="--tc:${TYPE_COL[t]};--tc2:${shade(TYPE_COL[t2],1.45)}">
   <div class=cTop><span class=cName>${gl?'<i class=crown></i>':''}${esc(m.name)}</span><span class=cost>${m.cost}</span></div>
-  <div class=art>${monImg(id,lg?'art':'front')}${gl?'<div class=gSpark></div>':''}</div>
+  <div class=art>${monImg(id,lg?'art':'front','',sh)}${gl?'<div class=gSpark></div>':''}${sh?'<span class=shyMark>✦</span>':''}</div>
   <div class=types>${typeChips(m)}</div>
   <div class=kw>${I(kw.ic)} <b>${kw.n}</b><br>${kw.d}</div>
   <div class=stats><span class="st atk">${m.atk}</span><span class=rar>${'★'.repeat(m.rar)}</span><span class="st hp">${m.hp}</span></div>
@@ -1406,7 +1457,10 @@ function tiltOn(el){if(!el||S.meta.settings.lowfx)return;let raf=0;el.classList.
 // 일반·고급은 한 번에 얻고, 희귀 3조각·영웅 5조각·전설 8조각을 모아야 내 카드가 돼요. 이미 있는 카드는 코인·별가루로 바뀌어요.
 const SHARD_NEED={3:3,4:5,5:8};
 const deckLim=id=>S.meta.col[id]?(MON[id].rar>=4?1:2):0;
-function gainCard(id,noPull){const m=S.meta;let r=MON[id].rar;m.shard=m.shard||{};
+function gainCard(id,noPull){const g=gainCard0(id,noPull);const m=S.meta;
+ if(!window.__sim&&(g.k==='new'||g.k==='dup'||g.k==='done')&&!hasShiny(g.id)&&rnd()<SHINY_RATE){m.shiny=m.shiny||{};m.shiny[g.id]=1;g.shiny=1;m.stats.shinyPack=(m.stats.shinyPack||0)+1;}
+ return g;}
+function gainCard0(id,noPull){const m=S.meta;let r=MON[id].rar;m.shard=m.shard||{};
  // 조각 끌림: 같은 희귀도에서 모으던 조각이 있으면 60%는 그 포켓몬 조각으로(조각이 흩어지지 않게)
  if(!noPull&&r>=3&&!m.col[id]&&!m.shard[id]){const prog=Object.keys(m.shard).map(Number).filter(x=>MON[x]&&MON[x].rar===r&&!m.col[x]).sort((a,b)=>m.shard[b]-m.shard[a]);if(prog.length&&rnd()<.6)id=prog[0];}
  m.dexSeen[id]=1;
@@ -1462,8 +1516,8 @@ async function openPacks(n){const m=S.meta;n=Math.min(n,m.packs,MULTI_MAX);if(n<
  order.forEach(i=>{const im=new Image();im.src=spriteURL(res[i].id);});
  const P=$('#pack');
  P.innerHTML=`<div class=pkInfo>카드팩 ${n}개를 한꺼번에!</div><div class=pkBags id=pkBag>${Array.from({length:Math.min(n,5)},(_,i)=>`<div class=pkBag style="--i:${i}"><div class=bl></div></div>`).join('')}</div><div class=pkInfo style="font-size:15px">눌러서 열어요</div>`;P.classList.add('on','multi');
- const tag=g=>g.k==='new'?'<span class=newB>NEW!</span>':g.k==='done'?'<span class=newB style="background:#ffb321">완성!</span>':g.k==='shard'?`<span class=newB style="background:#9a6bff">${g.n}/${g.need}</span>`:'<span class=newB style="background:#7a86a8">+별가루</span>';
- const face=g=>g.k==='shard'?`<div class="card sm r${MON[g.id].rar} shardCard" style="--tc:${TYPE_COL[MON[g.id].types[0]]};--tc2:#fff"><div class=cTop><span class=cName>${esc(MON[g.id].name)}</span></div><div class=art>${monImg(g.id)}<div class=shardMask style="--p:${g.n/g.need}"></div></div><div class=stats><span class=rar>${'★'.repeat(MON[g.id].rar)}</span></div></div>`:cardHTML(g.id,{size:'sm',plain:1,noHolo:1});
+ const tag=g=>(g.shiny?'<span class="newB shyB">✦</span>':'')+(g.k==='new'?'<span class=newB>NEW!</span>':g.k==='done'?'<span class=newB style="background:#ffb321">완성!</span>':g.k==='shard'?`<span class=newB style="background:#9a6bff">${g.n}/${g.need}</span>`:'<span class=newB style="background:#7a86a8">+별가루</span>');
+ const face=g=>g.k==='shard'?`<div class="card sm r${MON[g.id].rar} shardCard" style="--tc:${TYPE_COL[MON[g.id].types[0]]};--tc2:#fff"><div class=cTop><span class=cName>${esc(MON[g.id].name)}</span></div><div class=art>${monImg(g.id)}<div class=shardMask style="--p:${g.n/g.need}"></div></div><div class=stats><span class=rar>${'★'.repeat(MON[g.id].rar)}</span></div></div>`:cardHTML(g.id,{size:'sm',plain:1,noHolo:1,shiny:!!g.shiny});
  let opened=false;
  const reveal=async()=>{if(opened)return;opened=true;$('#pkBag').classList.add('shake');if(top>=4)$('#pkBag').classList.add('hard');sfx('shake');await wait(top>=4?1200:700);
   P.innerHTML=`${top>=5?'<div class=rays></div>':''}<div class=pkInfo>${n*5}장! 눌러서 뒤집거나 모두 뒤집어요</div>
@@ -1485,13 +1539,14 @@ async function openPack(){const m=S.meta;if(m.packs<=0){toast('카드팩이 없�
  const P=$('#pack');const top=Math.max(...cards.map(id=>MON[id].rar));
  P.innerHTML=`<div class=pkInfo>카드팩을 눌러서 열어요!</div><div class=pkBag id=pkBag><div class=bl></div></div><button class="btn ghost sm" id=pkSkip>한 번에 열기</button>`;P.classList.add('on');
  let opened=false;
- const tag=g=>g.k==='new'?'<span class=newB>NEW!</span>':g.k==='done'?'<span class=newB style="background:#ffb321">조각 완성! NEW</span>':g.k==='shard'?`<span class=newB style="background:#9a6bff">조각 ${g.n}/${g.need}</span>`:`<span class=newB style="background:#7a86a8">+코인 ${g.coin} · 별가루 ${g.dust}</span>`;
- const face=(id,g)=>g.k==='shard'?`<div class="card r${MON[id].rar} shardCard" data-id="${id}" style="--tc:${TYPE_COL[MON[id].types[0]]};--tc2:#fff"><div class=cTop><span class=cName>${esc(MON[id].name)}</span></div><div class=art>${monImg(id)}<div class=shardMask style="--p:${g.n/g.need}"></div></div><div class=kw style="font-size:12px">조각을 ${g.need}개 모으면<br>내 카드가 돼요!</div><div class=stats><span class=rar>${'★'.repeat(MON[id].rar)}</span></div></div>`:cardHTML(id,{plain:1});
+ const tag=g=>(g.shiny?'<span class="newB shyB">✦ 이로치!</span>':'')+(g.k==='new'?'<span class=newB>NEW!</span>':g.k==='done'?'<span class=newB style="background:#ffb321">조각 완성! NEW</span>':g.k==='shard'?`<span class=newB style="background:#9a6bff">조각 ${g.n}/${g.need}</span>`:`<span class=newB style="background:#7a86a8">+코인 ${g.coin} · 별가루 ${g.dust}</span>`);
+ const face=(id,g)=>g.k==='shard'?`<div class="card r${MON[id].rar} shardCard" data-id="${id}" style="--tc:${TYPE_COL[MON[id].types[0]]};--tc2:#fff"><div class=cTop><span class=cName>${esc(MON[id].name)}</span></div><div class=art>${monImg(id)}<div class=shardMask style="--p:${g.n/g.need}"></div></div><div class=kw style="font-size:12px">조각을 ${g.need}개 모으면<br>내 카드가 돼요!</div><div class=stats><span class=rar>${'★'.repeat(MON[id].rar)}</span></div></div>`:cardHTML(id,{plain:1,shiny:!!g.shiny});
  const reveal=async(all)=>{if(opened)return;opened=true;const bag=$('#pkBag');bag.classList.add('shake');if(top>=4)bag.classList.add('hard');sfx('shake');
   if(!all){await wait(top>=4?1300:800);}
   P.innerHTML=`${top>=5?'<div class=rays></div>':''}<div class=pkInfo>카드를 눌러 뒤집어요</div><div class=pkRow>${cards.map((id,i)=>`<div class="flip g${MON[id].rar}" data-i="${i}"><div class=in><div class=bk></div><div class=fc>${tag(res[i])}${face(id,res[i])}</div></div></div>`).join('')}</div><div class=mbtns><button class="btn gold" id=pkAll>모두 뒤집기</button><button class="btn green hidden" id=pkDone>다 봤어요!</button></div><div class=pkInfo style="font-size:13px">희귀 이상 포켓몬은 조각으로 나와요 · 이미 있는 카드는 코인·별가루로 바뀌어요</div>`;
   let left=5;const flipOne=async(f)=>{if(f.classList.contains('open'))return;f.classList.add('open');left--;const i=+f.dataset.i,id=cards[i],r=MON[id].rar,g=res[i];
-   if(g.k==='done'){sfx('evolve');confetti(50);banner('조각 완성!',`${esc(MON[id].name)} 카드를 얻었어요`);}
+   if(g.shiny){sfx('rare');confetti(60);banner('✦ 이로치!',`색이 다른 ${esc(MON[id].name)}!`);}
+   else if(g.k==='done'){sfx('evolve');confetti(50);banner('조각 완성!',`${esc(MON[id].name)} 카드를 얻었어요`);}
    else if(r>=4){sfx('rare');if(r===5)banner('전설의 조각!',esc(MON[id].name));}else sfx('flip');
    if(!left){$('#pkAll').classList.add('hidden');$('#pkDone').classList.remove('hidden');}};
   P.querySelectorAll('.flip').forEach(f=>f.onclick=()=>flipOne(f));
@@ -1512,7 +1567,7 @@ async function evolve(id,to,how){const m=MON[id],t=MON[to],need=evoCost(m);const
  if(!fr)me.candy-=need;me.col[id]--;if(me.col[id]<=0)delete me.col[id];addCard(to);me.stats.evolved++;if(fr)me.stats.friendEvo=(me.stats.friendEvo||0)+1;gainXP(40);
  // 덱에 있던 카드는 진화한 카드로 바꿔요. 마지막 1장이 진화하면 단짝 점수·금빛 강화·파트너도 함께 넘어가요
  const di=me.deck.indexOf(id);if(di>=0&&!me.col[id])me.deck[di]=to;
- if(!me.col[id]){if(me.bond&&me.bond[id]){me.bond[to]=(me.bond[to]||0)+me.bond[id];delete me.bond[id];}if(me.gold&&me.gold[id]){me.gold[to]=Math.max(me.gold[to]||0,me.gold[id]);delete me.gold[id];}if(me.partner===id)me.partner=to;}
+ if(!me.col[id]){if(me.bond&&me.bond[id]){me.bond[to]=(me.bond[to]||0)+me.bond[id];delete me.bond[id];}if(me.gold&&me.gold[id]){me.gold[to]=Math.max(me.gold[to]||0,me.gold[id]);delete me.gold[id];}if(me.shiny&&me.shiny[id]){if(!me.shiny[to])me.shiny[to]=me.shiny[id];delete me.shiny[id];}if(me.partner===id)me.partner=to;}
  autoSave();closeM();
  const P=$('#pack');P.innerHTML=`<div class=rays></div><div class=pkInfo>어라…? ${esc(m.name)}의 모습이…!</div><div style="width:200px;height:200px;display:flex;align-items:center;justify-content:center" id=evoBox>${monImg(id,'art')}</div><div class=mbtns><button class="btn gold big hidden" id=evoOk>멋져요!</button></div>`;P.classList.add('on');
  const box=$('#evoBox');const im=box.querySelector('img');im.style.cssText='width:180px;height:180px;object-fit:contain;transition:filter .3s,transform .3s';
@@ -1529,7 +1584,32 @@ function megaGain(n){if(window.__sim||!n)return;const g=megaSt();g.xtal=(g.xtal|
 const megaForms=id=>hasKeyStone()?(MEGA_OF[id]||[]).filter(x=>megaSt().stones[x.sid]):[];
 function craftStone(sid){const g=megaSt(),x=MEGA_BY[sid];if(!x||!S.meta.col[x.base])return false;if(g.stones[sid])return false;if((g.xtal||0)<MEGA_XTAL){toast(`메가 결정이 ${MEGA_XTAL-(g.xtal||0)}개 모자라요`);return false;}
  g.xtal-=MEGA_XTAL;g.stones[sid]=today();S.meta.stats.megaStone=(S.meta.stats.megaStone||0)+1;autoSave();return true;}
-const megaImg=(sid,kind='art',cls='')=>monImg(sid,kind,cls);
+const megaImg=(sid,kind='art',cls='')=>monImg(sid,kind,cls,false);
+// ---- 이로치 ----
+const hasShiny=id=>!!(S.meta.shiny&&S.meta.shiny[id]);
+const shinyOf=id=>!!(S.meta.shiny&&S.meta.shiny[id]===1); // 1 = 이로치로 보여 주기, 2 = 가지고 있지만 원래 색으로 보기
+function shineGain(n){if(window.__sim||!n)return;S.meta.shine=(Number(S.meta.shine)||0)+n;}
+function makeShiny(id){const m=S.meta;m.shiny=m.shiny||{};if(!m.col[id]||hasShiny(id))return false;if((m.shine||0)<SHINY_COST){toast(`반짝 가루가 ${SHINY_COST-(m.shine||0)}개 모자라요`);return false;}
+ m.shine-=SHINY_COST;m.shiny[id]=1;m.stats.shinyMade=(m.stats.shinyMade||0)+1;autoSave();return true;}
+function shinyToggle(id){const m=S.meta;if(!hasShiny(id))return;m.shiny[id]=m.shiny[id]===1?2:1;autoSave();}
+function shinyPanel(id){const me=S.meta,own=me.col[id];if(!own)return '';const h=hasShiny(id),sp=me.shine||0;
+ return `<div class="explain shinyBox" style="font-size:14px;width:100%"><b style="color:#c46a00">✦ 이로치</b> <span class=mut style="font-size:12px">색이 다른 아주 희귀한 모습이에요. 능력은 똑같아요.</span>
+  <div class=megaRow><div class=megaForm>${monImg(id,'art','',false)}<b>원래 색</b></div><div class=megaForm>${monImg(id,'art',h?'':'sil',true)}<b>${h?'이로치':'???'}</b></div></div>
+  ${h?`<div class=mbtns><button class="btn ghost sm" data-a=shy>${shinyOf(id)?'원래 색으로 보기':'이로치로 보기'}</button></div>`:`<div style="font-size:13px">반짝 가루 <b>${sp}/${SHINY_COST}</b> <button class="btn sm" style="background:#ffb321;color:#fff" data-a=mkshy ${sp>=SHINY_COST?'':'disabled'}>이로치로 바꾸기</button><br><span class=mut style="font-size:12px">카드팩에서 장마다 1/64 확률로도 만나요. 반짝 가루는 개념 별 +1 · 완벽한 훈련 +2 · 단원 배지 +3 · 체육관 첫 승리 +3.</span></div>`}</div>`;}
+// ---- 거다이맥스 ----
+function dmaxSt(){const m=S.meta;m.dmax=m.dmax||{mush:0,soup:{},seen:{},n:0};return m.dmax;}
+const hasBand=()=>Object.keys(S.meta.gyms||{}).length>=GMAX_BADGES;
+function mushGain(n){if(window.__sim||!n)return;const g=dmaxSt();g.mush=(g.mush||0)+n;}
+const gmaxForms=id=>!window.__sim&&hasBand()&&dmaxSt().soup[id]?(GMAX_OF[id]||[]):[];
+function cookSoup(base){const g=dmaxSt();if(!GMAX_OF[base]||!S.meta.col[base]||g.soup[base])return false;if((g.mush||0)<GMAX_SOUP){toast(`다이 버섯이 ${GMAX_SOUP-(g.mush||0)}개 모자라요`);return false;}
+ g.mush-=GMAX_SOUP;g.soup[base]=today();S.meta.stats.gmaxSoup=(S.meta.stats.gmaxSoup||0)+1;autoSave();return true;}
+function gmaxPanel(id){const gs=GMAX_OF[id];if(!gs)return '';const me=S.meta,own=me.col[id],g=dmaxSt();
+ return `<div class="explain gmaxBox" style="font-size:14px;width:100%"><b style="color:#d6264f">${I('flame')} 거다이맥스</b> <span class=mut style="font-size:12px">배틀에서 한 번(메가진화와 둘 중 하나), 문제를 맞히면 ${GMAX_TURNS}차례 동안 거대해져요! 공격 +${GMAX_BOOST.atk} · 체력 +${GMAX_BOOST.hp} · 변신할 때 상대 포켓몬 모두에게 ${GMAX_BOOST.wave} 피해</span>
+  <div class=megaRow>${gs.map(x=>`<div class=megaForm>${monImg(x.sid,'art',own?'':'sil',false)}<b>${own||g.seen[x.sid]?esc(x.name):'???'}</b></div>`).join('')}</div>
+  <div style="font-size:13px">${g.soup[id]?`${I('check')} 다이수프를 먹었어요`:own?`<button class="btn red sm" data-a=soup ${(g.mush||0)>=GMAX_SOUP?'':'disabled'}>다이 버섯 ${GMAX_SOUP}개로 다이수프 만들기</button>`:''}
+  · ${hasBand()?`${I('check')} 다이맥스 밴드 있음`:`${I('lock')} 다이맥스 밴드: 체육관 배지 <b>${GMAX_BADGES}개</b>를 모으면 받아요 (지금 ${Object.keys(me.gyms).length}개)`} · 다이 버섯 <b>${g.mush||0}/${GMAX_SOUP}</b>
+  <br><span class=mut style="font-size:12px">다이 버섯은 끝없는 도전 10문제 중 8개 이상 정답 +1 · 오늘의 훈련 80% 이상 +1 · 공부하며 이긴 배틀 +1 · 체육관 첫 승리 +3으로 모여요.</span></div></div>`;}
+
 
 // ---- 진화 계보: 갈래 진화·단짝 진화·메가진화를 한눈에 ----
 function evoRoot(id){let r=id,g=0;while(MON[r].from&&MON[MON[r].from]&&g++<5)r=MON[r].from;return r;}
@@ -1571,6 +1651,9 @@ function showCard(id){const m=MON[id],me=S.meta,own=me.col[id]||0;const kw=kwOf(
   <div style="font-size:13px">${hasKeyStone()?`${I('check')} 키스톤 있음`:`${I('lock')} 키스톤: 트레이너 <b>Lv.${MEGA_LV}</b>가 되면 받아요 (지금 Lv.${lvOf(me.xp).lv})`} · 메가 결정 <b>${ms.xtal||0}/${MEGA_XTAL}</b><br><span class=mut style="font-size:12px">메가 결정은 개념 별 +1 · 완벽한 훈련 +2 · 단원 배지 +3 · 체육관 첫 승리 +3으로 모여요.</span></div></div>`:'';
  const acts={x:()=>closeM(),_close:()=>closeM(),gold:()=>upgradeGold(id),buy:async()=>{const p=buyPrice(id);if(!p||me.coins<p)return;if(!(await confirmBox(`정말 갖고 싶나요?<br><b>${josa(esc(m.name),'을를')}</b> <b>${p}코인</b>(가치의 ${BUY_X}배)으로 데려올까요?<br><span class=mut>코인은 문제를 풀어 모은 소중한 보상이에요.</span>`,'데려올래요','조금 더 생각할래요')))return;me.coins-=p;if(me.shard)delete me.shard[id];me.col[id]=1;me.dexSeen[id]=1;me.stats.bought=(me.stats.bought||0)+1;autoSave();sfx('evolve');confetti(40);toast(`${esc(m.name)}${hasJong(m.name)?'과':'와'} 함께하게 되었어요!`);showCard(id);},pt:()=>{setPartner(id);showCard(id);},craft:()=>{const g=craft(id);if(!g)return;sfx(g.k==='done'||g.k==='new'?'evolve':'coin');if(g.k==='done'||g.k==='new'){confetti(40);toast(`${esc(m.name)} 카드를 얻었어요!`);}else toast(`조각 ${g.n}/${g.need}`);showCard(id);}};
  m.to.forEach(t=>{acts['ev'+t]=()=>evolve(id,t);acts['fe'+t]=()=>evolve(id,t,'friend');});
+ acts.shy=()=>{shinyToggle(id);showCard(id);};
+ acts.mkshy=async()=>{if(!(await confirmBox(`반짝 가루 ${SHINY_COST}개로 <b>${josa(esc(m.name),'을를')}</b> 이로치로 바꿀까요?<br><span class=mut>능력은 그대로, 색만 바뀌어요.</span>`,'바꾸기','나중에')))return;if(makeShiny(id)){sfx('rare');confetti(50);banner('✦ 이로치!',esc(m.name));}showCard(id);};
+ acts.soup=async()=>{if(!(await confirmBox(`다이 버섯 ${GMAX_SOUP}개로 <b>${esc(m.name)}</b>의 다이수프를 만들까요?<br><span class=mut>체육관 배지 ${GMAX_BADGES}개(다이맥스 밴드)가 있으면 배틀에서 거다이맥스할 수 있어요.</span>`,'만들기','나중에')))return;if(cookSoup(id)){sfx('evolve');confetti(40);toast(`${esc(m.name)}의 다이수프를 만들었어요!`);}showCard(id);};
  megas.forEach(x=>acts['ms'+x.sid]=async()=>{if(!(await confirmBox(`메가 결정 ${MEGA_XTAL}개로 <b>${esc(x.name)}</b>의 메가스톤을 만들까요?`,'만들기','나중에')))return;if(craftStone(x.sid)){sfx('evolve');confetti(40);toast(`${esc(x.name)} 메가스톤을 얻었어요!`);}showCard(id);});
  M(`<div style="display:flex;flex-direction:column;align-items:center;gap:10px">${own?cardHTML(id,{size:'lg'}):`<div class="card lg locked">${''}<div class=art>${monImg(id,'front')}</div></div>`}
   <div style="text-align:center"><b class=jua style="font-size:22px">No.${m.id} ${esc(m.name)}</b> <span class=mut>${esc(m.genus)}</span><br>${own?`<span class=mut>가지고 있는 카드 ${own}장 · 키 ${m.ht}m · 몸무게 ${m.wt}kg</span>`:'<span class=mut>아직 없는 카드예요</span>'}</div>
@@ -1581,6 +1664,8 @@ function showCard(id){const m=MON[id],me=S.meta,own=me.col[id]||0;const kw=kwOf(
   ${m.to.length||m.from||megas.length?`<div style="width:100%"><div class=mut style="font-size:13px;margin-bottom:4px">${I('up')} 진화 계보 <small>(눌러서 보기)</small></div>${evoTree(id)}</div>`:''}
   ${m.to.length?`<div class=menuCol style="width:100%">${evo}<div class=mut style="font-size:12px;text-align:center">내 사탕 ${me.candy}개${m.to.some(t=>friendEvo(id,t))?` · 이 포켓몬과 함께 푼 문제 ${bondOf(id)}개 (파트너일 때 쌓여요)`:''}</div></div>`:''}
   ${megaBox}
+  ${gmaxPanel(id)}
+  ${shinyPanel(id)}
   ${own?goldPanel(id):''}
   ${own?`<div class=row style="width:100%;align-items:center"><span class=mut style="font-size:13px">${regionOf(id)} 지역 · 함께 푼 문제 ${bondOf(id)}개</span>${partnerId()===id?`<span class=pill style="border-color:#ff5a8a">${I('heart')} 지금 파트너</span>`:`<button class="btn red sm" data-a=pt>${I('heart')} 파트너로 함께 공부</button>`}</div>`:''}
   <button class="btn gold" data-a=x>닫기</button></div>`,acts);
@@ -1591,12 +1676,12 @@ function showCard(id){const m=MON[id],me=S.meta,own=me.col[id]||0;const kw=kwOf(
 let DEXF='all',DEXR=0;
 function renderDex(){S.screen='dex';const me=S.meta;const own=ownCount();
  const inR=id=>DEXR<0||(id>=REGIONS[DEXR][1]&&id<=REGIONS[DEXR][2]);
- const fl=(DEXF==='all'?MON_IDS.filter(inR):DEXF==='own'?MON_IDS.filter(id=>me.col[id]):DEXF==='evo'?MON_IDS.filter(id=>me.col[id]&&MON[id].to.length):DEXF==='mega'?MON_IDS.filter(id=>MEGA_OF[id]&&inR(id)):DEXF==='gold'?MON_IDS.filter(id=>goldOf(id)&&me.col[id]):MON_IDS.filter(id=>inR(id)&&MON[id].types.includes(+DEXF)));
- $('#view').innerHTML=hudHTML()+`<div class=wrap><div class=panel><div class=row style="align-items:center"><h2 style="margin:0">${I('book')} 도감</h2><span class=hudSp></span><span class=pill>${own} / ${MON_IDS.length}</span><span class=pill title="별가루">${I('star')} 별가루 ${me.dust||0}</span><span class=pill title="메가 결정 20개 = 메가스톤 1개" style="border-color:#b98cff">${I('star')} 메가 결정 ${megaSt().xtal||0}</span></div>
+ const fl=(DEXF==='all'?MON_IDS.filter(inR):DEXF==='own'?MON_IDS.filter(id=>me.col[id]):DEXF==='evo'?MON_IDS.filter(id=>me.col[id]&&MON[id].to.length):DEXF==='mega'?MON_IDS.filter(id=>MEGA_OF[id]&&inR(id)):DEXF==='gold'?MON_IDS.filter(id=>goldOf(id)&&me.col[id]):DEXF==='shiny'?MON_IDS.filter(id=>hasShiny(id)&&me.col[id]):DEXF==='gmax'?MON_IDS.filter(id=>GMAX_OF[id]&&inR(id)):MON_IDS.filter(id=>inR(id)&&MON[id].types.includes(+DEXF)));
+ $('#view').innerHTML=hudHTML()+`<div class=wrap><div class=panel><div class=row style="align-items:center"><h2 style="margin:0">${I('book')} 도감</h2><span class=hudSp></span><span class=pill>${own} / ${MON_IDS.length}</span><span class=pill title="별가루">${I('star')} 별가루 ${me.dust||0}</span><span class=pill title="메가 결정 20개 = 메가스톤 1개" style="border-color:#b98cff">${I('star')} 메가 결정 ${megaSt().xtal||0}</span><span class=pill title="반짝 가루 15개 = 이로치 1번" style="border-color:#ffb321">✦ 반짝 가루 ${me.shine||0}</span><span class=pill title="다이 버섯 8개 = 다이수프 1개" style="border-color:#ff7a95">${I('flame')} 다이 버섯 ${dmaxSt().mush||0}</span></div>
   <div class=filters style="margin:8px 0">${REGIONS.map((r,i)=>`<button class="fbtn${DEXR===i?' on':''}" data-r="${i}">${r[0]} <small>${MON_IDS.filter(id=>id>=r[1]&&id<=r[2]&&me.col[id]).length}/${r[2]-r[1]+1}</small></button>`).join('')}<button class="fbtn${DEXR<0?' on':''}" data-r="-1">모든 지역</button></div>
-  <div class=filters style="margin:8px 0">${[['all','전체'],['own','가진 카드'],['evo','진화 가능'],['mega','메가진화'],['gold','보물 카드']].map(([k,n])=>`<button class="fbtn${DEXF===k?' on':''}" data-f="${k}">${n}</button>`).join('')}${TYPE_KO.map((n,i)=>`<button class="fbtn${DEXF===String(i)?' on':''}" data-f="${i}" style="${DEXF===String(i)?`background:${TYPE_COL[i]};border-color:${TYPE_COL[i]}`:''}">${n}</button>`).join('')}</div>
+  <div class=filters style="margin:8px 0">${[['all','전체'],['own','가진 카드'],['evo','진화 가능'],['mega','메가진화'],['gmax','거다이맥스'],['shiny','이로치'],['gold','보물 카드']].map(([k,n])=>`<button class="fbtn${DEXF===k?' on':''}" data-f="${k}">${n}</button>`).join('')}${TYPE_KO.map((n,i)=>`<button class="fbtn${DEXF===String(i)?' on':''}" data-f="${i}" style="${DEXF===String(i)?`background:${TYPE_COL[i]};border-color:${TYPE_COL[i]}`:''}">${n}</button>`).join('')}</div>
   <div class=mut style="font-size:12px;margin-bottom:8px">일반·고급은 한 번에, 희귀는 조각 3개·영웅 5개·전설 8개를 모아야 내 카드가 돼요. 본 적 있는 포켓몬은 별가루로 조각을 만들 수 있어요. 카드팩에서 전설 조각이 나올 확률은 장마다 ${PACK_W[5]}%예요. 카드팩 40개 안에는 꼭 1장 나와요(지금 ${me.pity.p5}/40). 영웅 이상은 10팩 안에 꼭(지금 ${me.pity.p4}/10).</div>
-  <div class=dexGrid>${fl.map(id=>{const n=me.col[id]||0,seen=me.dexSeen[id];const gl=n?goldOf(id):0;return `<div class="dexCell ${n?'':seen?'seen':'none'}${gl?' gold'+gl:''}${MEGA_OF[id]&&n?' canMega':''}" data-id="${id}"><span class=no>${id}</span>${!n&&me.shard&&me.shard[id]?`<span class=n2 style="color:#9a6bff">${me.shard[id]}/${SHARD_NEED[MON[id].rar]}</span>`:''}${monImg(id)}<span class=nm>${n||seen?esc(MON[id].name):'???'}</span></div>`;}).join('')||'<p class=mut>아직 없어요</p>'}</div></div></div>`;
+  <div class=dexGrid>${fl.map(id=>{const n=me.col[id]||0,seen=me.dexSeen[id];const gl=n?goldOf(id):0;return `<div class="dexCell ${n?'':seen?'seen':'none'}${gl?' gold'+gl:''}${MEGA_OF[id]&&n?' canMega':''}${GMAX_OF[id]&&n?' canGmax':''}${n&&hasShiny(id)?' shiny':''}" data-id="${id}"><span class=no>${id}</span>${!n&&me.shard&&me.shard[id]?`<span class=n2 style="color:#9a6bff">${me.shard[id]}/${SHARD_NEED[MON[id].rar]}</span>`:''}${monImg(id)}<span class=nm>${n||seen?esc(MON[id].name):'???'}</span></div>`;}).join('')||'<p class=mut>아직 없어요</p>'}</div></div></div>`;
  bindHud();
  $('#view').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{sfx('tap');DEXF=b.dataset.f;renderDex();});
  $('#view').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{sfx('tap');DEXR=+b.dataset.r;renderDex();});
@@ -1719,20 +1804,20 @@ function typeHelper(sel){sel=sel==null?1:sel;const strong=typesStrong(sel),weak=
 const GYMS=[
  {n:'바위 체육관',ldr:'관장 단단',types:[12,8],lv:1,av:74,c:'#c8b48e',hp:14,hidden:3,collect:12,d:'바위와 땅 · 상성 첫걸음',tip:'물·풀·땅 공격을 준비해요. 처음 받은 모래두지도 도움이 돼요.',roster:[74,74,246,246,27,27,50,50,138,75,95,185]},
  {n:'물결 체육관',ldr:'관장 이슬비',types:[2],lv:3,av:120,c:'#7fc8ff',hp:16,hidden:3,collect:20,d:'물 · 유리한 타입 모으기',tip:'풀·전기로 물결을 공략해요. 에너지 1~2 카드도 충분히 넣어요.',roster:[60,60,116,116,7,7,54,98,120,8,61,117]},
- {n:'번개 체육관',ldr:'관장 찌릿',types:[4],lv:6,av:100,c:'#ffe066',hp:18,hidden:3,collect:30,d:'전기 · 빠른 공격에 대비',tip:'땅 공격이 유리해요. 모래두지·디그다처럼 일찍 낼 카드를 모아요.',roster:[172,172,179,179,25,100,180,239,239,26,82,181]},
- {n:'숲 체육관',ldr:'관장 새싹',types:[3,11],lv:9,av:43,c:'#8be08b',hp:20,hidden:3,collect:45,d:'풀과 벌레 · 성장하기 전에 공격',tip:'불꽃·비행 공격이 좋아요. 회복과 벌레의 성장이 쌓이기 전에 공략해요.',roster:[69,191,10,1,43,152,46,2,70,45,71,182]},
- {n:'안개 체육관',ldr:'관장 보라',types:[7,13],lv:13,av:23,c:'#c79bff',hp:21,hidden:4,collect:65,d:'독과 고스트 · 두 가지 상성 준비',tip:'독에는 땅·에스퍼, 고스트에는 악 공격을 준비해요. 유령은 첫 공격을 피해요.',roster:[13,43,69,1,41,23,88,109,92,30,2,93]},
+ {n:'번개 체육관',ldr:'관장 찌릿',types:[4],lv:6,av:100,c:'#ffe066',hp:17,hidden:3,collect:30,d:'전기 · 빠른 공격에 대비',tip:'땅 공격이 유리해요. 모래두지·디그다처럼 일찍 낼 카드를 모아요.',roster:[172,172,179,179,25,100,180,239,239,26,82,181]},
+ {n:'숲 체육관',ldr:'관장 새싹',types:[3,11],lv:9,av:43,c:'#8be08b',hp:19,hidden:3,collect:45,d:'풀과 벌레 · 성장하기 전에 공격',tip:'불꽃·비행 공격이 좋아요. 회복과 벌레의 성장이 쌓이기 전에 공략해요.',roster:[69,191,10,1,43,152,46,2,70,45,71,182]},
+ {n:'안개 체육관',ldr:'관장 보라',types:[7,13],lv:13,av:23,c:'#c79bff',hp:20,hidden:4,collect:65,d:'독과 고스트 · 두 가지 상성 준비',tip:'독에는 땅·에스퍼, 고스트에는 악 공격을 준비해요. 유령은 첫 공격을 피해요.',roster:[13,43,69,1,41,23,88,109,92,30,2,93]},
  {n:'환상 체육관',ldr:'관장 미르',types:[10,17],lv:17,av:63,c:'#ffc2e6',hp:22,hidden:4,collect:90,d:'에스퍼와 페어리 · 역할 나누기',tip:'에스퍼에는 악·벌레, 페어리에는 독·강철을 준비해요. 한 타입에만 의지하지 마세요.',roster:[173,175,35,39,63,96,64,202,65,36,40,176]},
  {n:'불꽃 체육관',ldr:'관장 화르륵',types:[1,6],lv:21,av:58,c:'#ffb37a',hp:23,hidden:4,collect:120,d:'불꽃과 격투 · 진화 덱 도전',tip:'불꽃에는 물·땅, 격투에는 비행·에스퍼가 유리해요. 진화 카드와 가벼운 카드를 섞어요.',roster:[37,218,4,58,66,5,77,67,38,68,6,59]},
  {n:'용의 체육관',ldr:'관장 비늘',types:[14,16],lv:25,av:147,c:'#a99bff',hp:24,hidden:4,collect:160,d:'드래곤과 강철 · 균형 잡힌 덱',tip:'드래곤에는 얼음·페어리, 강철에는 불꽃·땅·격투를 준비해요. 두 번 공격하는 용을 조심해요.',roster:[436,436,374,304,599,878,81,305,148,707,227,705]},
- {n:'챔피언 리그',ldr:'챔피언 하늘',types:null,lv:30,av:149,c:'#ffd23f',hp:26,hidden:4,collect:200,d:'모든 타입 · 수집과 전략의 마지막 도전',tip:'공개된 상대를 보고 여러 상성을 준비해요. 전설 카드 없이도 도전할 수 있어요!',roster:[25,7,37,1,64,75,67,148,6,9,376,149]}];
+ {n:'챔피언 리그',ldr:'챔피언 하늘',types:null,lv:30,av:149,c:'#ffd23f',hp:25,hidden:4,collect:200,d:'모든 타입 · 수집과 전략의 마지막 도전',tip:'공개된 상대를 보고 여러 상성을 준비해요. 전설 카드 없이도 도전할 수 있어요!',roster:[25,7,37,1,64,75,67,148,6,9,376,149]}];
 let B=null;
 // 소환 에너지와 별개인 학습 비축 에너지. 사용분은 자동 저장한다.
 const MATH_ENERGY_MAX=30;
 let deckGym=null,chargingMath=false;
 function mathEnergy(){return clamp(Math.floor(Number(S.meta.mathEnergy)||0),0,MATH_ENERGY_MAX);}
 function reserveBattle(){return B&&!B.pvp&&B.mathMode==='reserve';}
-function spendMathEnergy(){const n=mathEnergy();if(n<1)return false;S.meta.mathEnergy=n-1;autoSave();return true;}
+function spendMathEnergy(){const n=mathEnergy();if(n<1)return false;S.meta.mathEnergy=n-1;if(B)B.eu=(B.eu||0)+1;autoSave();return true;}
 function gainMathEnergy(ok){S.meta.mathEnergy=Math.min(MATH_ENERGY_MAX,mathEnergy()+(ok?3:0));autoSave();}
 function energyPrepHTML(){return `<div class=explain><b>학습 에너지 ${mathEnergy()}/${MATH_ENERGY_MAX}</b><br>정답 1개로 +3 · 공격/자동 막기에 1 사용(막기는 상대 차례당 한 번). 소환 에너지와 따로예요.<br>에너지가 없으면 약한 공격, 자동 막기는 쉬어요. 문제는 자동으로 뜨지 않아요.</div><div class=mbtns><button class="btn green" data-a=charge>문제 5개로 충전</button></div>`;}
 async function chargeMathEnergy(done){if(chargingMath)return;if(B&&(B.busy||B.side!=='me'||B.pvp))return;if(mathEnergy()>=MATH_ENERGY_MAX){toast('학습 에너지가 가득 찼어요!');return;}chargingMath=true;const battle=B;if(battle)battle.busy=true;let stop=false,answered=0,correct=0;
@@ -1741,7 +1826,13 @@ async function chargeMathEnergy(done){if(chargingMath)return;if(B&&(B.busy||B.si
  const r=await askQ($('#chargeQuestion'),q,{noRetry:true});recordAnswer(q,r.ok,r.ms,{choice:r.choice,guess:r.guess});answered++;if(r.ok)correct++;gainMathEnergy(r.ok);
  }}finally{chargingMath=false;if(battle&&B===battle)battle.busy=false;closeM();if(battle&&B===battle)renderBattle();else if(done)done();}
  toast(`${answered}문제 중 ${correct}개 정답 · 학습 에너지 ${mathEnergy()}`);}
-const HERO_HP=20;const foeHP=d=>Math.round(13+d*1.3);
+// 관장이 처음 쥐는 카드 수(체육관 순서대로). 3장이면 첫 차례들이 덜 몰아쳐요
+const FOE_HAND=[3,3,3,4,4,4,4,4,4];
+const HERO_HP=20;
+// 재도전 응원: 같은 체육관에서 공부하며 진 만큼 다음 도전의 내 트레이너 체력 +1 (최대 +4). 이기면 사라져요.
+// 바로 포기(공부 3 미만)는 세지 않아서 일부러 져서 쌓을 수 없어요.
+const CHEER_MAX=4;
+const cheerOf=gi=>gi>=0&&S.meta.gymLoss?Math.min(CHEER_MAX,S.meta.gymLoss[gi]||0):0;const foeHP=d=>Math.round(13+d*1.3);
 function gymDeck(g,diff){
  if(g&&g.roster)return shuffle(g.roster.slice()); // 상대 덱: 체육관 타입 + 난이도에 맞는 비용
  const pool=MON_IDS.filter(id=>{const m=MON[id];if(m.rar===5&&diff<9)return false;if(g&&g.types&&!m.types.some(t=>g.types.includes(t)))return false;return m.cost<=Math.min(6,2+Math.ceil(diff/2));});
@@ -1754,17 +1845,17 @@ const brand=()=>B&&B.rng?B.rng():rnd();
 function mkPlayer(name,deck,hp,av,keep){return{name,hp,max:hp,mana:0,maxMana:0,deck:keep?deck.slice():shuffle(deck.slice()),hand:[],board:[null,null,null],av,fat:0};}
 function mkUnit(id){const m=MON[id];const kw=kwOf(m).k;return{id,atk:m.atk,hp:m.hp,max:m.hp,kw,att:kw==='rush'?1:0,frozen:0,dodge:kw==='dodge'?1:0,tough:kw==='tough'?1:0,grow:0,fresh:1};}
 const isTaunt=u=>u&&(u.kw==='taunt'||u.kw==='armor');
-function startBattle(gi){const me=S.meta;if(gi>=0&&!window.__sim&&!gymOpen(gi)){toast('앞 체육관 승리와 트레이너 레벨을 확인해요.');return;}if(gi>=0&&!window.__sim)me.stats.gymTry=(me.stats.gymTry||0)+1;if(!ensureDeck()){toast('덱에 카드가 12장 있어야 해요. 카드팩을 더 열어 봐요!');return;}
+function startBattle(gi){const me=S.meta;if(gi>=0&&!window.__sim&&!gymOpen(gi)){toast('앞 체육관 승리와 트레이너 레벨을 확인해요.');return;}if(!ensureDeck()){toast('덱에 카드가 12장 있어야 해요. 카드팩을 더 열어 봐요!');return;}
  const g=gi>=0?GYMS[gi]:null;const diff=g?gi+1:clamp(Math.ceil(lvOf(me.xp).lv/2),1,7);
  const wildT=rint(0,17);const wild=g?null:{n:'연습 대전',ldr:'떠돌이 트레이너',types:[wildT,rint(0,17)],c:TYPE_COL[wildT]};
  const G=g||wild;
- B={gi,g:G,diff,turn:0,round:0,side:'me',me:mkPlayer(me.name,SIM.deck||me.deck,HERO_HP,partnerId()),foe:mkPlayer(G.ldr,gymDeck(G,diff),G.hp||foeHP(diff),g?g.av:rpick(MON_IDS.filter(id=>MON[id].types.includes(wildT)))),
+ B={gi,g:G,diff,turn:0,round:0,side:'me',me:mkPlayer(me.name,SIM.deck||me.deck,HERO_HP+cheerOf(gi),partnerId()),foe:mkPlayer(G.ldr,gymDeck(G,diff),G.hp||foeHP(diff),g?g.av:rpick(MON_IDS.filter(id=>MON[id].types.includes(wildT)))),
   mathMode:window.__sim?'classic':(me.settings.battleMode||'reserve'),sel:-1,pick:-1,busy:false,combo:0,qn:0,qc:0,defUsed:false,over:false,powerUsed:false};
- for(let i=0;i<3;i++)draw(B.me,true);for(let i=0;i<(g&&gi<3?3:4);i++)draw(B.foe,true);
+ for(let i=0;i<3;i++)draw(B.me,true);for(let i=0;i<(g?FOE_HAND[gi]:4);i++)draw(B.foe,true);
  S.screen='battle';$('#view').innerHTML='';$('#battle').classList.add('on');
  renderBattle();
  if(window.__sim)return startTurn('me');
- (async()=>{await wait(200);banner(esc(G.n),`${esc(G.ldr)}와(과) 대결!`,1800);await wait(1600);
+ const myB=B;(async()=>{await wait(200);banner(esc(G.n),`${esc(G.ldr)}와(과) 대결!`,1800);await wait(1600);if(B!==myB||B.over)return; // 시작 연출 중에 포기했으면 멈춰요
   await coachOnce('c_battle',[
    {h:'카드 배틀',ic:'cards',t:'상대 트레이너의 <b>체력을 0</b>으로 만들면 이겨요!'},
    {el:'.bBot .mana',h:'에너지',ic:'bolt',t:'차례마다 에너지가 1씩 늘어요(최대 6). 카드 왼쪽 위 숫자만큼 에너지를 써서 포켓몬을 내보내요.'},
@@ -1789,13 +1880,13 @@ function tgtBadge(d,i){if(!B||B.side!=='me')return '';const me=B.me;let out='';
  return out?`<div class=tbadge>${out}</div>`:'';}
 function renderBattle(){if(!B||window.__sim)return;const me=B.me,fo=B.foe;const my=B.side==='me'&&!B.busy;
  const valid=targetsFor(B.sel);
- const unitH=(u,P,i)=>{if(!u)return '';const mine=P===me;const m=MON[u.id];const ready=mine&&my&&u.att>0&&!u.frozen;const mg=u.mega&&MEGA_BY[u.mega];const mo=mine&&my&&canMegaUnit(u);
-  return `<div class="unit${ready?' ready':''}${mine&&B.sel===i?' sel':''}${!mine&&valid.units.includes(i)?' tgt':''}${isTaunt(u)?' taunt':''}${u.frozen?' frozen':''}${mine&&!ready&&my?' zz':''}${mg?' mega':''}${u.gold?' gold'+u.gold:''}${mo?' megaOk':''}" data-i="${i}">
-   ${!mine?tgtBadge(u,i):''}<div class=kwI>${I(kwOf(m).ic)}</div>${mo?'<div class=megaTag>M</div>':''}<div class=shadow></div><div class=sp>${monImg(mg?u.mega:u.id,mine?'back':'anim')}</div><div class=un>${esc(mg?mg.name:m.name)}</div><div class=tdots>${m.types.map(t=>`<i style="background:${TYPE_COL[t]}"></i>`).join('')}</div>
+ const unitH=(u,P,i)=>{if(!u)return '';const mine=P===me;const m=MON[u.id];const ready=mine&&my&&u.att>0&&!u.frozen;const mg=u.mega&&MEGA_BY[u.mega];const gx=u.gmax&&GMAX_BY[u.gmax];const mo=mine&&my&&canMegaUnit(u);const go=mine&&my&&!mo&&canGmaxUnit(u);
+  return `<div class="unit${ready?' ready':''}${mine&&B.sel===i?' sel':''}${!mine&&valid.units.includes(i)?' tgt':''}${isTaunt(u)?' taunt':''}${u.frozen?' frozen':''}${mine&&!ready&&my?' zz':''}${mg?' mega':''}${gx?' gmax':''}${u.gold?' gold'+u.gold:''}${mine&&u.shiny?' shiny':''}${mo||go?' megaOk':''}" data-i="${i}">
+   ${!mine?tgtBadge(u,i):''}<div class=kwI>${I(kwOf(m).ic)}</div>${mo?'<div class=megaTag>M</div>':go?'<div class="megaTag gTag">G</div>':''}${gx?`<div class=gTurn>${u.gmaxT}</div>`:''}<div class=shadow></div><div class=sp>${monImg(mg?u.mega:gx?u.gmax:u.id,mine?'back':'anim','',mine&&!!u.shiny)}</div><div class=un>${esc(mg?mg.name:gx?gx.name:m.name)}</div><div class=tdots>${m.types.map(t=>`<i style="background:${TYPE_COL[t]}"></i>`).join('')}</div>
    <div class=us><span class="st atk">${u.atk}</span><span class="st hp"${u.hp<u.max?' style="background:#d9393f"':''}>${u.hp}</span></div></div>`;};
  const mana=P=>`<div class=mana>${Array.from({length:6},(_,i)=>`<i class="${i<P.mana?'on':''}"${i>=P.maxMana?' style="opacity:.3"':''}></i>`).join('')}<b>${P.mana}/${P.maxMana}</b></div>`;
  $('#battle').innerHTML=`
-  <div class=bTop><div class="hero${valid.hero?' tgt':''}" id=heroFoe>${valid.hero&&me.board[B.sel]?`<div class=tbadge style="top:-12px"><b class=dmgp>-${me.board[B.sel].atk+(me.board[B.sel].kw==='quake'?1:0)}</b></div>`:''}<div class=av style="background:${B.g.c}">${monImg(fo.av,'front')}</div><div><div class=hn>${esc(fo.name)}</div><div class=hhp>${I('heart')}${fo.hp}</div></div></div>
+  <div class=bTop><div class="hero${valid.hero?' tgt':''}" id=heroFoe>${valid.hero&&me.board[B.sel]?`<div class=tbadge style="top:-12px"><b class=dmgp>-${me.board[B.sel].atk+(me.board[B.sel].kw==='quake'?1:0)}</b></div>`:''}<div class=av style="background:${B.g.c}">${monImg(fo.av,'front','',false)}</div><div><div class=hn>${esc(fo.name)}</div><div class=hhp>${I('heart')}${fo.hp}</div></div></div>
    <span class=pill>${I('cards')} ${fo.hand.length}</span><span class=pill title="남은 덱">${I('book')} ${fo.deck.length}</span><span class=hudSp></span>${mana(fo)}<button class="btn ghost sm" id=bMenu>메뉴</button></div>
   <div class=lane id=foeLane>${fo.board.map((u,i)=>`<div class=slot data-i="${i}">${unitH(u,fo,i)}</div>`).join('')}</div>
   <div class=mid>${reserveBattle()?`<button class="btn green sm" id=bCharge ${my?'':'disabled'}>학습 에너지 ${mathEnergy()}/30 · 충전</button>`:''}<div class=msg id=bMsg></div>${B.combo>=2?`<span class=pill style="color:#ff7a00">${I('flame')} ${B.combo}연속</span>`:''}</div>
@@ -1831,24 +1922,27 @@ function typesStrong(t){return TYPE_EN.map((_,x)=>x).filter(x=>TYPE_CHART[t][x]>
 function typesWeak(t){return TYPE_EN.map((_,x)=>x).filter(x=>TYPE_CHART[t][x]<1);}
 function closeInfo(){const b=$('#bInfo');if(b){b.classList.remove('on');b.innerHTML='';}}
 function showInfo(id,o={}){if(window.__sim)return;const m=MON[id],kw=kwOf(m),t=kwType(m);
- const mi=o.unit&&!o.foe?B.me.board.indexOf(o.unit):-1;const forms=mi>=0&&!o.unit.mega?megaForms(id):[];
+ const mi=o.unit&&!o.foe?B.me.board.indexOf(o.unit):-1;const forms=mi>=0&&!o.unit.mega&&!o.unit.gmax?megaForms(id):[];const gforms=mi>=0&&!o.unit.mega&&!o.unit.gmax?gmaxForms(id):[];
+ const gmaxBtns=gforms.length&&canGmaxUnit(o.unit)&&B.side==='me'&&!B.busy?gforms.map(x=>`<button class="btn red big" data-gmax="${x.sid}">${I('flame')} ${esc(x.name)}!</button>`).join(''):'';
+ const gmaxInfo=o.unit&&o.unit.gmax&&GMAX_BY[o.unit.gmax]?`<div class=kwbox style="background:#ffecef;border-color:#ff8fa3">${I('flame')} <b>${esc(GMAX_BY[o.unit.gmax].name)}</b> — ${o.unit.gmaxT}차례 남았어요 (공격 +${GMAX_BOOST.atk} · 체력 +${GMAX_BOOST.hp})</div>`:gforms.length?`<div class=kwbox style="background:#ffecef;border-color:#ff8fa3">${I('flame')} ${B.megaUsed?'이번 배틀의 변신(메가진화·거다이맥스)은 이미 썼어요':B.megaTry===B.turn?'다음 차례에 다시 도전할 수 있어요':`<b>거다이맥스</b>할 수 있어요! 문제를 맞히면 ${GMAX_TURNS}차례 동안 거대해지고, 상대 포켓몬 모두에게 ${GMAX_BOOST.wave} 피해 (배틀마다 한 번)`}</div>`:'';
  const megaBtns=forms.length&&canMegaUnit(o.unit)&&B.side==='me'&&!B.busy?forms.map(x=>`<button class="btn purple big" data-mega="${x.sid}">${I('star')} ${esc(x.name)}!</button>`).join(''):'';
  const megaInfo=o.unit&&o.unit.mega&&MEGA_BY[o.unit.mega]?`<div class=kwbox style="background:#f3ebff;border-color:#b98cff">${I('star')} <b>${esc(MEGA_BY[o.unit.mega].name)}</b> — 메가진화로 공격 +${MEGA_BOOST.atk} · 체력 +${MEGA_BOOST.hp}</div>`:forms.length?`<div class=kwbox style="background:#f3ebff;border-color:#b98cff">${I('star')} ${B.megaUsed?'이번 배틀의 메가진화는 이미 썼어요':B.megaTry===B.turn?'다음 차례에 다시 메가진화에 도전할 수 있어요':`<b>메가진화</b>할 수 있어요! 문제를 맞히면 변신해서 공격 +${MEGA_BOOST.atk} · 체력 +${MEGA_BOOST.hp} (배틀마다 한 번)`}</div>`:'';let b=$('#bInfo');if(!b){b=document.createElement('div');b.id='bInfo';document.body.appendChild(b);}
  const chips=a=>a.map(x=>`<span class=tchip style="background:${TYPE_COL[x]}">${TYPE_KO[x]}</span>`).join('')||'<span class=mut>없음</span>';
  const opp=o.foe?B.me.board:B.foe.board;
- const vs=opp.map(d=>{if(!d)return '';const mu=o.foe?matchup(d.id,id):matchup(id,d.id);return `<div class=vs>${monImg(d.id,'front')}<span style="flex:1">${esc(MON[d.id].name)}</span>${mu?`<span class=tchip style="background:${mu.c==='adv'?'#3cc47c':'#a7b0bd'}">${o.foe?(mu.c==='adv'?'나에게 유리':'나에게 불리'):mu.t}</span>`:'<span class=mut style="font-size:12px">보통</span>'}</div>`;}).join('');
+ const vs=opp.map(d=>{if(!d)return '';const mu=o.foe?matchup(d.id,id):matchup(id,d.id);return `<div class=vs>${monImg(d.id,'front','',!!(o.foe&&d.shiny))}<span style="flex:1">${esc(MON[d.id].name)}</span>${mu?`<span class=tchip style="background:${mu.c==='adv'?'#3cc47c':'#a7b0bd'}">${o.foe?(mu.c==='adv'?'나에게 유리':'나에게 불리'):mu.t}</span>`:'<span class=mut style="font-size:12px">보통</span>'}</div>`;}).join('');
  const st=o.unit?`<div class=mut style="font-size:13px">지금 공격 ${o.unit.atk} · 체력 ${o.unit.hp}/${o.unit.max}${o.unit.frozen?' · 얼음':''}${o.unit.dodge?' · 피하기 남음':''}</div>`:'';
- b.innerHTML=`<div class=sheet>${cardHTML(id,{noHolo:1})}<div class=itx><h3>${esc(m.name)} ${o.foe?'<span class=mut style="font-size:13px">(상대)</span>':''}</h3>${st}
+ b.innerHTML=`<div class=sheet>${cardHTML(id,{noHolo:1,shiny:o.foe?false:o.unit?!!o.unit.shiny:undefined,gold:o.foe?0:undefined})}<div class=itx><h3>${esc(m.name)} ${o.foe?'<span class=mut style="font-size:13px">(상대)</span>':''}</h3>${st}
   <div class=kwbox>${I(kw.ic)} <b>${kw.n}</b> — ${kw.d}</div>
   <div><b style="color:#1f8a52">이 타입에 강해요 ×1.5</b><div class=mrow>${chips(typesStrong(t))}</div></div>
   <div><b style="color:#7a86a8">이 타입에는 약하게 들어가요 −1</b><div class=mrow>${chips(typesWeak(t))}</div></div>
   ${vs?`<div style="margin-top:4px"><b>${o.foe?'내 포켓몬과 상성':'지금 상대와 상성'}</b>${vs}</div>`:''}
   ${o.why?`<div style="color:#d9393f;margin-top:4px">${o.why}</div>`:''}
-  ${megaInfo}
-  <div class=mbtns style="margin-top:8px">${o.hand!=null&&o.can?'<button class="btn red big" id=biPlay>내보내기</button>':''}${megaBtns}<button class="btn ghost" id=biX>닫기</button></div></div></div>`;
+  ${megaInfo}${gmaxInfo}
+  <div class=mbtns style="margin-top:8px">${o.hand!=null&&o.can?'<button class="btn red big" id=biPlay>내보내기</button>':''}${megaBtns}${gmaxBtns}<button class="btn ghost" id=biX>닫기</button></div></div></div>`;
  b.classList.add('on');
  const x=$('#biX');x.onclick=()=>{sfx('tap');closeInfo();if(o.hand!=null){B.pick=-1;renderBattle();}};
  b.querySelectorAll('[data-mega]').forEach(x=>x.onclick=()=>tryMega(mi,+x.dataset.mega));
+ b.querySelectorAll('[data-gmax]').forEach(x=>x.onclick=()=>tryGmax(mi,+x.dataset.gmax));
  const pl=$('#biPlay');if(pl)pl.onclick=()=>{const me=B.me;closeInfo();const sl=me.board.indexOf(null);if(sl<0||B.busy)return;if(B.pvp)pvpSend({t:'sum',h:o.hand,s:sl});summon(me,o.hand,sl);};}
 // ---- 메가진화: 배틀마다 한 번, 내 차례에 문제를 맞히면 변신 ----
 function canMegaUnit(u){return !!(u&&B&&!B.megaUsed&&!u.mega&&B.megaTry!==B.turn&&typeof megaForms==='function'&&megaForms(u.id).length);}
@@ -1867,6 +1961,27 @@ async function megaFx(P,i,sid){const u=P.board[i],x=MEGA_BY[sid];if(!u||!x)retur
  renderBattle();const e2=unitEl(P,i);sfx('evolve');particles(e2,'#c58cff',22);particles(e2,'#ffe066',12);
  if(e2&&!S.meta.settings.lowfx)try{e2.animate([{transform:'scale(.6)',filter:'brightness(3)'},{transform:'scale(1.25)',filter:'brightness(1.5)',offset:.6},{transform:'none',filter:'none'}],{duration:620,easing:'cubic-bezier(.3,1.4,.5,1)'});}catch(e){}
  banner(esc(x.name)+'!',x.kind==='primal'?'원시회귀!':`메가진화! 공격 +${MEGA_BOOST.atk} · 체력 +${MEGA_BOOST.hp}`,1600);fx(e2,`+${MEGA_BOOST.atk}/+${MEGA_BOOST.hp}`,'heal');await wait(900);}
+// ---- 거다이맥스: 배틀마다 한 번(메가진화와 둘 중 하나), 내 차례에 문제를 맞히면 3차례 동안 거대해져요 ----
+function canGmaxUnit(u){return !!(u&&B&&!B.megaUsed&&!u.mega&&!u.gmax&&B.megaTry!==B.turn&&typeof gmaxForms==='function'&&gmaxForms(u.id).length);}
+async function tryGmax(i,sid){const me=B.me,u=me.board[i];const x=GMAX_BY[sid];if(!u||!x||B.busy||B.side!=='me'||!canGmaxUnit(u))return;closeInfo();B.busy=true;B.sel=-1;B.pick=-1;renderBattle();
+ const q=pickQ();const r=q?await battleQ(q,{who:u.id,what:`${esc(x.name)}! 맞히면 거대해져요`}):{ok:true};
+ if(!B)return;
+ if(r.ok){B.qc++;B.combo++;if(B.pvp)pvpSend({t:'gmax',s:i,sid});await gmaxFx(me,i,sid);}
+ else{B.combo=0;B.megaTry=B.turn;toast('아쉬워요! 다음 차례에 다시 도전할 수 있어요');}
+ if(B){B.busy=false;renderBattle();}}
+async function gmaxFx(P,i,sid){const u=P.board[i],x=GMAX_BY[sid];if(!u||!x)return;const O=P===B.me?B.foe:B.me;
+ const el=unitEl(P,i);sfx('rare');
+ if(el&&!S.meta.settings.lowfx&&!window.__sim){for(let k=0;k<3;k++){el.style.filter='brightness(2.4) saturate(2) hue-rotate(-20deg)';await wait(150);el.style.filter='';await wait(110);}}
+ u.gmax=sid;u.gmaxT=GMAX_TURNS;u.atk+=GMAX_BOOST.atk;u.hp+=GMAX_BOOST.hp;u.max+=GMAX_BOOST.hp;
+ if(P===B.me){B.megaUsed=true;if(!window.__sim){const g=dmaxSt();g.seen[sid]=1;g.n=(g.n||0)+1;S.meta.stats.gmax=(S.meta.stats.gmax||0)+1;autoSave();}}
+ renderBattle();const e2=unitEl(P,i);if(!window.__sim){sfx('evolve');particles(e2,'#ff4d6d',24);particles(e2,'#ffd23f',10);
+  banner(esc(x.name)+'!',`거다이맥스! ${GMAX_TURNS}차례 동안 공격 +${GMAX_BOOST.atk} · 체력 +${GMAX_BOOST.hp}`,1600);fx(e2,`+${GMAX_BOOST.atk}/+${GMAX_BOOST.hp}`,'heal');await wait(900);}
+ // 거다이 기술: 상대 포켓몬 모두에게 1 피해
+ for(let j=0;j<3;j++){if(O.board[j]){await dealUnit(O,j,GMAX_BOOST.wave);}}
+ cleanup();renderBattle();checkEnd();}
+// 차례가 시작될 때 거다이맥스 시간을 줄이고, 끝나면 원래 크기로
+function gmaxTick(P){P.board.forEach((u,i)=>{if(!u||!u.gmax)return;u.gmaxT--;if(u.gmaxT>0)return;
+ u.gmax=0;u.atk=Math.max(1,u.atk-GMAX_BOOST.atk);u.max=Math.max(1,u.max-GMAX_BOOST.hp);u.hp=Math.min(u.hp,u.max);if(!window.__sim)fx(unitEl(P,i),'원래 크기로','txt');});}
 // ---- 타격감: 뒤로 젖혔다 돌진 → 멈칫(히트스톱) → 번쩍 · 파편 · 흔들림 · 큰 숫자 ----
 function center(el){const r=zRect(el);return[r.left+r.width/2,r.top+r.height/2];}
 function particles(el,col,n){if(!el||S.meta.settings.lowfx||window.__sim)return;const[x,y]=center(el);for(let k=0;k<n;k++){const d=document.createElement('div');d.className='pcl';d.style.left=x+'px';d.style.top=y+'px';d.style.background=k%3?col:'#fff';const a=Math.random()*Math.PI*2,r=50+Math.random()*70;d.style.setProperty('--dx',Math.cos(a)*r+'px');d.style.setProperty('--dy',Math.sin(a)*r+'px');d.style.setProperty('--r',(Math.random()*540-270)+'deg');document.body.appendChild(d);setTimeout(()=>d.remove(),600);}
@@ -1881,7 +1996,7 @@ function targetsFor(si){const r={units:[],hero:false};if(si<0||!B||B.side!=='me'
  const fo=B.foe;const taunts=fo.board.map((u,i)=>isTaunt(u)?i:-1).filter(i=>i>=0);
  if(taunts.length&&a.kw!=='sneak'){r.units=taunts;return r;}
  r.units=fo.board.map((u,i)=>u?i:-1).filter(i=>i>=0);r.hero=true;return r;}
-async function summon(P,hi,slot){const id=P.hand[hi];if(!window.__sim)S.meta.dexSeen[id]=1;const m=MON[id];P.mana-=m.cost;P.hand.splice(hi,1);const u=mkUnit(id);if(P===B.me&&!window.__sim&&typeof goldOf==='function'&&goldOf(id))u.gold=goldOf(id);P.board[slot]=u;B.pick=-1;sfx('summon');
+async function summon(P,hi,slot){const id=P.hand[hi];if(!window.__sim)S.meta.dexSeen[id]=1;const m=MON[id];P.mana-=m.cost;P.hand.splice(hi,1);const u=mkUnit(id);if(P===B.me&&!window.__sim&&typeof goldOf==='function'&&goldOf(id))u.gold=goldOf(id);if(P===B.me&&!window.__sim&&typeof shinyOf==='function'&&shinyOf(id))u.shiny=1;P.board[slot]=u;B.pick=-1;sfx('summon');
  const O=P===B.me?B.foe:B.me;renderBattle();slamFx(P,slot);await wait(380);
  // 나올 때 효과
  if(u.kw==='ember'){const t=O.board.map((x,i)=>x?i:-1).filter(i=>i>=0);if(t.length){const ti=t[Math.floor(brand()*t.length)];await dealUnit(O,ti,1,'불씨');}else{O.hp-=1;fx(heroEl(O),'-1','');}}
@@ -1941,6 +2056,7 @@ function cleanup(){[B.me,B.foe].forEach(P=>P.board.forEach((u,i)=>{if(u&&u.hp<=0
 function checkEnd(){if(!B||B.over)return false;if(B.foe.hp<=0||B.me.hp<=0){B.over=true;if(window.__sim)return true;setTimeout(()=>endBattle(B.foe.hp<=0&&B.me.hp>0||(B.foe.hp<=0&&B.me.hp>=B.foe.hp)),600);return true;}return false;}
 async function startTurn(side){if(!B||B.over)return;closeInfo();B.side=side;const P=side==='me'?B.me:B.foe;B.turn++;if(side==='me')B.round++;
  P.maxMana=Math.min(6,P.maxMana+1);P.mana=P.maxMana;B.powerUsed=false;B.defUsed=false;
+ gmaxTick(P);
  P.board.forEach(u=>{if(!u)return;u.fresh=0;u.att=u.frozen?0:(u.kw==='double'?2:1);if(u.frozen&&side==='me'){}if(u.kw==='grow'&&u.grow<2){u.grow++;u.atk++;}});
  // 얼음은 한 차례만
  P.board.forEach(u=>{if(u&&u.frozen){u.frozen=0;u.att=0;}});
@@ -1979,23 +2095,34 @@ async function foeAttack(i,tg){const fo=B.foe,me=B.me;const a=fo.board[i];if(!a)
   const cd=applyType(d.atk,typeMul(d.id,a.id));if(cd>0){await wait(200);await dealUnit(fo,i,cd);}}
  cleanup();renderBattle();checkEnd();}
 function battleMenu(){M(`<h2>배틀 메뉴</h2>${reserveBattle()?'<p>학습 에너지: 공격 1 · 자동 막기 1(상대 차례당 한 번, 피해 −2) · 카드 뽑기 1. 막기 설정을 끄면 자동 막기도 꺼져요.</p>':''}<div class=explain style="font-size:14px">${Object.values(KW).filter((v,i,a)=>a.findIndex(x=>x.n===v.n)===i).map(k=>`${I(k.ic)} <b>${k.n}</b> ${k.d}`).join('<br>')}<br><br><b>타입 상성</b>: 상성이 좋으면 피해 ×1.5(효과가 굉장했다!), 나쁘면 −1. 공격받은 포켓몬은 반격해요.<br>10번째 차례부터는 두 트레이너 모두 조금씩 지쳐요.</div>
- <div class=mbtns><button class="btn gold" data-a=x>계속하기</button>${B.pvp?'':`<button class="btn green" data-a=sv>${I('disk')} 저장하고 나가기</button>`}<button class="btn ghost" data-a=q>포기하기</button></div>`,{x:()=>closeM(),_close:()=>closeM(),sv:()=>{if(B.busy||B.side!=='me'){toast('내 차례일 때 저장할 수 있어요');return;}const o=Object.assign({},B,{busy:false,sel:-1,pick:-1});delete o.rng;S.meta.bsave=JSON.stringify(o);saveLocal();closeM();B=null;$('#battle').classList.remove('on');$('#battle').innerHTML='';renderLeague();toast('배틀을 저장했어요! 지금 꺼도 다음에 이어서 할 수 있어요');},q:async()=>{if(await confirmBox('배틀을 포기할까요? 푼 문제는 기록에 남아요.','포기','계속')){closeM();if(B.pvp)pvpSend({t:'quit'});B.over=true;endBattle(false);}}});}
+ <div class=mbtns><button class="btn gold" data-a=x>계속하기</button>${B.pvp?'':`<button class="btn green" data-a=sv>${I('disk')} 저장하고 나가기</button>`}<button class="btn ghost" data-a=q>포기하기</button></div>`,{x:()=>closeM(),_close:()=>closeM(),sv:()=>{if(B.busy||B.side!=='me'){toast('내 차례일 때 저장할 수 있어요');return;}const o=Object.assign({},B,{busy:false,sel:-1,pick:-1});delete o.rng;S.meta.bsave=JSON.stringify(o);saveLocal();closeM();B=null;$('#battle').classList.remove('on');$('#battle').innerHTML='';renderLeague();toast('배틀을 저장했어요! 지금 꺼도 다음에 이어서 할 수 있어요');},q:async()=>{if(await confirmBox('배틀을 포기할까요? 푼 문제는 기록에 남아요.<br><span class=mut>포기하면 코인·경험치는 받지 않아요.</span>','포기','계속')){closeM();if(B.pvp)pvpSend({t:'quit'});B.over=true;B.forfeit=true;endBattle(false);}}});}
+// 보상은 '이번 배틀에서 한 공부'(즉석 문제 정답 수, 또는 쓴 학습 에너지)에 맞춰요.
+// 체육관 첫 승리는 그대로 다 주고, 다시 이기기·연습 대전·패배는 공부한 만큼. 바로 포기하면 코인·경험치 0.
+function battleLearn(){return B.mathMode==='reserve'&&!B.pvp?(B.eu||0):B.qc;}
+function battleReward(win,first,learn,forfeit,diff){const full=30+diff*10;
+ if(win)return{coins:first?full:Math.min(full,10+learn*3),xp:first?40:Math.min(40,10+learn*3),mush:first?3:learn>=5?1:0};
+ if(forfeit)return{coins:0,xp:0,mush:0};return{coins:Math.min(10,learn*2),xp:Math.min(15,learn*2),mush:0};}
 async function endBattle(win){if(B&&B.pvp)return pvpEnd(win);const me=S.meta,g=B.g,gi=B.gi;const first=gi>=0&&win&&!me.gyms[gi];
- let coins=win?30+B.diff*10:10,candy=B.qc,packs=0,legend=0;
+ const learn=battleLearn();const rw=battleReward(win,first,learn,!!B.forfeit,B.diff);
+ let coins=rw.coins,candy=B.qc,packs=0,legend=0;
+ if(gi>=0&&!window.__sim&&(win||learn>=3))me.stats.gymTry=(me.stats.gymTry||0)+1;
+ if(rw.mush&&typeof mushGain==='function')mushGain(rw.mush);
+ if(gi>=0&&!window.__sim){me.gymLoss=me.gymLoss||{};if(win)delete me.gymLoss[gi];else if(learn>=3)me.gymLoss[gi]=Math.min(CHEER_MAX,(me.gymLoss[gi]||0)+1);}
  if(win)me.battles.w++;else me.battles.l++;
  if(win&&B.me.hp<=5)me.stats.comeback=(me.stats.comeback||0)+1;
  if(win&&B.qn>=5&&B.qc>=B.qn)me.stats.flawless=(me.stats.flawless||0)+1;
  me.stats.candyAll=(me.stats.candyAll||0)+candy;
- if(first){me.gyms[gi]=today();packs=2;if(typeof megaGain==='function')megaGain(3);if(gi===8){legend=rpick(MON_IDS.filter(id=>MON[id].rar===5&&!me.col[id]))||rpick(MON_IDS.filter(id=>MON[id].rar===5));addCard(legend);}}
- me.coins+=coins;me.candy+=candy;me.packs+=packs;gainXP(win?40:15);autoSave();
+ if(first){me.gyms[gi]=today();packs=2;if(typeof megaGain==='function')megaGain(3);if(typeof shineGain==='function')shineGain(3);if(gi===8){legend=rpick(MON_IDS.filter(id=>MON[id].rar===5&&!me.col[id]))||rpick(MON_IDS.filter(id=>MON[id].rar===5));addCard(legend);}}
+ me.coins+=coins;me.candy+=candy;me.packs+=packs;gainXP(rw.xp);autoSave();
  sfx(win?'win':'lose');if(win)confetti(70);
  $('#bq').classList.remove('on');
  M(`<div style="text-align:center"><h2 style="font-size:34px">${win?'승리!':'아쉬워요…'}</h2>
-  <div style="display:flex;justify-content:center">${monImg(win?me.starter||25:B.foe.av,'anim')}</div>
+  <div style="display:flex;justify-content:center">${win?monImg(me.starter||25,'anim'):monImg(B.foe.av,'anim','',false)}</div>
   <p style="margin:6px 0">${reserveBattle()?`미리 충전한 에너지로 배틀했어요! 남은 학습 에너지 <b>${mathEnergy()}</b><br>충전할 때 푼 문제는 성장 기록에 저장돼요.`:`배틀에서 푼 문제 <b>${B.qn}</b>개 중 <b>${B.qc}</b>개 정답!`}</p>
-  ${first?`<div class=explain style="text-align:center"><b>${esc(g.n)} 배지</b>를 얻었어요! 메가 결정 +3${legend?`<br>챔피언 기념 전설 카드: <b>${esc(MON[legend].name)}</b>`:''}</div>`:''}
-  <div class=row style="justify-content:center;gap:8px;margin-top:8px"><span class=pill>${I('coin')} +${coins}</span><span class=pill>${I('candy')} +${candy}</span>${packs?`<span class=pill>${I('ball')} 카드팩 +${packs}</span>`:''}</div>
-  ${win?'':`<p class=mut style="margin-top:8px">학습 에너지를 충전하거나 상성에 맞게 덱을 바꾸고 다시 도전해요!</p>`}
+  ${first?`<div class=explain style="text-align:center"><b>${esc(g.n)} 배지</b>를 얻었어요! 메가 결정 +3 · 반짝 가루 +3 · 다이 버섯 +3${Object.keys(me.gyms).length===GMAX_BADGES?'<br><b>다이맥스 밴드</b>를 받았어요! 이제 거다이맥스할 수 있어요':''}${legend?`<br>챔피언 기념 전설 카드: <b>${esc(MON[legend].name)}</b>`:''}</div>`:''}
+  <div class=row style="justify-content:center;gap:8px;margin-top:8px"><span class=pill>${I('coin')} +${coins}</span><span class=pill>${I('candy')} +${candy}</span>${packs?`<span class=pill>${I('ball')} 카드팩 +${packs}</span>`:''}${rw.mush&&!first?`<span class=pill>${I('flame')} 다이 버섯 +${rw.mush}</span>`:''}</div>
+  ${B.forfeit?'<p class=mut style="margin-top:8px">포기한 배틀은 코인·경험치가 없어요. 푼 문제의 사탕은 받아요.</p>':!first&&rw.coins<30+B.diff*10&&(win||rw.coins<10)?`<p class=mut style="margin-top:8px;font-size:13px">코인은 이번 배틀에서 한 공부만큼 받아요 (${B.mathMode==='reserve'?'쓴 학습 에너지':'맞힌 문제'} ${learn})</p>`:''}
+  ${win?'':`<p class=mut style="margin-top:8px">학습 에너지를 충전하거나 상성에 맞게 덱을 바꾸고 다시 도전해요!${gi>=0&&cheerOf(gi)?`<br>${I('heart')} 재도전 응원: 다음 도전은 내 트레이너 체력 <b>+${cheerOf(gi)}</b>`:''}</p>`}
   <div class=mbtns><button class="btn gold big" data-a=x>확인</button></div></div>`,{x:()=>{closeM();B=null;$('#battle').classList.remove('on');$('#battle').innerHTML='';if(S.lvUp)levelUpFx();renderLeague();},_close:()=>{}});}
 // ---- 리그 화면 ----
 function gymNeed(i){return GYMS[i].lv;}
@@ -2004,10 +2131,10 @@ function gymOpen(i){const me=S.meta;return (i===0||me.gyms[i-1])&&lvOf(me.xp).lv
 function gymCounters(g){const visible=g.roster.slice(0,-g.hidden);return MON_IDS.filter(id=>S.meta.col[id]>0).map(id=>({id,hits:visible.filter(foe=>typeMul(id,foe)>=2).length})).filter(x=>x.hits>0).sort((a,b)=>b.hits-a.hits||MON[a.id].cost-MON[b.id].cost||a.id-b.id).slice(0,6);}
 function gymPreviewCards(g){return g.roster.map((id,i)=>i>=g.roster.length-g.hidden?
  '<div class="gymScout secret"><b>??</b><span>비공개 핵심 포켓몬</span><small>배틀에서 만나요</small></div>':
- `<div class=gymScout>${monImg(id,'front')}<b>${esc(MON[id].name)}</b><span>${typeChips(MON[id])}</span><small>에너지 ${MON[id].cost} · 공격 ${MON[id].atk} · 체력 ${MON[id].hp}</small><small>${esc(kwOf(MON[id]).n)}</small></div>`).join('');}
+ `<div class=gymScout>${monImg(id,'front','',false)}<b>${esc(MON[id].name)}</b><span>${typeChips(MON[id])}</span><small>에너지 ${MON[id].cost} · 공격 ${MON[id].atk} · 체력 ${MON[id].hp}</small><small>${esc(kwOf(MON[id]).n)}</small></div>`).join('');}
 function previewGym(i){if(!GYMS[i]||!gymOpen(i)){toast('레벨을 올리고 앞 체육관을 먼저 이겨요.');return;}deckGym=i;const g=GYMS[i],op=gymOpen(i),owned=Object.keys(S.meta.col).filter(id=>S.meta.col[id]>0).length,recs=gymCounters(g);
  M(`<h2>${i+1}단계 · ${esc(g.n)}</h2><p>${esc(g.d)} · 관장 체력 <b>${g.hp}</b></p>
- <div class=explain>${esc(g.tip)}<br>도감 수집 목표 <b>${g.collect}종</b> · 현재 ${owned}종 <small>(도전 필수 조건은 아니에요)</small></div>
+ <div class=explain>${esc(g.tip)}${cheerOf(i)?`<br>${I('heart')} <b>재도전 응원</b> — 이번 도전은 내 트레이너 체력 +${cheerOf(i)}`:''}<br>도감 수집 목표 <b>${g.collect}종</b> · 현재 ${owned}종 <small>(도전 필수 조건은 아니에요)</small></div>
  <p>관장 덱 12장 중 ${12-g.hidden}장 공개 · 핵심 ${g.hidden}장은 <b>??</b><br><small class=mut>재도전해도 같은 덱이에요. 카드를 뽑는 순서만 달라져요.</small></p>
  <div class=gymScoutGrid>${gymPreviewCards(g)}</div>
  <p><b>내 도감에서 준비할 카드</b><br>${recs.length?recs.map(x=>esc(MON[x.id].name)).join(' · '):'아직 유리한 카드가 없어요. 카드팩·진화·도감에서 데려오기로 준비해요.'}<br><small class=mut>공개 카드에 유리한 공격 기준이에요. 덱의 에너지 균형도 살펴봐요.</small></p>
@@ -2019,7 +2146,7 @@ function renderLeague(){deckGym=null;S.screen='league';const me=S.meta;const L=l
   <div class=explain><label>문제 푸는 방식 <select id=gMathMode><option value=reserve ${me.settings.battleMode!=='classic'?'selected':''}>미리 충전하기</option><option value=classic ${me.settings.battleMode==='classic'?'selected':''}>공격할 때 풀기</option></select></label><p>학습 에너지 ${mathEnergy()}/30 · 정답 1개 = +3<br><small>공격·자동 막기에 1 사용. 0이면 약한 공격만 해요. 친구 대전은 기존 문제 방식을 사용해요.</small></p><button class="btn green sm" id=gCharge>문제 5개로 충전</button></div>
   ${me.bsave?`<div class=explain style="margin-bottom:10px;display:flex;align-items:center;gap:10px">${I('disk')} 저장해 둔 배틀이 있어요 <span class=hudSp></span><button class="btn green sm" id=gResume>이어서 배틀하기</button><button class="btn ghost sm" id=gDrop>그만두기</button></div>`:''}
   <div class=gyms><div class=gym id=gWild><div class=gi style="background:#e9f7ff">${I('map')}</div><div><div class=gn>연습 대전</div><div class=gd>아무 때나 할 수 있어요. 코인·사탕을 모아요.</div></div></div>
-  ${GYMS.map((g,i)=>{const op=gymOpen(i);return `<div class="gym${op?'':' lock'}${me.gyms[i]?' won':''}" data-g="${i}"><div class=gi style="background:${g.c}">${op||me.gyms[i]?monImg(g.av,'front'):I('lock')}</div><div><div class=gn>${esc(g.n)}</div><div class=gd>${esc(g.ldr)} · ${esc(g.d)}<br>${op?'덱 확인하고 도전':`Lv.${g.lv} 필요${i>0&&!me.gyms[i-1]?' · 앞 체육관 승리':''}`}</div></div></div>`;}).join('')}</div>
+  ${GYMS.map((g,i)=>{const op=gymOpen(i);return `<div class="gym${op?'':' lock'}${me.gyms[i]?' won':''}" data-g="${i}"><div class=gi style="background:${g.c}">${op||me.gyms[i]?monImg(g.av,'front','',false):I('lock')}</div><div><div class=gn>${esc(g.n)}</div><div class=gd>${esc(g.ldr)} · ${esc(g.d)}<br>${op?'덱 확인하고 도전':`Lv.${g.lv} 필요${i>0&&!me.gyms[i-1]?' · 앞 체육관 승리':''}`}</div></div></div>`;}).join('')}</div>
   <div class=mbtns><button class="btn ghost" id=gDeck>${I('cards')} 덱 고치기</button></div></div></div>`;
  bindHud();
  $('#gMathMode').onchange=e=>{me.settings.battleMode=e.target.value;autoSave();};
@@ -2048,7 +2175,7 @@ const SIM={p:.8,deck:null,
 // 연결은 WebRTC(PeerJS). 처음 연결할 때만 PeerJS 공개 서버를 거치고, 그 뒤는 기기끼리 바로 주고받아요.
 const PVP_COST=60;       // 한 판에 드는 코인 (훈련 정답 12개쯤) — 쉬는 시간 내내 하지 않도록
 const PVP_WIN=30,PVP_LOSE=10;
-const PVP_VER=2; // 2: 메가진화 행동(mega)이 생겼어요
+const PVP_VER=3; // 2: 메가진화 행동(mega) · 3: 거다이맥스 행동(gmax)
 const PV={peer:null,conn:null,host:false,code:'',q:[],busy:false,foe:null,started:false,charged:false};
 function loadPeer(){return new Promise((res,rej)=>{if(window.Peer)return res();const s=document.createElement('script');s.src='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';s.onload=()=>res();s.onerror=()=>rej(new Error('연결 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'));document.head.appendChild(s);});}
 function pvpClose(){try{PV.conn&&PV.conn.close();}catch(e){}try{PV.peer&&PV.peer.destroy();}catch(e){}PV.peer=null;PV.conn=null;PV.q=[];PV.busy=false;PV.started=false;}
@@ -2097,6 +2224,7 @@ async function pvpPump(){if(PV.busy)return;PV.busy=true;
   if(d.t==='atk'){PV.q.shift();B.busy=true;const a=B.foe.board[d.si];msg(`${esc(PV.foe.name)}의 ${a?esc(MON[a.id].name):''} 공격! ${d.ok?'(문제 정답!)':'(문제를 틀려서 약하게)'}`);await wait(500);await resolveAttack(B.foe,B.me,d.si,d.tg,d.ok,d.cb);B.busy=false;continue;}
   if(d.t==='pow'){PV.q.shift();if(d.ok)draw(B.foe);B.foe.mana-=2;fx(heroEl(B.foe),d.ok?'공부 기술 성공!':'공부 기술','txt');renderBattle();continue;}
   if(d.t==='mega'){PV.q.shift();B.busy=true;msg(`${esc(PV.foe.name)}의 메가진화!`);await megaFx(B.foe,d.s,d.sid);B.busy=false;continue;}
+  if(d.t==='gmax'){PV.q.shift();B.busy=true;msg(`${esc(PV.foe.name)}의 거다이맥스!`);await gmaxFx(B.foe,d.s,d.sid);if(B)B.busy=false;continue;}
   if(d.t==='end'){PV.q.shift();await startTurn('me');continue;}
   if(d.t==='quit'){PV.q.shift();if(!B.over){B.over=true;toast('친구가 대전을 그만두었어요');setTimeout(()=>endBattle(true),600);}continue;}
   PV.q.shift();}}
@@ -2113,7 +2241,7 @@ function pvpBegin(seed){if(PV.started)return;PV.started=true;const me=S.meta,f=P
  setTimeout(()=>{if(!B)return;if(meFirst)startTurn('me');else{B.side='foe';B.turn++;B.foe.maxMana=1;B.foe.mana=1;draw(B.foe);B.busy=false;renderBattle();pvpPump();}},1600);}
 async function pvpEnd(win){const me=S.meta;const f=PV.foe||{name:'친구'};
  if(win!==null){me.pvp=me.pvp||{n:0,w:0,l:0,gg:0,foes:{}};me.pvp.n++;if(win)me.pvp.w++;else me.pvp.l++;me.pvp.foes[f.name]=(me.pvp.foes[f.name]||0)+1;me.pvp.last=Date.now();
-  const back=win?PVP_WIN:PVP_LOSE;me.coins+=back;me.candy+=B.qc;me.stats.candyAll=(me.stats.candyAll||0)+B.qc;gainXP(win?30:15);}
+  const back=win?PVP_WIN:PVP_LOSE;me.coins+=back;me.candy+=B.qc;me.stats.candyAll=(me.stats.candyAll||0)+B.qc;gainXP(B.qn?(win?30:15):0);}
  else if(PV.charged){me.coins+=Math.round(PVP_COST/2);}
  autoSave();sfx(win?'win':'lose');if(win)confetti(60);
  const qn=B?B.qn:0,qc=B?B.qc:0;
@@ -2328,7 +2456,7 @@ function pickVisitor(bk){const g=gst();const want=[...BERRY[bk].types,...BERRY[b
 function gardenTick(){const g=gst();let ch=false;
  // 먹이 접시: 열매를 놓고 문제를 3개 더 맞히면 손님이 와요(하루 2번까지)
  if(g.plate&&(!g.visit||g.visit.st!=='here')&&solvedC()-g.plate.at>=VISIT_NEED){if(g.vd.d!==today())g.vd={d:today(),n:0};
-  if(g.vd.n<2){g.visit={id:pickVisitor(g.plate.b),b:g.plate.b,st:'here',d:today()};g.vd.n++;g.plate=null;ch=true;}}
+  if(g.vd.n<2&&clockOk()){g.visit={id:pickVisitor(g.plate.b),b:g.plate.b,st:'here',d:today()};g.vd.n++;g.plate=null;ch=true;}}
  if(ch)autoSave();return g;}
 
 let GTIMER=0,GMODE=null; // GMODE: {feed:'열매키'} 열매 주기 · {deco:1} 꾸미기
@@ -2908,10 +3036,11 @@ function renderTeacher(){S.screen='teacher';const y=schoolYear();
  const list=()=>{const c=($('#tcCls').value||'').toUpperCase();S.tcCls=c;let h='';for(let g=1;g<=6;g++)for(let s=1;s<=2;s++){const code=makeTeacherCode(g,s,c.length===3?c:'SSC',y);h+=`<div style="text-align:center;background:#fff;border:2px solid var(--line);border-radius:14px;padding:8px"><div class=jua>${g}학년 ${s}학기</div><div class=tcode style="font-size:24px">${code}</div></div>`;}$('#tcList').innerHTML=h;};
  list();$('#tcCls').oninput=list;
  $('#tcBack').onclick=()=>{sfx('tap');renderTitle();};
- const rows=[];const add=o=>{const m=upgradeMeta(mergeMeta(o.meta));for(const a of ACH){const t=achTier(a,m);if(t>((m.ach[a.k]&&m.ach[a.k].t)||0))m.ach[a.k]={t,d:[]};}const sk=Object.entries(m.sk);const weak=sk.filter(([id,v])=>SKM[id]&&v.x>=2&&v.x>=v.c/2).map(([id])=>SKM[id].n).slice(0,3);
+ const rows=[];const add=o=>{const st=sigState(o);const m=upgradeMeta(mergeMeta(o.meta));
+  const chk=st==='bad'?'<b style="color:#d9393f">⚠ 파일이 바뀜</b>':m.tamper?`<b style="color:#d97a00">⚠ 기기 저장이 바뀐 적 ${m.tamper}번</b>`:st==='old'?'<span class=mut>옛 형식</span>':'정상';for(const a of ACH){const t=achTier(a,m);if(t>((m.ach[a.k]&&m.ach[a.k].t)||0))m.ach[a.k]={t,d:[]};}const sk=Object.entries(m.sk);const weak=sk.filter(([id,v])=>SKM[id]&&v.x>=2&&v.x>=v.c/2).map(([id])=>SKM[id].n).slice(0,3);
   const last7=Object.keys(m.days).filter(k=>dayDiff(k,today())<7).reduce((s,k)=>s+m.days[k].n,0);
-  rows.push(`<tr><td>${esc(m.name)}</td><td>${esc(semName(m.gs))}</td><td>${lvOf(m.xp).lv}</td><td>${m.stats.q}</td><td>${m.stats.q?Math.round(m.stats.c/m.stats.q*100):0}%</td><td>${last7}</td><td>${Object.keys(m.days).length}</td><td>${Object.keys(m.badges).length}</td><td>${(()=>{const h=m.hist||[];if(h.length<40&&!m.first20)return '-';const p=(m.first20||h.slice(0,20)).reduce((a,x)=>a+x,0),r=h.slice(-20).reduce((a,x)=>a+x,0);return `${p} → <b>${r}</b>`;})()}</td><td style="text-align:left">${esc(Object.keys(m.found||{}).map(F=>SKM[F]?SKM[F].n:'').filter(Boolean).join(', ')||'-')}</td><td style="text-align:left">${esc(weak.join(', ')||'-')}</td><td>${m.stats.guessWrong||0}회${m.stats.guessAlert?` (천천히 안내 ${m.stats.guessAlert})`:''}</td><td>${ACH.reduce((s,a)=>s+((m.ach[a.k]&&m.ach[a.k].t)||0),0)}</td><td style="text-align:left">${esc(strengths(m).slice(0,2).map(x=>STR[x.k].n).join(', ')||'-')}${playStyle(m).length?'<br><span class=mut>'+esc(playStyle(m).map(t=>'#'+t[0]).join(' '))+'</span>':''}</td></tr>`);};
- const show=()=>{$('#tcRep').innerHTML=rows.length?`<table class=rep><tr><th>닉네임</th><th>학기</th><th>Lv</th><th>푼 문제</th><th>정답률</th><th>최근 7일</th><th>공부한 날</th><th>단원 배지</th><th>처음 20 → 최근 20</th><th>석산 쌓는 중</th><th>더 연습할 개념</th><th>찍기 의심</th><th>도전 배지</th><th>강점 · 스타일</th></tr>${rows.join('')}</table>`:'<p class=mut>읽을 수 있는 기록이 없어요</p>';};
+  rows.push(`<tr><td>${esc(m.name)}</td><td>${esc(semName(m.gs))}</td><td>${lvOf(m.xp).lv}</td><td>${m.stats.q}</td><td>${m.stats.q?Math.round(m.stats.c/m.stats.q*100):0}%</td><td>${last7}</td><td>${Object.keys(m.days).length}</td><td>${Object.keys(m.badges).length}</td><td>${(()=>{const h=m.hist||[];if(h.length<40&&!m.first20)return '-';const p=(m.first20||h.slice(0,20)).reduce((a,x)=>a+x,0),r=h.slice(-20).reduce((a,x)=>a+x,0);return `${p} → <b>${r}</b>`;})()}</td><td style="text-align:left">${esc(Object.keys(m.found||{}).map(F=>SKM[F]?SKM[F].n:'').filter(Boolean).join(', ')||'-')}</td><td style="text-align:left">${esc(weak.join(', ')||'-')}</td><td>${m.stats.guessWrong||0}회${m.stats.guessAlert?` (천천히 안내 ${m.stats.guessAlert})`:''}</td><td>${ACH.reduce((s,a)=>s+((m.ach[a.k]&&m.ach[a.k].t)||0),0)}</td><td style="text-align:left">${esc(strengths(m).slice(0,2).map(x=>STR[x.k].n).join(', ')||'-')}${playStyle(m).length?'<br><span class=mut>'+esc(playStyle(m).map(t=>'#'+t[0]).join(' '))+'</span>':''}</td><td>${chk}</td></tr>`);};
+ const show=()=>{$('#tcRep').innerHTML=rows.length?`<table class=rep><tr><th>닉네임</th><th>학기</th><th>Lv</th><th>푼 문제</th><th>정답률</th><th>최근 7일</th><th>공부한 날</th><th>단원 배지</th><th>처음 20 → 최근 20</th><th>석산 쌓는 중</th><th>더 연습할 개념</th><th>찍기 의심</th><th>도전 배지</th><th>강점 · 스타일</th><th title="저장 코드나 파일을 게임 밖에서 고쳤는지">기록 확인</th></tr>${rows.join('')}</table>`:'<p class=mut>읽을 수 있는 기록이 없어요</p>';};
  $('#tcGo').onclick=async()=>{rows.length=0;for(const line of $('#tcIn').value.split(/\n+/)){if(!line.trim())continue;try{add(await readAny(line));}catch(e){}}show();};
  $('#tcFiles').onclick=()=>$('#tcF').click();
  const cards=[];$('#tcCards').onclick=async()=>{cards.length=0;const box=$('#tcCardBox');box.innerHTML='';const keep=S.meta;
@@ -2925,7 +3054,7 @@ function renderTeacher(){S.screen='teacher';const y=schoolYear();
 const BGMAP={title:'town',gate:'town',name:'town',starter:'town',hub:'town',garden:'route',train:'route',result:'route',dex:'lab',deck:'lab',grow:'lab',ach:'lab',map:'lab',teacher:'lab',season:'stadium',league:'stadium',pvp:'stadium',battle:'battle'};
 let _bgCur='';function bgTick(){if(typeof ART==='undefined')return;const k=BGMAP[S.screen]||'town';if(k===_bgCur)return;_bgCur=k;const el=$('#bgImg');el.style.backgroundImage=`url(${ART.bg[k]})`;el.classList.add('on');const b=$('#battle');b.classList.add('art');b.style.backgroundImage=`url(${ART.bg.battle})`;}
 // ===== 시작 =====
-function init(){loadLocal();applySafe();initFit();coachInit();
+function init(){loadLocal();if(S.meta.gift4){delete S.meta.gift4;saveLocal();setTimeout(()=>toast('✦ 업데이트 선물! 반짝 가루 +15 · 다이 버섯 +8 — 도감에서 이로치·거다이맥스를 만나 봐요'),2500);}if(S.tamperMsg){S.tamperMsg=0;setTimeout(()=>toast('저장 기록이 게임 밖에서 바뀐 흔적이 있어서 코인·카드팩 같은 재화를 0으로 되돌렸어요. 공부 기록과 카드는 그대로예요.'),1500);}applySafe();initFit();coachInit();
  $('#fileIn').onchange=e=>{handleFile(e.target.files[0]);e.target.value='';};
  addEventListener('dragover',e=>e.preventDefault());
  addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer&&e.dataTransfer.files[0];if(f&&/\.(md|markdown|txt)$/i.test(f.name))handleFile(f);});
