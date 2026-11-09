@@ -567,6 +567,20 @@ svg.egg.big{width:110px}
 .unit.gmax .un{background:linear-gradient(90deg,#ffd6dd,#ffe7c2);color:#b0123a}
 .megaTag.gTag{background:linear-gradient(135deg,#ff4d6d,#c2185b)}
 .gTurn{position:absolute;top:2px;left:2px;z-index:6;min-width:22px;height:22px;border-radius:11px;background:#ff4d6d;color:#fff;font-family:'Black Han Sans';font-size:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff}
+/* 인연의 끈 */
+.threadBox{background:linear-gradient(160deg,#eefbf2,#f6fff0);border-color:#9fdcb5}
+.dexCell.relSel{border-color:#3cc47c;border-width:3px;background:#e4f8ea}
+/* 레이드 · 서바이벌 (움직임 없이) */
+.raidBoss{height:220px;display:flex;align-items:center;justify-content:center}
+.raidBoss img{max-height:100%;max-width:90%;object-fit:contain;filter:drop-shadow(0 0 14px rgba(255,77,109,.75))}
+.raidBoss.down img{filter:grayscale(1) opacity(.5)}
+.raidHp{position:relative;height:22px;border-radius:11px;background:#ffe3e8;border:2px solid #ff8fa3;overflow:hidden;margin:6px auto 0;max-width:420px}
+.raidHp i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#ff4d6d,#ff8a3d)}
+.raidHp span{position:relative;display:block;text-align:center;font-family:'Jua';font-size:14px;line-height:18px;color:#5a0a1f}
+.miniWrap{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px}
+.miniTop{display:flex;gap:10px;align-items:center;font-family:'Jua';font-size:17px;flex-wrap:wrap;justify-content:center}
+.miniTop #mnH{color:#ff4d6d;letter-spacing:1px}
+#mcv{border:3px solid #9fd38f;border-radius:14px;touch-action:none;image-rendering:pixelated;background:#eaf7e4}
 </style>
 </head>
 <body>
@@ -749,7 +763,7 @@ function defaultMeta(){return{ver:SAVE_VER,name:'',code:'',gs:'',cls:'',focus:nu
  xp:0,coins:0,candy:0,packs:0,dust:0,pity:{p4:0,p5:0},col:{},seen:{},dexSeen:{},deck:[],
  sk:{},days:{},hist:[],train:{last:'',best:0,count:0,lastRes:null,daily:''},
  badges:{},gyms:{},battles:{w:0,l:0},stats:{q:0,c:0,streak:0,bestCombo:0,bestStreak:0,guessWrong:0,guessAlert:0,careful:0,lowerStar:0,shardDone:0,crafted:0,foundDone:0,superEff:0,gymTry:0,retryOk:0,bounce:0,fast:0,better:0,perfect:0,quickTrain:0,practice:0,comeback:0,flawless:0,defOk:0,candyAll:0,evolved:0,opened:0},
- mathEnergy:0,gold:{},shiny:{},shine:0,dmax:{mush:0,soup:{},seen:{},n:0},tamper:0,clockMax:'',gymLoss:{},mega:{xtal:0,stones:{},seen:{},n:0},garden:{res:[],deco:{},own:{},plots:[null,null,null],berry:{},plate:null,visit:null,vd:{d:'',n:0},eggs:[],album:[],heart:{},hday:{},breath:'',first:0},unl:{},unlNew:{},ach:{},partner:0,bond:{},stoneSeen:null,card:null,uMaxAt:'',shard:{},dust:0,season:null,seasons:[],bsave:null,thist:[],first20:null,first20t:null,found:{},endless:{best:0,total:0,runs:0},pvp:{n:0,w:0,l:0,gg:0,foes:{},last:0},tod:{m:0,a:0,e:0},firstPlay:0,settings:{battleMode:'reserve',anim:'still',sound:true,lowfx:false,safe:'auto',zoom:'auto',fit:'auto',imgs:true,defq:true}};}
+ mathEnergy:0,gold:{},shiny:{},shine:0,dmax:{mush:0,soup:{},seen:{},n:0},tamper:0,clockMax:'',gymLoss:{},thread:0,raid:{cur:null,wins:0,tries:0,last:'',best:0},mini:{tk:0,prog:0,day:'',n:0,best:0,runs:0},mega:{xtal:0,stones:{},seen:{},n:0},garden:{res:[],deco:{},own:{},plots:[null,null,null],berry:{},plate:null,visit:null,vd:{d:'',n:0},eggs:[],album:[],heart:{},hday:{},breath:'',first:0},unl:{},unlNew:{},ach:{},partner:0,bond:{},stoneSeen:null,card:null,uMaxAt:'',shard:{},dust:0,season:null,seasons:[],bsave:null,thist:[],first20:null,first20t:null,found:{},endless:{best:0,total:0,runs:0},pvp:{n:0,w:0,l:0,gg:0,foes:{},last:0},tod:{m:0,a:0,e:0},firstPlay:0,settings:{battleMode:'reserve',anim:'still',sound:true,lowfx:false,safe:'auto',zoom:'auto',fit:'auto',imgs:true,defq:true}};}
 function mergeMeta(m){const d=defaultMeta();if(!m||typeof m!=='object')return d;for(const k in d){if(!(k in m))continue;if(d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k]))d[k]=Object.assign(d[k],m[k]);else d[k]=m[k];}return d;}
 function upgradeMeta(m){
  // v1 → v2: 처음 20문제 기록·개념별 최근 기록이 생겼어요. 옛 기록에서 알 수 있는 만큼 채워요.
@@ -1190,11 +1204,12 @@ function recordAnswer(q,ok,ms,opt={}){const m=S.meta,v=skState(q.sk),d=dayRec();
  foundUpdate(q,ok);
  if(opt.guess){m.stats.guessWrong=(m.stats.guessWrong||0)+1;}
  gainXP(ok?10:opt.guess?0:3); // 틀려도 노력 점수(단, 찍은 답은 빼요)
+ if(typeof miniTicketTick==='function')miniTicketTick(ok,opt);
  const ks=Object.keys(m.days);if(ks.length>400)ks.sort().slice(0,ks.length-400).forEach(k=>delete m.days[k]);
  m.stats.bestStreak=Math.max(m.stats.bestStreak||0,streakDays());
  checkBadges();autoSave();}
 function unitsWithSkills(){const map={};allowedSkills().forEach(s=>{const k=unitKey(s.s,s.u);(map[k]=map[k]||[]).push(s);});return map;}
-function checkBadges(){const m=S.meta,map=unitsWithSkills();for(const k in map){if(m.badges[k])continue;if(map[k].every(s=>(m.sk[s.id]&&m.sk[s.id].st>=3))){m.badges[k]=today();m.packs+=1;gainXP(100);if(typeof megaGain==='function')megaGain(3);if(typeof shineGain==='function')shineGain(3);if(semIdx(k.split('|')[0])<semIdx(m.gs))m.coins+=100;S.newBadges=(S.newBadges||[]);S.newBadges.push(k);}}}
+function checkBadges(){const m=S.meta,map=unitsWithSkills();for(const k in map){if(m.badges[k])continue;if(map[k].every(s=>(m.sk[s.id]&&m.sk[s.id].st>=3))){m.badges[k]=today();m.packs+=1;gainXP(100);if(typeof megaGain==='function')megaGain(3);if(typeof shineGain==='function')shineGain(3);if(typeof threadGain==='function')threadGain(5);if(semIdx(k.split('|')[0])<semIdx(m.gs))m.coins+=100;S.newBadges=(S.newBadges||[]);S.newBadges.push(k);}}}
 function streakDays(){const m=S.meta;let n=0;let d=new Date();if(!m.days[today(d)]){d.setDate(d.getDate()-1);}while(m.days[today(d)]&&m.days[today(d)].n>0){n++;d.setDate(d.getDate()-1);}return n;}
 
 // ---- 배운 만큼 말하기: 평균·백분율·소수를 배웠는지에 따라 성장 이야기가 달라져요 ----
@@ -1314,8 +1329,9 @@ async function startTraining(opt={}){
  if(!opt.pool&&!endless&&res.n&&res.c>=res.n*.8&&typeof mushGain==='function')mushGain(1);
  if(!endless&&res.c===res.n&&res.ms/res.n<6000)m.stats.quickTrain=(m.stats.quickTrain||0)+1;
  if(opt.pool)m.stats.practice=(m.stats.practice||0)+1;
+ if(opt.exped){m.stats.exped=(m.stats.exped||0)+1;if(res.c>=res.n*.8)shineGain(1);}
  m.stats.candyAll=(m.stats.candyAll||0)+candy;
- m.candy+=candy;const coins=correct*5;m.coins+=coins;gainXP(endless?Math.min(60,correct*2):Math.round(30*correct/Math.max(1,N)));if(first)m.packs+=1;
+ m.candy+=candy;const coins=correct*5;m.coins+=coins;if(first&&typeof threadGain==='function')threadGain(3);gainXP(endless?Math.min(60,correct*2):Math.round(30*correct/Math.max(1,N)));if(first)m.packs+=1;
  if(!m.firstPlay)m.firstPlay=Date.now();
  autoSave();
  showTrainResult(res,ghost,{candy,coins,first,pool:!!opt.pool,endless});}
@@ -1596,6 +1612,38 @@ function shinyPanel(id){const me=S.meta,own=me.col[id];if(!own)return '';const h
  return `<div class="explain shinyBox" style="font-size:14px;width:100%"><b style="color:#c46a00">✦ 이로치</b> <span class=mut style="font-size:12px">색이 다른 아주 희귀한 모습이에요. 능력은 똑같아요.</span>
   <div class=megaRow><div class=megaForm>${monImg(id,'art','',false)}<b>원래 색</b></div><div class=megaForm>${monImg(id,'art',h?'':'sil',true)}<b>${h?'이로치':'???'}</b></div></div>
   ${h?`<div class=mbtns><button class="btn ghost sm" data-a=shy>${shinyOf(id)?'원래 색으로 보기':'이로치로 보기'}</button></div>`:`<div style="font-size:13px">반짝 가루 <b>${sp}/${SHINY_COST}</b> <button class="btn sm" style="background:#ffb321;color:#fff" data-a=mkshy ${sp>=SHINY_COST?'':'disabled'}>이로치로 바꾸기</button><br><span class=mut style="font-size:12px">카드팩에서 장마다 1/64 확률로도 만나요. 반짝 가루는 개념 별 +1 · 완벽한 훈련 +2 · 단원 배지 +3 · 체육관 첫 승리 +3.</span></div>`}</div>`;}
+// ---- 인연의 끈: 포켓몬을 자연으로 돌려보내면 끈이 생기고, 끈을 모아 원하는 포켓몬을 데려와요 ----
+// 돌려보낼 때 받는 끈보다 데려올 때 드는 끈이 훨씬 많아요(전설은 아주 어렵게, 그래도 꾸준히 하면 가능).
+// 공부로도 모여요: 하루 첫 훈련 +3 · 단원 배지 +5 · 레이드 승리 +10
+const THREAD_GIVE={1:1,2:2,3:6,4:15,5:40};
+const THREAD_COST={1:15,2:30,3:90,4:240,5:900};
+function threadGain(n){if(window.__sim||!n)return;S.meta.thread=(Number(S.meta.thread)||0)+n;}
+// 마지막 1장을 지켜야 하는 까닭(없으면 '')
+function releaseBlock(id){const me=S.meta,n=me.col[id]||0;if(!n)return '가지고 있지 않아요';if(n>1)return '';
+ if(partnerId()===id)return '지금 함께 공부하는 파트너예요';if(me.deck.includes(id))return '배틀 덱에 들어 있어요. 덱에서 먼저 빼 주세요';
+ if(goldOf(id))return '금빛·무지빛 보물 카드예요';if(hasShiny(id))return '이로치 카드예요';return '';}
+function releaseCard(id){const me=S.meta;if(releaseBlock(id))return 0;const r=MON[id].rar,g=THREAD_GIVE[r];
+ me.col[id]--;if(me.col[id]<=0)delete me.col[id];threadGain(g);me.stats.released=(me.stats.released||0)+1;autoSave();return g;}
+function threadGet(id){const me=S.meta,c=THREAD_COST[MON[id].rar];if(me.col[id])return false;if((me.thread||0)<c){toast(`인연의 끈이 ${c-(me.thread||0)}개 모자라요`);return false;}
+ me.thread-=c;if(me.shard)delete me.shard[id];me.col[id]=1;me.dexSeen[id]=1;me.stats.threadGet=(me.stats.threadGet||0)+1;autoSave();return true;}
+function threadPanel(id){const me=S.meta,m=MON[id],own=me.col[id]||0,t=me.thread||0;
+ if(own){const why=releaseBlock(id);return `<div class="explain threadBox" style="font-size:14px;width:100%"><b style="color:#2f8f6b">${I('leaf')} 자연으로 돌려보내기</b> <span class=mut style="font-size:12px">돌려보내면 인연의 끈 <b>${THREAD_GIVE[m.rar]}개</b>를 받아요. 다시 만나려면 카드팩·조각·끈으로 데려와야 해요.</span>
+  <div class=mbtns>${why?`<span class=mut style="font-size:13px">${I('lock')} ${esc(why)}</span>`:`<button class="btn green sm" data-a=rel>${own>1?'1장 ':''}자연으로 돌려보내기 (+${THREAD_GIVE[m.rar]})</button>`}</div></div>`;}
+ const c=THREAD_COST[m.rar];
+ return `<div class="explain threadBox" style="font-size:14px;width:100%"><b style="color:#2f8f6b">${I('heart')} 인연의 끈으로 데려오기</b> <span class=mut style="font-size:12px">${m.rar>=5?'전설의 포켓몬은 끈이 아주 많이 필요해요. 꾸준히 모으면 만날 수 있어요!':'모은 인연의 끈으로 이 포켓몬을 데려와요.'}</span>
+  <div style="font-size:13px;margin-top:4px">인연의 끈 <b>${t} / ${c}</b> <span class=xpBar style="display:inline-block;width:120px;vertical-align:middle"><i style="width:${Math.min(100,t/c*100)}%"></i></span></div>
+  <div class=mbtns><button class="btn green sm" data-a=tget ${t>=c?'':'disabled'}>끈 ${c}개로 데려오기</button></div></div>`;}
+// 여러 마리 한 번에 돌려보내기
+function releasePicker(){const me=S.meta;const ids=Object.keys(me.col).map(Number).filter(id=>MON[id]&&!releaseBlock(id)).sort((a,b)=>MON[a].rar-MON[b].rar||a-b);const sel=new Set();
+ const total=()=>[...sel].reduce((s,id)=>s+THREAD_GIVE[MON[id].rar],0);
+ const draw=()=>{M(`<h2>${I('leaf')} 자연으로 돌려보내기</h2><p class=mut style="font-size:13px">돌려보낼 포켓몬을 눌러 고르세요. 파트너·덱·보물·이로치의 마지막 1장은 목록에 없어요. 여러 장 있는 포켓몬은 1장씩 돌려보내요.</p>
+  <div class=dexGrid style="max-height:52vh;overflow-y:auto">${ids.map(id=>`<div class="dexCell${sel.has(id)?' relSel':''}" data-rid="${id}"><span class=no>${'★'.repeat(MON[id].rar)}</span>${me.col[id]>1?`<span class=n2>×${me.col[id]}</span>`:''}${monImg(id)}<span class=nm>${esc(MON[id].name)} +${THREAD_GIVE[MON[id].rar]}</span></div>`).join('')||'<p class=mut>돌려보낼 수 있는 포켓몬이 없어요</p>'}</div>
+  <p style="text-align:center">고른 포켓몬 <b>${sel.size}</b>마리 · 받을 인연의 끈 <b>${total()}</b>개 (지금 ${me.thread||0}개)</p>
+  <div class=mbtns><button class="btn ghost" data-a=x>닫기</button><button class="btn green" data-a=go ${sel.size?'':'disabled'}>돌려보내기</button></div>`,
+  {x:()=>{closeM();renderDex();},_close:()=>{closeM();renderDex();},go:async()=>{const n=sel.size,g=total();if(!(await confirmBox(`포켓몬 <b>${n}</b>마리를 자연으로 돌려보낼까요?<br>인연의 끈 <b>${g}</b>개를 받아요.<br><span class=mut>돌려보낸 포켓몬은 다시 데려와야 만날 수 있어요.</span>`,'돌려보내기','다시 생각할래요')))return;
+   let got=0;[...sel].forEach(id=>{got+=releaseCard(id);});sfx('heal');toast(`${I('leaf')} 고마웠어! 인연의 끈 +${got}`);closeM();renderDex();}},{wide:1});
+  $('#mbox').querySelectorAll('[data-rid]').forEach(c=>c.onclick=()=>{const id=+c.dataset.rid;sel.has(id)?sel.delete(id):sel.add(id);sfx('tap');const sc=$('#mbox .dexGrid').scrollTop;draw();$('#mbox .dexGrid').scrollTop=sc;});};
+ draw();}
 // ---- 거다이맥스 ----
 function dmaxSt(){const m=S.meta;m.dmax=m.dmax||{mush:0,soup:{},seen:{},n:0};return m.dmax;}
 const hasBand=()=>Object.keys(S.meta.gyms||{}).length>=GMAX_BADGES;
@@ -1652,6 +1700,8 @@ function showCard(id){const m=MON[id],me=S.meta,own=me.col[id]||0;const kw=kwOf(
  const acts={x:()=>closeM(),_close:()=>closeM(),gold:()=>upgradeGold(id),buy:async()=>{const p=buyPrice(id);if(!p||me.coins<p)return;if(!(await confirmBox(`정말 갖고 싶나요?<br><b>${josa(esc(m.name),'을를')}</b> <b>${p}코인</b>(가치의 ${BUY_X}배)으로 데려올까요?<br><span class=mut>코인은 문제를 풀어 모은 소중한 보상이에요.</span>`,'데려올래요','조금 더 생각할래요')))return;me.coins-=p;if(me.shard)delete me.shard[id];me.col[id]=1;me.dexSeen[id]=1;me.stats.bought=(me.stats.bought||0)+1;autoSave();sfx('evolve');confetti(40);toast(`${esc(m.name)}${hasJong(m.name)?'과':'와'} 함께하게 되었어요!`);showCard(id);},pt:()=>{setPartner(id);showCard(id);},craft:()=>{const g=craft(id);if(!g)return;sfx(g.k==='done'||g.k==='new'?'evolve':'coin');if(g.k==='done'||g.k==='new'){confetti(40);toast(`${esc(m.name)} 카드를 얻었어요!`);}else toast(`조각 ${g.n}/${g.need}`);showCard(id);}};
  m.to.forEach(t=>{acts['ev'+t]=()=>evolve(id,t);acts['fe'+t]=()=>evolve(id,t,'friend');});
  acts.shy=()=>{shinyToggle(id);showCard(id);};
+ acts.rel=async()=>{const g=THREAD_GIVE[m.rar];if(!(await confirmBox(`<b>${josa(esc(m.name),'을를')}</b> 자연으로 돌려보낼까요?<br>인연의 끈 <b>${g}</b>개를 받아요.${(me.col[id]||0)>1?'':'<br><span class=mut>마지막 1장이에요. 다시 만나려면 데려와야 해요.</span>'}`,'돌려보내기','다시 생각할래요')))return;const got=releaseCard(id);if(got){sfx('heal');toast(`${I('leaf')} ${esc(m.name)}: 고마웠어! 인연의 끈 +${got}`);}showCard(id);};
+ acts.tget=async()=>{const c=THREAD_COST[m.rar];if(!(await confirmBox(`인연의 끈 <b>${c}</b>개로 <b>${josa(esc(m.name),'을를')}</b> 데려올까요?`,'데려오기','나중에')))return;if(threadGet(id)){sfx('evolve');confetti(m.rar>=5?90:40);if(m.rar>=5)banner('인연이 닿았어요!',esc(m.name));toast(`${esc(m.name)}${hasJong(m.name)?'과':'와'} 인연이 닿았어요!`);}showCard(id);};
  acts.mkshy=async()=>{if(!(await confirmBox(`반짝 가루 ${SHINY_COST}개로 <b>${josa(esc(m.name),'을를')}</b> 이로치로 바꿀까요?<br><span class=mut>능력은 그대로, 색만 바뀌어요.</span>`,'바꾸기','나중에')))return;if(makeShiny(id)){sfx('rare');confetti(50);banner('✦ 이로치!',esc(m.name));}showCard(id);};
  acts.soup=async()=>{if(!(await confirmBox(`다이 버섯 ${GMAX_SOUP}개로 <b>${esc(m.name)}</b>의 다이수프를 만들까요?<br><span class=mut>체육관 배지 ${GMAX_BADGES}개(다이맥스 밴드)가 있으면 배틀에서 거다이맥스할 수 있어요.</span>`,'만들기','나중에')))return;if(cookSoup(id)){sfx('evolve');confetti(40);toast(`${esc(m.name)}의 다이수프를 만들었어요!`);}showCard(id);};
  megas.forEach(x=>acts['ms'+x.sid]=async()=>{if(!(await confirmBox(`메가 결정 ${MEGA_XTAL}개로 <b>${esc(x.name)}</b>의 메가스톤을 만들까요?`,'만들기','나중에')))return;if(craftStone(x.sid)){sfx('evolve');confetti(40);toast(`${esc(x.name)} 메가스톤을 얻었어요!`);}showCard(id);});
@@ -1666,6 +1716,7 @@ function showCard(id){const m=MON[id],me=S.meta,own=me.col[id]||0;const kw=kwOf(
   ${megaBox}
   ${gmaxPanel(id)}
   ${shinyPanel(id)}
+  ${threadPanel(id)}
   ${own?goldPanel(id):''}
   ${own?`<div class=row style="width:100%;align-items:center"><span class=mut style="font-size:13px">${regionOf(id)} 지역 · 함께 푼 문제 ${bondOf(id)}개</span>${partnerId()===id?`<span class=pill style="border-color:#ff5a8a">${I('heart')} 지금 파트너</span>`:`<button class="btn red sm" data-a=pt>${I('heart')} 파트너로 함께 공부</button>`}</div>`:''}
   <button class="btn gold" data-a=x>닫기</button></div>`,acts);
@@ -1677,15 +1728,16 @@ let DEXF='all',DEXR=0;
 function renderDex(){S.screen='dex';const me=S.meta;const own=ownCount();
  const inR=id=>DEXR<0||(id>=REGIONS[DEXR][1]&&id<=REGIONS[DEXR][2]);
  const fl=(DEXF==='all'?MON_IDS.filter(inR):DEXF==='own'?MON_IDS.filter(id=>me.col[id]):DEXF==='evo'?MON_IDS.filter(id=>me.col[id]&&MON[id].to.length):DEXF==='mega'?MON_IDS.filter(id=>MEGA_OF[id]&&inR(id)):DEXF==='gold'?MON_IDS.filter(id=>goldOf(id)&&me.col[id]):DEXF==='shiny'?MON_IDS.filter(id=>hasShiny(id)&&me.col[id]):DEXF==='gmax'?MON_IDS.filter(id=>GMAX_OF[id]&&inR(id)):MON_IDS.filter(id=>inR(id)&&MON[id].types.includes(+DEXF)));
- $('#view').innerHTML=hudHTML()+`<div class=wrap><div class=panel><div class=row style="align-items:center"><h2 style="margin:0">${I('book')} 도감</h2><span class=hudSp></span><span class=pill>${own} / ${MON_IDS.length}</span><span class=pill title="별가루">${I('star')} 별가루 ${me.dust||0}</span><span class=pill title="메가 결정 20개 = 메가스톤 1개" style="border-color:#b98cff">${I('star')} 메가 결정 ${megaSt().xtal||0}</span><span class=pill title="반짝 가루 15개 = 이로치 1번" style="border-color:#ffb321">✦ 반짝 가루 ${me.shine||0}</span><span class=pill title="다이 버섯 8개 = 다이수프 1개" style="border-color:#ff7a95">${I('flame')} 다이 버섯 ${dmaxSt().mush||0}</span></div>
+ $('#view').innerHTML=hudHTML()+`<div class=wrap><div class=panel><div class=row style="align-items:center"><h2 style="margin:0">${I('book')} 도감</h2><span class=hudSp></span><span class=pill>${own} / ${MON_IDS.length}</span><span class=pill title="별가루">${I('star')} 별가루 ${me.dust||0}</span><span class=pill title="메가 결정 20개 = 메가스톤 1개" style="border-color:#b98cff">${I('star')} 메가 결정 ${megaSt().xtal||0}</span><span class=pill title="포켓몬을 자연으로 돌려보내면 생겨요" style="border-color:#3cc47c">${I('leaf')} 인연의 끈 ${me.thread||0}</span><span class=pill title="반짝 가루 15개 = 이로치 1번" style="border-color:#ffb321">✦ 반짝 가루 ${me.shine||0}</span><span class=pill title="다이 버섯 8개 = 다이수프 1개" style="border-color:#ff7a95">${I('flame')} 다이 버섯 ${dmaxSt().mush||0}</span></div>
   <div class=filters style="margin:8px 0">${REGIONS.map((r,i)=>`<button class="fbtn${DEXR===i?' on':''}" data-r="${i}">${r[0]} <small>${MON_IDS.filter(id=>id>=r[1]&&id<=r[2]&&me.col[id]).length}/${r[2]-r[1]+1}</small></button>`).join('')}<button class="fbtn${DEXR<0?' on':''}" data-r="-1">모든 지역</button></div>
   <div class=filters style="margin:8px 0">${[['all','전체'],['own','가진 카드'],['evo','진화 가능'],['mega','메가진화'],['gmax','거다이맥스'],['shiny','이로치'],['gold','보물 카드']].map(([k,n])=>`<button class="fbtn${DEXF===k?' on':''}" data-f="${k}">${n}</button>`).join('')}${TYPE_KO.map((n,i)=>`<button class="fbtn${DEXF===String(i)?' on':''}" data-f="${i}" style="${DEXF===String(i)?`background:${TYPE_COL[i]};border-color:${TYPE_COL[i]}`:''}">${n}</button>`).join('')}</div>
-  <div class=mut style="font-size:12px;margin-bottom:8px">일반·고급은 한 번에, 희귀는 조각 3개·영웅 5개·전설 8개를 모아야 내 카드가 돼요. 본 적 있는 포켓몬은 별가루로 조각을 만들 수 있어요. 카드팩에서 전설 조각이 나올 확률은 장마다 ${PACK_W[5]}%예요. 카드팩 40개 안에는 꼭 1장 나와요(지금 ${me.pity.p5}/40). 영웅 이상은 10팩 안에 꼭(지금 ${me.pity.p4}/10).</div>
+  <div class=mbtns style="justify-content:flex-start;margin:0 0 8px"><button class="btn green sm" id=relBtn>${I('leaf')} 여러 마리 자연으로 돌려보내기</button><span class=mut style="font-size:12px">인연의 끈을 모아 원하는 포켓몬을 데려와요 (도감에서 없는 포켓몬을 눌러요)</span></div><div class=mut style="font-size:12px;margin-bottom:8px">일반·고급은 한 번에, 희귀는 조각 3개·영웅 5개·전설 8개를 모아야 내 카드가 돼요. 본 적 있는 포켓몬은 별가루로 조각을 만들 수 있어요. 카드팩에서 전설 조각이 나올 확률은 장마다 ${PACK_W[5]}%예요. 카드팩 40개 안에는 꼭 1장 나와요(지금 ${me.pity.p5}/40). 영웅 이상은 10팩 안에 꼭(지금 ${me.pity.p4}/10).</div>
   <div class=dexGrid>${fl.map(id=>{const n=me.col[id]||0,seen=me.dexSeen[id];const gl=n?goldOf(id):0;return `<div class="dexCell ${n?'':seen?'seen':'none'}${gl?' gold'+gl:''}${MEGA_OF[id]&&n?' canMega':''}${GMAX_OF[id]&&n?' canGmax':''}${n&&hasShiny(id)?' shiny':''}" data-id="${id}"><span class=no>${id}</span>${!n&&me.shard&&me.shard[id]?`<span class=n2 style="color:#9a6bff">${me.shard[id]}/${SHARD_NEED[MON[id].rar]}</span>`:''}${monImg(id)}<span class=nm>${n||seen?esc(MON[id].name):'???'}</span></div>`;}).join('')||'<p class=mut>아직 없어요</p>'}</div></div></div>`;
  bindHud();
  $('#view').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{sfx('tap');DEXF=b.dataset.f;renderDex();});
  $('#view').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{sfx('tap');DEXR=+b.dataset.r;renderDex();});
  $('#view').querySelectorAll('.dexCell').forEach(c=>c.onclick=()=>{sfx('tap');showCard(+c.dataset.id);});
+ if($('#relBtn'))$('#relBtn').onclick=()=>{sfx('tap');releasePicker();};
  const ev=MON_IDS.find(id=>me.col[id]&&MON[id].to.length&&me.candy>=evoCost(MON[id]));
  if(ev)coachOnce('c_evo',[{h:'진화할 수 있어요!',ic:'candy',t:`사탕이 모였어요! <b>${esc(MON[ev].name)}</b> 카드를 눌러 진화시켜 봐요. 공부한 만큼 포켓몬이 자라요.`,el:`.dexCell[data-id="${ev}"]`}]);}
 
@@ -2253,6 +2305,140 @@ async function pvpEnd(win){const me=S.meta;const f=PV.foe||{name:'친구'};
   <div class=mbtns>${win!==null?`<button class="btn green big" data-a=gg>${I('heart')} 좋은 경기!</button>`:''}<button class="btn gold" data-a=x>확인</button></div></div>`,
   {gg:b=>{pvpSend({t:'gg'});me.pvp.gg=(me.pvp.gg||0)+1;autoSave();toast('친구에게 "좋은 경기!"라고 인사했어요');b.disabled=true;},x:()=>{closeM();B=null;$('#battle').classList.remove('on');$('#battle').innerHTML='';setTimeout(pvpClose,1500);if(S.lvUp)levelUpFx();renderPvp();},_close:()=>{}});}
 
+// ===== 관장 이후: 다이맥스 레이드 · 약점 원정 · 파트너 서바이벌(티켓 미니게임) =====
+// 원칙: 게임 시간은 늘 '맞힌 문제'의 결과로만 열려요. 찍거나 포기해서는 보상이 없어요.
+
+// ---------- 1) 다이맥스 레이드: 하루 한 번, 거대 포켓몬을 문제로만 공격 ----------
+const RAID_HP=20,RAID_Q=30; // 보스 체력 20 · 하루 최대 30문제(정답 1개 = 1 피해, 3연속부터 2 피해)
+function raidSt(){const m=S.meta;m.raid=m.raid||{cur:null,wins:0,tries:0,last:'',best:0};return m.raid;}
+function dayHash(s){let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h;}
+// 보스: 아직 없는 거다이맥스 포켓몬 중 하나를 그 포켓몬을 얻을 때까지 계속(학생마다 순서가 달라요). 다 모으면 날마다 바뀌어요
+function raidBoss(d=today()){const m=S.meta,L=GMAX.filter(x=>MON[x.base]);const bases=[...new Set(L.map(x=>x.base))];
+ const want=bases.filter(b=>!m.col[b]).sort((a,b)=>dayHash((m.name||'')+a)-dayHash((m.name||'')+b));
+ if(!want.length)return L[dayHash(d+'raid')%L.length];const fs=L.filter(x=>x.base===want[0]);return fs[dayHash(d)%fs.length];}
+const RAID_SHARD=2; // 이기면 보스 포켓몬 조각 2개(★3은 2번, ★4는 3번, ★5는 4번 이기면 내 카드)
+// 약한 개념부터: 틀린 기록·별이 적은 개념을 6개 골라 그 안에서 내요
+function weakPool(n=6){const al=allowedSkills();return al.slice().sort((a,b)=>needW(b)-needW(a)).slice(0,n);}
+function raidCur(){const r=raidSt(),d=today();if(!r.cur||r.cur.d!==d){const b=raidBoss(d);r.cur={d,sid:b.sid,base:b.base,hp:RAID_HP,n:0,c:0,combo:0,done:0};}return r.cur;}
+function renderRaid(){S.screen='raid';const m=S.meta,c=raidCur(),b=GMAX_BY[c.sid];const r=raidSt();
+ const left=RAID_Q-c.n;const pct=Math.max(0,c.hp)/RAID_HP*100;
+ $('#view').innerHTML=hudHTML()+`<div class=wrap><div class="panel raidBox">
+  <div class=row style="align-items:center"><h2 style="margin:0">${I('flame')} 다이맥스 레이드</h2><span class=hudSp></span><span class=pill>이긴 레이드 ${r.wins}</span></div>
+  <p class=mut style="font-size:13px;margin:6px 0">하루에 한 번 거대 포켓몬이 나타나요. <b>문제를 맞혀야만</b> 공격할 수 있어요(정답 1개 = 1 피해, 3개 연속부터 2 피해). 내가 약한 개념부터 나와요. 하루 ${RAID_Q}문제 안에 쓰러뜨려요!</p>
+  <div class=raidBoss${c.hp<=0?' down':''}>${monImg(c.sid,'art','',false)}</div>
+  <div class=jua style="text-align:center;font-size:22px;color:#b0123a">${esc(b?b.name:'거대 포켓몬')}</div>
+  <div class=mut style="text-align:center;font-size:13px">${m.col[c.base]?`이미 가진 포켓몬이에요. 이기면 다른 보상을 받아요.`:`아직 없는 포켓몬! 이기면 <b>${esc(MON[c.base].name)}</b> 조각 ${RAID_SHARD}개${SHARD_NEED[MON[c.base].rar]?` (지금 ${(m.shard&&m.shard[c.base])||0}/${SHARD_NEED[MON[c.base].rar]})`:''} · 얻을 때까지 같은 보스예요`}</div>
+  <div class=raidHp><i style="width:${pct}%"></i><span>${Math.max(0,c.hp)} / ${RAID_HP}</span></div>
+  <div class=row style="justify-content:center;gap:8px;margin-top:6px"><span class=pill>푼 문제 ${c.n}/${RAID_Q}</span><span class=pill>맞힌 문제 ${c.c}</span>${c.combo>=3?`<span class=pill style="border-color:#ff4d6d">${c.combo}연속! 2 피해</span>`:''}</div>
+  ${c.done?`<div class=explain style="text-align:center;margin-top:10px">${c.done===1?'오늘의 레이드에서 이겼어요!':'오늘의 레이드가 끝났어요.'} 내일 새 거대 포켓몬이 나타나요.</div>`
+   :`<div class=mbtns><button class="btn red big" id=rdGo>${I('sword')} 문제로 공격! ${c.n?'(이어서)':''}</button></div><p class=mut style="text-align:center;font-size:12px">5문제마다 쉬어 가요. 중간에 그만두어도 오늘 안에는 이어서 할 수 있어요.</p>`}
+  <div class=mbtns><button class="btn ghost" id=rdBack>트레이너 방으로</button></div></div></div>`;
+ bindHud();$('#rdBack').onclick=()=>{sfx('tap');renderHub();};if($('#rdGo'))$('#rdGo').onclick=()=>{sfx('tap');raidRun();};}
+let raidBusy=false;
+async function raidRun(){if(raidBusy)return;const c=raidCur();if(c.done)return;if(!clockOk()){toast('기기 날짜가 이상해요. 날짜를 확인해 주세요.');return;}raidBusy=true;const r=raidSt();if(!c.n)r.tries++;
+ let stop=false,k=0;
+ try{while(!stop&&c.hp>0&&c.n<RAID_Q&&k<5){const q=pickQ({pool:weakPool()});if(!q)break;
+  M(`<h2>${I('flame')} 레이드 · ${c.n+1}/${RAID_Q}</h2><p class=mut>보스 체력 ${c.hp} · 정답이면 ${c.combo>=2?2:1} 피해</p><div id=raidQ></div><div class=mbtns><button class="btn ghost" data-a=stop>이 문제까지만</button></div>`,{stop:b=>{stop=true;b.disabled=true;b.textContent='이 문제를 마치면 쉬어요';}});
+  const a=await askQ($('#raidQ'),q,{noRetry:true});recordAnswer(q,a.ok,a.ms,{choice:a.choice,guess:a.guess});c.n++;k++;
+  if(a.ok&&!a.guess){c.combo++;c.c++;const d=c.combo>=3?2:1;c.hp-=d;}else c.combo=0;
+  autoSave();}
+ }finally{raidBusy=false;closeM();}
+ if(c.hp<=0||c.n>=RAID_Q)return raidEnd(c.hp<=0);
+ renderRaid();if(k>=5&&c.hp>0)toast('잠깐 쉬어요! 다시 누르면 이어서 공격해요');}
+function raidEnd(win){const m=S.meta,c=raidCur(),r=raidSt(),b=GMAX_BY[c.sid];c.done=win?1:2;r.last=c.d;r.best=Math.max(r.best||0,c.c);
+ const coins=c.c*(win?3:2);m.coins+=coins;let mush=win?3:c.c>=10?1:0,shine=win?2:0,card=null;
+ if(mush)mushGain(mush);if(shine)shineGain(shine);
+ if(win){r.wins++;dmaxSt().seen[c.sid]=1;for(let i=0;i<RAID_SHARD;i++){const had=!!m.col[c.base];const g2=gainCard(c.base,true);if(!card||g2.k!=='dup')card=g2;if(!had&&m.col[c.base])break;}threadGain(10);}
+ gainXP(Math.min(60,c.c*2));autoSave();sfx(win?'win':'lose');if(win)confetti(70);
+ M(`<div style="text-align:center"><h2 style="font-size:30px">${win?'레이드 승리!':'오늘은 여기까지!'}</h2>
+  <div class=raidBoss style="height:150px">${monImg(c.sid,'art','',false)}</div>
+  <p>${c.n}문제 중 <b>${c.c}개</b> 정답${win?` — <b>${esc(b.name)}</b>을(를) 쓰러뜨렸어요!`:'. 내일 또 도전해요!'}</p>
+  <div class=row style="justify-content:center;gap:8px;flex-wrap:wrap"><span class=pill>${I('coin')} +${coins}</span>${mush?`<span class=pill>${I('flame')} 다이 버섯 +${mush}</span>`:''}${shine?`<span class=pill>✦ 반짝 가루 +${shine}</span>`:''}${win?`<span class=pill>${I('leaf')} 인연의 끈 +10</span>`:''}${card?`<span class=pill>${card.k==='shard'?`${esc(MON[c.base].name)} 조각 ${card.n}/${card.need}`:card.k==='dup'?`${esc(MON[c.base].name)} 카드(별가루로)`:`${esc(MON[c.base].name)} 카드!`}</span>`:''}</div>
+  <div class=mbtns><button class="btn gold big" data-a=x>확인</button></div></div>`,{x:()=>{closeM();if(S.lvUp)levelUpFx();renderRaid();},_close:()=>{}});}
+
+// ---------- 2) 약점 원정: 내가 자주 틀린 개념만 8문제 ----------
+function weakList(){const m=S.meta;return allowedSkills().filter(s=>{const v=m.sk[s.id];return v&&(v.w>0||struggling(v)||(v.x>=2&&v.st<3));}).sort((a,b)=>needW(b)-needW(a));}
+function renderExped(){S.screen='exped';const m=S.meta,w=weakList();const low=allowedSkills().slice().sort((a,b)=>((m.sk[a.id]||{}).st||0)-((m.sk[b.id]||{}).st||0)).slice(0,5);
+ const list=(w.length?w:low).slice(0,5);
+ $('#view').innerHTML=hudHTML()+`<div class=wrap><div class=panel><div class=row style="align-items:center"><h2 style="margin:0">${I('map')} 약점 원정</h2><span class=hudSp></span><span class=pill>다녀온 원정 ${m.stats.exped||0}</span></div>
+  <p style="margin:8px 0">${w.length?`자주 틀렸던 개념 <b>${w.length}개</b>를 찾았어요. 8문제로 다시 다져요! 80% 넘게 맞히면 <b>반짝 가루 +1</b>.`:'지금은 눈에 띄는 약점이 없어요. 대단해요! 별이 적은 개념으로 원정을 떠나요.'}</p>
+  <div class=menuCol>${list.map(s=>`<div class=skRow><b>${esc(s.n)}</b> <span class=mut>${esc(semName(s.s))}</span> ${starsHTML((m.sk[s.id]||{}).st||0)}</div>`).join('')}</div>
+  <div class=mbtns><button class="btn ghost" id=exBack>돌아가기</button><button class="btn green big" id=exGo>${I('flame')} 원정 출발 (8문제)</button></div></div></div>`;
+ bindHud();$('#exBack').onclick=()=>{sfx('tap');renderHub();};$('#exGo').onclick=()=>{sfx('tap');startTraining({pool:list,n:8,exped:true});};}
+
+// ---------- 3) 파트너 서바이벌: 정답 5개 = 티켓 1장, 하루 3판, 한 판 90초 ----------
+const MINI_NEED=5,MINI_TK=3,MINI_DAY=3,MINI_TIME=90;
+function miniSt(){const m=S.meta;m.mini=m.mini||{tk:0,prog:0,day:'',n:0,best:0,runs:0};if(m.mini.day!==today()){m.mini.day=today();m.mini.n=0;}return m.mini;}
+// recordAnswer에서 불러요: 서바이벌 안에서 푼 문제는 티켓이 되지 않아요(무한 반복 막기)
+function miniTicketTick(ok,opt){if(!ok||opt.retry||opt.guess||S.inMini||typeof featOn!=='function'||!featOn('mini'))return;const g=miniSt();if(g.tk>=MINI_TK)return;
+ g.prog++;if(g.prog>=MINI_NEED){g.prog=0;g.tk++;toast(`${I('bolt')} 서바이벌 티켓 +1 (${g.tk}/${MINI_TK})`);}}
+function renderMiniHome(){S.screen='minihome';const g=miniSt();const can=g.tk>0&&g.n<MINI_DAY;
+ $('#view').innerHTML=hudHTML()+`<div class=wrap><div class=panel style="text-align:center"><h2>${I('bolt')} 파트너 서바이벌</h2>
+  <div style="display:flex;justify-content:center;height:96px">${monImg(partnerId(),'anim')}</div>
+  <p>파트너와 함께 90초 동안 버텨요! 화면을 누른 채 움직이면 파트너가 따라가고, 공격은 자동이에요.<br>레벨이 오르면 <b>문제를 맞혀서</b> 강화를 골라요.</p>
+  <div class=explain style="font-size:14px">티켓 <b>${g.tk}/${MINI_TK}</b> · 다음 티켓까지 정답 <b>${MINI_NEED-g.prog}</b>개 · 오늘 ${g.n}/${MINI_DAY}판 · 최고 점수 ${g.best}<br><span class=mut>티켓은 훈련·끝없는 도전·레이드·원정에서 맞힌 문제 ${MINI_NEED}개마다 1장(최대 ${MINI_TK}장). 하루 ${MINI_DAY}판까지예요.</span></div>
+  <div class=mbtns><button class="btn ghost" id=mnBack>돌아가기</button><button class="btn gold big" id=mnGo ${can?'':'disabled'}>${g.n>=MINI_DAY?'오늘은 다 했어요':g.tk?'티켓 1장으로 시작':'티켓이 없어요'}</button></div></div></div>`;
+ bindHud();$('#mnBack').onclick=()=>{sfx('tap');renderHub();};$('#mnGo').onclick=()=>{if(!can)return;sfx('tap');startMini();};}
+const MINI_UP=[
+ {k:'rate',n:'빠른 공격',d:'공격 간격 −20%',f:s=>{s.cd*=.8;}},
+ {k:'dmg',n:'강한 공격',d:'위력 +1',f:s=>{s.dmg++;}},
+ {k:'multi',n:'여러 발',d:'한 번에 1발 더',f:s=>{s.shots++;}},
+ {k:'move',n:'날쌘 발',d:'이동 속도 +20%',f:s=>{s.spd*=1.2;}},
+ {k:'mag',n:'자석',d:'보석을 더 멀리서 모아요',f:s=>{s.mag+=30;}},
+ {k:'heal',n:'회복',d:'체력 +2 (최대 7)',f:(s,p)=>{p.hp=Math.min(7,p.hp+2);}}];
+const MINI_FOES=[10,13,16,19,21,23,27,29,32,41,43,46,48,50,52,54,56,60,69,72,74,81,84,92,96,98,100,109,116,118,120,129];
+function startMini(){const g=miniSt();if(g.tk<1||g.n>=MINI_DAY)return;if(!clockOk()){toast('기기 날짜가 이상해요. 날짜를 확인해 주세요.');return;}
+ g.tk--;g.n++;g.runs++;autoSave();S.screen='mini';S.inMini=1;
+ $('#view').innerHTML=`<div class=miniWrap><div class=miniTop><span id=mnT>90</span><span id=mnH></span><span id=mnL>Lv.1</span><span id=mnS>0점</span><button class="btn ghost sm" id=mnQ>그만</button></div><canvas id=mcv></canvas><div class=mut style="font-size:12px;text-align:center">화면을 누른 채 움직이면 파트너가 따라가요 · 방향키도 돼요</div></div>`;
+ const cv=$('#mcv');const W=Math.round(Math.min(VW()-24,520)),H=Math.round(Math.min(VH()-150,620));cv.width=W;cv.height=H;cv.style.width=W+'px';cv.style.height=H+'px';const ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;
+ const imgOf={};const load=(id,sh)=>{const k=id+(sh?'s':'');if(imgOf[k])return imgOf[k];const im=new Image();im.src=spriteURL(id,'front',sh);im.onerror=()=>{if(sh){im.onerror=null;im.src=spriteURL(id,'front');}};return imgOf[k]=im;};
+ const pid=partnerId();const pim=load(pid,shinyOf(pid));const foes=shuffle(MINI_FOES.filter(id=>MON[id]).slice()).slice(0,8);foes.forEach(id=>load(id));
+ const st={cd:.8,dmg:1,shots:1,spd:150,mag:80};const P={x:W/2,y:H/2,hp:5,inv:0};
+ let E=[],Bu=[],Gm=[],t=0,spawn=0,fire=0,xp=0,lv=1,kills=0,paused=false,over=false,last=performance.now(),tgt=null;const keys={};
+ const need=()=>3+lv*2; // 한 판에 레벨업(=문제) 5~7번쯤
+ const pos=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};};
+ cv.onpointerdown=e=>{tgt=pos(e);cv.setPointerCapture&&cv.setPointerCapture(e.pointerId);};cv.onpointermove=e=>{if(tgt)tgt=pos(e);};cv.onpointerup=cv.onpointercancel=()=>{tgt=null;};
+ const kd=e=>{keys[e.key]=1;},ku=e=>{keys[e.key]=0;};addEventListener('keydown',kd);addEventListener('keyup',ku);
+ const finish=async(quit)=>{if(over)return;over=true;removeEventListener('keydown',kd);removeEventListener('keyup',ku);S.inMini=0;
+  const alive=P.hp>0&&!quit;const score=kills+lv*5+(alive?20:0);const dust=Math.min(10,Math.floor(score/8));g.best=Math.max(g.best,score);S.meta.dust=(S.meta.dust||0)+dust;S.meta.stats.miniRuns=(S.meta.stats.miniRuns||0)+1;autoSave();sfx(alive?'win':'lose');
+  M(`<div style="text-align:center"><h2>${alive?'끝까지 버텼어요!':quit?'여기까지!':'아쉬워요!'}</h2><div style="display:flex;justify-content:center;height:90px">${monImg(pid,'anim')}</div>
+   <p>쓰러뜨린 포켓몬 <b>${kills}</b> · 레벨 <b>${lv}</b> · 점수 <b>${score}</b>${score>=g.best?' (최고 기록!)':''}</p><div class=row style="justify-content:center"><span class=pill>${I('star')} 별가루 +${dust}</span></div>
+   <p class=mut style="font-size:13px">오늘 ${g.n}/${MINI_DAY}판 · 남은 티켓 ${g.tk}장. 다음 티켓은 문제를 맞혀서 모아요!</p><div class=mbtns><button class="btn gold big" data-a=x>확인</button></div></div>`,{x:()=>{closeM();renderMiniHome();},_close:()=>{}});};
+ $('#mnQ').onclick=()=>{sfx('tap');finish(true);};
+ const levelUp=async()=>{paused=true;const q=pickQ();let ok=false;
+  if(q){M(`<h2>${I('up')} 레벨 업!</h2><p class=mut>문제를 맞히면 강화를 골라요</p><div id=mnQq></div>`);const a=await askQ($('#mnQq'),q,{noRetry:true});recordAnswer(q,a.ok,a.ms,{choice:a.choice,guess:a.guess});ok=a.ok&&!a.guess;closeM();}
+  if(ok){const ch=shuffle(MINI_UP.slice()).slice(0,3);await new Promise(res=>{M(`<h2 style="text-align:center">정답! 강화를 골라요</h2><div class=menuCol>${ch.map((u,i)=>`<button class="btn blue big" data-a="u${i}">${esc(u.n)} <small style="opacity:.8">${esc(u.d)}</small></button>`).join('')}</div>`,Object.fromEntries(ch.map((u,i)=>['u'+i,()=>{u.f(st,P);closeM();res();}])));});}
+  else{P.hp=Math.min(7,P.hp+1);toast('괜찮아요! 이번엔 체력 +1. 다음 문제는 꼭 맞혀요!');}
+  last=performance.now();paused=false;};
+ const hearts=()=>{$('#mnH').innerHTML='❤'.repeat(Math.max(0,P.hp));};hearts();
+ const near=(a,b,r)=>(a.x-b.x)**2+(a.y-b.y)**2<r*r;
+ const draw=()=>{ctx.fillStyle='#eaf7e4';ctx.fillRect(0,0,W,H);ctx.fillStyle='#d6eecd';for(let x=20;x<W;x+=40)for(let y=20;y<H;y+=40)ctx.fillRect(x,y,3,3);
+  Gm.forEach(o=>{ctx.fillStyle='#4d9cff';ctx.beginPath();ctx.arc(o.x,o.y,5,0,7);ctx.fill();});
+  E.forEach(o=>{const im=o.im;if(im.complete&&im.naturalWidth)ctx.drawImage(im,o.x-22,o.y-22,44,44);else{ctx.fillStyle='#b9a';ctx.beginPath();ctx.arc(o.x,o.y,14,0,7);ctx.fill();}});
+  ctx.fillStyle='#ffb321';Bu.forEach(o=>{ctx.beginPath();ctx.arc(o.x,o.y,5,0,7);ctx.fill();});
+  ctx.globalAlpha=P.inv>0&&Math.floor(P.inv*6)%2?0.45:1;if(pim.complete&&pim.naturalWidth)ctx.drawImage(pim,P.x-28,P.y-28,56,56);else{ctx.fillStyle='#ff5a8a';ctx.beginPath();ctx.arc(P.x,P.y,18,0,7);ctx.fill();}ctx.globalAlpha=1;};
+ const step=now=>{if(over||S.screen!=='mini'){if(!over){over=true;S.inMini=0;removeEventListener('keydown',kd);removeEventListener('keyup',ku);}return;}
+  let dt=Math.min(.05,(now-last)/1000);last=now;if(paused||document.hidden||modalOpen()||$('#unlock').classList.contains('on')){requestAnimationFrame(step);return;} // 창·축하 화면이 떠 있으면 멈춤
+  t+=dt;const rem=Math.max(0,MINI_TIME-t);$('#mnT').textContent=Math.ceil(rem)+'초';
+  // 이동
+  let dx=(keys.ArrowRight?1:0)-(keys.ArrowLeft?1:0),dy=(keys.ArrowDown?1:0)-(keys.ArrowUp?1:0);if(tgt){dx=tgt.x-P.x;dy=tgt.y-P.y;if(dx*dx+dy*dy<64){dx=0;dy=0;}}
+  const dl=Math.hypot(dx,dy);if(dl){P.x+=dx/dl*st.spd*dt;P.y+=dy/dl*st.spd*dt;}P.x=clamp(P.x,20,W-20);P.y=clamp(P.y,20,H-20);if(P.inv>0)P.inv-=dt;
+  // 적 나오기
+  spawn-=dt;if(spawn<=0){spawn=Math.max(.35,1.1-t*.009);const sd=Math.floor(rnd()*4);const x=sd===0?-20:sd===1?W+20:rnd()*W,y=sd===2?-20:sd===3?H+20:rnd()*H;const id=rpick(foes);E.push({x,y,hp:1+Math.floor(t/30),spd:38+t*.45,im:load(id)});}
+  E.forEach(o=>{const a=Math.atan2(P.y-o.y,P.x-o.x);o.x+=Math.cos(a)*o.spd*dt;o.y+=Math.sin(a)*o.spd*dt;if(P.inv<=0&&near(o,P,30)){P.hp--;P.inv=1.2;hearts();sfx('thud');}});
+  // 자동 공격: 가장 가까운 적에게
+  fire-=dt;if(fire<=0&&E.length){fire=st.cd;let best=null,bd=1e9;E.forEach(o=>{const d=(o.x-P.x)**2+(o.y-P.y)**2;if(d<bd){bd=d;best=o;}});const a0=Math.atan2(best.y-P.y,best.x-P.x);
+   for(let i=0;i<st.shots;i++){const a=a0+(i-(st.shots-1)/2)*.22;Bu.push({x:P.x,y:P.y,vx:Math.cos(a)*320,vy:Math.sin(a)*320,life:1.6});}}
+  Bu.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;for(const o of E){if(o.hp>0&&near(b,o,22)){o.hp-=st.dmg;b.life=0;break;}}});
+  E=E.filter(o=>{if(o.hp<=0){kills++;Gm.push({x:o.x,y:o.y});return false;}return true;});Bu=Bu.filter(b=>b.life>0&&b.x>-30&&b.x<W+30&&b.y>-30&&b.y<H+30);
+  // 보석 모으기
+  Gm=Gm.filter(o=>{if(near(o,P,st.mag)){const a=Math.atan2(P.y-o.y,P.x-o.x);o.x+=Math.cos(a)*260*dt;o.y+=Math.sin(a)*260*dt;}if(near(o,P,20)){xp++;return false;}return true;});
+  $('#mnS').textContent=(kills+lv*5)+'점';draw();
+  if(P.hp<=0||rem<=0){finish(false);return;}
+  if(xp>=need()){xp-=need();lv++;$('#mnL').textContent='Lv.'+lv;sfx('level');levelUp();}
+  requestAnimationFrame(step);};
+ draw();requestAnimationFrame(t0=>{last=t0;requestAnimationFrame(step);});}
+
 // ===== 도전 과제 · 디지털 배지 · 나의 강점 =====
 // 잘하는 것만이 아니라 '열심히 하는 것', '나만의 특징'도 찾아 주는 배지예요.
 // 배지마다 동·은·금 3단계. 정답률과 상관없는 끈기·탐험·돌봄 배지를 일부러 많이 두었어요.
@@ -2279,7 +2465,7 @@ const ACH=[
  {k:'bounce',s:'effort',n:'오뚝이',u:'틀린 바로 다음 문제를 맞힌 수',v:m=>m.stats.bounce||0,t:[10,50,150]},
  {k:'streak',s:'effort',n:'연속 출석',u:'가장 길게 이어서 공부한 날',v:m=>m.stats.bestStreak||0,t:[3,7,21]},
  {k:'weekly',s:'effort',n:'한 주 꾸준히',u:'4일 넘게 공부한 주',v:m=>weeksActive(m),t:[1,4,12]},
- {k:'endless',s:'effort',n:'끝없는 도전',u:'끝없는 도전에서 푼 문제(누적)',v:m=>(m.endless&&m.endless.total)||0,t:[30,200,1000]},
+ {k:'endless',s:'effort',n:'끝없는 도전',u:'끝없는 도전에서 맞힌 문제(누적)',v:m=>(m.endless&&m.endless.total)||0,t:[30,200,1000]},
  {k:'seasonLv',s:'effort',n:'시즌 여행자',u:'이번 시즌 레벨',v:m=>m.season?seasonLv(m.season):0,t:[10,25,50]},
  {k:'bigday',s:'effort',n:'열공의 날',u:'하루에 30문제 넘게 도전한 날',v:m=>Object.values(m.days).filter(d=>d.n>=30).length,t:[1,5,15]},
  {k:'better',s:'growth',n:'어제의 나를 넘어',u:'어제의 나보다 더 맞히거나 더 빨랐던 훈련',v:m=>m.stats.better||0,t:[1,5,20]},
@@ -2321,7 +2507,13 @@ const ACH=[
  {k:'pvp',s:'friend',n:'친구 대전',u:'친구와 한 카드 대전',v:m=>(m.pvp&&m.pvp.n)||0,t:[1,5,20]},
  {k:'gg',s:'friend',n:'좋은 경기',u:'대전 뒤 "좋은 경기!" 인사',v:m=>(m.pvp&&m.pvp.gg)||0,t:[1,5,20]},
  {k:'foes',s:'friend',n:'여러 친구와',u:'함께 대전한 서로 다른 친구',v:m=>Object.keys((m.pvp&&m.pvp.foes)||{}).length,t:[2,5,10]},
- {k:'pvpwin',s:'friend',n:'우정의 승리',u:'친구 대전 승리',v:m=>(m.pvp&&m.pvp.w)||0,t:[1,5,15]}];
+ {k:'pvpwin',s:'friend',n:'우정의 승리',u:'친구 대전 승리',v:m=>(m.pvp&&m.pvp.w)||0,t:[1,5,15]},
+ // 관장 이후에도 이어지는 수집·도전 목표(2026-11-09)
+ {k:'shinyCol',s:'care',n:'이로치 수집가',u:'모은 이로치 카드',v:m=>Object.keys(m.shiny||{}).filter(id=>m.col[id]).length,t:[1,5,15]},
+ {k:'gmaxCol',s:'strategy',n:'거다이맥스 도감',u:'만나 본 거다이맥스 모습',v:m=>Object.keys((m.dmax&&m.dmax.seen)||{}).length,t:[1,8,20]},
+ {k:'raidWin',s:'effort',n:'레이드 영웅',u:'이긴 다이맥스 레이드',v:m=>(m.raid&&m.raid.wins)||0,t:[1,7,30]},
+ {k:'regionDone',s:'care',n:'지역 박사',u:'도감을 다 채운 지역',v:m=>REGIONS.filter(r=>{for(let i=r[1];i<=r[2];i++)if(MON[i]&&!m.col[i])return false;return true;}).length,t:[1,3,9]},
+ {k:'exped',s:'growth',n:'약점 탐험가',u:'다녀온 약점 원정',v:m=>m.stats.exped||0,t:[3,15,50]}];
 const TIER=['','동','은','금'],TIER_C=['#ccc','#d08a4b','#b9c4d2','#ffcf3a'],TIER_C2=['#999','#8a5221','#7c8796','#c48a00'];
 function achTier(a,m){const v=a.v(m);let t=0;a.t.forEach(g=>{if(v>=g)t++;});return t;}
 // 배지 그림 (SVG) — 화면과 이미지 저장에 같이 써요
@@ -2342,7 +2534,7 @@ function achCheck(){const m=S.meta;if(!m.name||window.__sim)return;let got=[];
  S.achQ=(S.achQ||[]).concat(got.map(([a,k])=>a.k+':'+k));
  const [a,k]=got[got.length-1];toast(`<span style="display:inline-flex;align-items:center;gap:6px">${badgeSVG(a,k,30)} 배지 획득! <b>${esc(a.n)} ${TIER[k]}</b>${got.length>1?` 외 ${got.length-1}개`:''}</span>`);sfx('rare');
  saveLocal();if(['hub','result','grow','ach','dex','league'].includes(S.screen))setTimeout(achCelebrate,500);}
-function achCelebrate(){if(!S.achQ||!S.achQ.length)return;if(CO||modalOpen()||$('#pack').classList.contains('on')||$('#unlock').classList.contains('on')||S.screen==='battle'||S.screen==='train'){clearTimeout(achCelebrate.t);achCelebrate.t=setTimeout(achCelebrate,900);return;}
+function achCelebrate(){if(!S.achQ||!S.achQ.length)return;if(CO||modalOpen()||$('#pack').classList.contains('on')||$('#unlock').classList.contains('on')||S.screen==='battle'||S.screen==='train'||S.screen==='mini'){clearTimeout(achCelebrate.t);achCelebrate.t=setTimeout(achCelebrate,900);return;}
  const list=S.achQ.splice(0);const items=list.map(x=>{const[k,t]=x.split(':');return[ACH.find(a=>a.k===k),+t];});const u=$('#unlock');
  const top=items.slice(0,6);
  u.innerHTML=`<h2>배지를 얻었어요!</h2><div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;max-width:560px">${top.map(([a,k])=>`<div style="text-align:center;width:120px;animation:unPop .6s">${badgeSVG(a,k,96)}<div class=jua style="font-size:16px;color:#ffe680">${esc(a.n)} ${TIER[k]}</div><div style="font-size:12px;opacity:.9">${STR[a.s].n}의 힘</div></div>`).join('')}</div>${items.length>6?`<p>외 ${items.length-6}개</p>`:''}<p style="font-size:14px">배지마다 사탕·코인을 받았어요. 금 배지는 카드팩도!</p><div class=row style="justify-content:center"><button class="btn ghost" id=unAch>배지 보러 가기</button><button class="btn gold big" id=unOk>좋아요!</button></div>`;
@@ -2841,15 +3033,18 @@ const FEAT=[
  {k:'season',n:'시즌',ic:'calendar',how:'첫 훈련을 마치면',ok:m=>m.train.count>0,ds:'한 학기가 한 시즌! 시즌 레벨을 올려 보상을 받고, 학기가 끝나면 나의 성장 리포트를 받아요.'},
  {k:'card',n:'트레이너 카드',ic:'medal',how:'석산에 돌 5개를 쌓으면',ok:m=>stoneList(m).length>=5,ds:'내가 꾸민 배지와 기록이 담긴 카드! 등급에 오르면 진짜 카드로 인쇄할 수 있어요.'},
  {k:'map',n:'학습 지도',ic:'map',how:'훈련을 2번 하면',ok:m=>m.train.count>=2,ds:'단원을 골라 연습하고, 개념별 별을 모아요.'},
- {k:'deck',n:'덱 짜기',ic:'cards',how:'배틀을 한 번 하면',ok:m=>m.battles.w+m.battles.l>0,ds:'내 카드로 배틀 덱을 직접 짜요.'}];
+ {k:'deck',n:'덱 짜기',ic:'cards',how:'배틀을 한 번 하면',ok:m=>m.battles.w+m.battles.l>0,ds:'내 카드로 배틀 덱을 직접 짜요.'},
+ {k:'exped',n:'약점 원정',ic:'map',how:'훈련을 3번 하면',ok:m=>m.train.count>=3,ds:'자주 틀린 개념만 골라 8문제로 다시 다져요. 잘 맞히면 반짝 가루!'},
+ {k:'raid',n:'다이맥스 레이드',ic:'flame',how:'챔피언을 이기면',ok:m=>Object.keys(m.gyms).length>=9,ds:'하루 한 번 나타나는 거대 포켓몬! 문제를 맞혀야만 공격할 수 있어요.'},
+ {k:'mini',n:'파트너 서바이벌',ic:'bolt',how:'챔피언을 이기면',ok:m=>Object.keys(m.gyms).length>=9,ds:'문제를 맞혀 모은 티켓으로 90초 동안 버티는 미니게임! 하루 3판까지예요.'}];
 const featOn=k=>!!S.meta.unl[k];
-function featTick(){const m=S.meta;if(CO||modalOpen()||$('#pack').classList.contains('on')||$('#unlock').classList.contains('on')||S.screen==='battle'||S.screen==='train'){clearTimeout(featTick.t);featTick.t=setTimeout(featTick,900);return;}
+function featTick(){const m=S.meta;if(CO||modalOpen()||$('#pack').classList.contains('on')||$('#unlock').classList.contains('on')||S.screen==='battle'||S.screen==='train'||S.screen==='mini'){clearTimeout(featTick.t);featTick.t=setTimeout(featTick,900);return;}
  const nw=FEAT.filter(f=>!m.unl[f.k]&&f.ok(m));if(!nw.length)return;nw.forEach(f=>{m.unl[f.k]=1;m.unlNew[f.k]=1;});autoSave();featCelebrate(nw);}
 function featCelebrate(list){const f=list.shift();if(!f){if(S.screen==='hub')renderHub();return;}const u=$('#unlock');sfx('rare');
  u.innerHTML=`<div class=uIc>${I(f.ic)}</div><h2>새 기능이 열렸어요!</h2><div class=jua style="font-size:28px;color:#ffd23f">${f.n}</div><p>${f.ds}</p><button class="btn gold big" id=unOk>좋아요!</button>`;u.classList.add('on');
  u.querySelector('.uIc .ic').style.cssText='width:120px;height:120px';
  $('#unOk').onclick=()=>{sfx('tap');u.classList.remove('on');featCelebrate(list);};}
-const NAV={garden:()=>{GMODE=null;renderGarden();},card:()=>renderCardScreen(),season:()=>renderSeason(),endless:()=>startTraining({endless:true}),pvp:()=>renderPvp(),ach:()=>renderAch(),pack:()=>packTile(),dex:()=>renderDex(),league:()=>renderLeague(),grow:()=>renderGrowth(),map:()=>renderMap(),deck:()=>renderDeck()};
+const NAV={raid:()=>renderRaid(),exped:()=>renderExped(),mini:()=>renderMiniHome(),garden:()=>{GMODE=null;renderGarden();},card:()=>renderCardScreen(),season:()=>renderSeason(),endless:()=>startTraining({endless:true}),pvp:()=>renderPvp(),ach:()=>renderAch(),pack:()=>packTile(),dex:()=>renderDex(),league:()=>renderLeague(),grow:()=>renderGrowth(),map:()=>renderMap(),deck:()=>renderDeck()};
 function packTile(){const m=S.meta;if(m.packs>0)return packChooser();
  if(m.coins>=100){confirmBox(`카드팩이 없어요. 코인 100개로 카드팩 1개를 살까요?<br><span class=mut>지금 코인 ${m.coins}개</span>`,'사기','아니요').then(y=>{if(y){m.coins-=100;m.packs++;sfx('coin');autoSave();openPack();}});return;}
  toast('카드팩이 없어요. 오늘의 훈련을 하거나 코인 100개를 모으면 받을 수 있어요!');}
@@ -2858,7 +3053,7 @@ function packTile(){const m=S.meta;if(m.packs>0)return packChooser();
 function renderHub(){S.screen='hub';const m=S.meta;if(!codeValid())return renderGate();ensureSeason();
  const done=m.train.daily===today();const gh=lastTrain();const partner=bestPartner();
  const tiles=FEAT.filter(f=>m.unl[f.k]).map(f=>{const extra=f.k==='pack'&&m.packs>0?`<span class=badgeDot>${m.packs}</span>`:'';
-  const td={pack:m.packs>0?'눌러서 열기!':`코인 100개 = 카드팩 1개 (지금 ${m.coins})`,dex:`${ownCount()} / ${MON_IDS.length}마리`,garden:gardenHint(m),league:`배지 ${Object.keys(m.gyms).length}/9`,grow:`${streakDays()}일째 공부 중`,endless:`최고 ${(m.endless&&m.endless.best)||0}문제`,season:m.season?`시즌 Lv.${seasonLv(m.season)}${(()=>{let n=0;for(let l=1;l<=seasonLv(m.season);l++)if(!m.season.claimed[l])n++;return n?` · 보상 ${n}개!`:'';})()}`:'',pvp:`한 판 ${PVP_COST}코인 · ${(m.pvp&&m.pvp.n)||0}판`,map:`${Object.keys(m.badges).length}개 단원 배지`,deck:`${m.deck.length}장`,card:(()=>{const t=cardTier(m);return t?`${t.n} 카드`:`돌 ${stoneList(m).length}/5`;})(),ach:`배지 ${ACH.reduce((s,a)=>s+((m.ach[a.k]&&m.ach[a.k].t)||0),0)}/${ACH.length*3}${strengths(m)[0]?' · '+STR[strengths(m)[0].k].n:''}`}[f.k];
+  const td={raid:(()=>{const c=S.meta.raid&&S.meta.raid.cur;return c&&c.d===today()&&c.done?'오늘 완료! 내일 또':`오늘: ${esc((GMAX_BY[raidCur().sid]||{}).name||'')}`;})(),exped:`약점 ${weakList().length}개`,mini:`티켓 ${miniSt().tk}/${MINI_TK} · 오늘 ${miniSt().n}/${MINI_DAY}판`,pack:m.packs>0?'눌러서 열기!':`코인 100개 = 카드팩 1개 (지금 ${m.coins})`,dex:`${ownCount()} / ${MON_IDS.length}마리`,garden:gardenHint(m),league:`배지 ${Object.keys(m.gyms).length}/9`,grow:`${streakDays()}일째 공부 중`,endless:`최고 ${(m.endless&&m.endless.best)||0}문제`,season:m.season?`시즌 Lv.${seasonLv(m.season)}${(()=>{let n=0;for(let l=1;l<=seasonLv(m.season);l++)if(!m.season.claimed[l])n++;return n?` · 보상 ${n}개!`:'';})()}`:'',pvp:`한 판 ${PVP_COST}코인 · ${(m.pvp&&m.pvp.n)||0}판`,map:`${Object.keys(m.badges).length}개 단원 배지`,deck:`${m.deck.length}장`,card:(()=>{const t=cardTier(m);return t?`${t.n} 카드`:`돌 ${stoneList(m).length}/5`;})(),ach:`배지 ${ACH.reduce((s,a)=>s+((m.ach[a.k]&&m.ach[a.k].t)||0),0)}/${ACH.length*3}${strengths(m)[0]?' · '+STR[strengths(m)[0].k].n:''}`}[f.k];
   return `<button class=tile data-f="${f.k}">${extra}${m.unlNew[f.k]?'<i class=newTag>NEW</i>':''}<span class=ti>${I(f.ic,'ti')}</span><span class=tn>${f.n}</span><span class=td>${td}</span></button>`;}).join('');
  const next=FEAT.find(f=>!m.unl[f.k]);
  $('#view').innerHTML=hudHTML()+`<div class=wrap>
