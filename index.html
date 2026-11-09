@@ -567,6 +567,15 @@ svg.egg.big{width:110px}
 .unit.gmax .un{background:linear-gradient(90deg,#ffd6dd,#ffe7c2);color:#b0123a}
 .megaTag.gTag{background:linear-gradient(135deg,#ff4d6d,#c2185b)}
 .gTurn{position:absolute;top:2px;left:2px;z-index:6;min-width:22px;height:22px;border-radius:11px;background:#ff4d6d;color:#fff;font-family:'Black Han Sans';font-size:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #fff}
+/* 업데이트 소식 */
+.updHead{text-align:center;background:linear-gradient(135deg,#ffe9a8,#ffd6e8);border-radius:16px;padding:12px 10px;margin-bottom:10px}
+.updList{display:flex;flex-direction:column;gap:8px;max-height:58vh;overflow-y:auto;padding-right:4px}
+.updItem{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--line);border-radius:14px;padding:8px 10px}
+.updItem b{font-family:'Jua';font-size:17px}
+.updItem p{margin:2px 0 0;font-size:14px;line-height:1.55}
+.updIc{flex:none;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.updIc .ic{width:32px;height:32px}
+.updSign{text-align:center;font-family:'Jua';font-size:17px;color:#c2185b;margin:12px 0 4px}
 /* 인연의 끈 */
 .threadBox{background:linear-gradient(160deg,#eefbf2,#f6fff0);border-color:#9fdcb5}
 .dexCell.relSel{border-color:#3cc47c;border-width:3px;background:#e4f8ea}
@@ -763,7 +772,7 @@ function defaultMeta(){return{ver:SAVE_VER,name:'',code:'',gs:'',cls:'',focus:nu
  xp:0,coins:0,candy:0,packs:0,dust:0,pity:{p4:0,p5:0},col:{},seen:{},dexSeen:{},deck:[],
  sk:{},days:{},hist:[],train:{last:'',best:0,count:0,lastRes:null,daily:''},
  badges:{},gyms:{},battles:{w:0,l:0},stats:{q:0,c:0,streak:0,bestCombo:0,bestStreak:0,guessWrong:0,guessAlert:0,careful:0,lowerStar:0,shardDone:0,crafted:0,foundDone:0,superEff:0,gymTry:0,retryOk:0,bounce:0,fast:0,better:0,perfect:0,quickTrain:0,practice:0,comeback:0,flawless:0,defOk:0,candyAll:0,evolved:0,opened:0},
- mathEnergy:0,gold:{},shiny:{},shine:0,dmax:{mush:0,soup:{},seen:{},n:0},tamper:0,clockMax:'',gymLoss:{},thread:0,raid:{cur:null,wins:0,tries:0,last:'',best:0},mini:{tk:0,prog:0,day:'',n:0,best:0,runs:0},mega:{xtal:0,stones:{},seen:{},n:0},garden:{res:[],deco:{},own:{},plots:[null,null,null],berry:{},plate:null,visit:null,vd:{d:'',n:0},eggs:[],album:[],heart:{},hday:{},breath:'',first:0},unl:{},unlNew:{},ach:{},partner:0,bond:{},stoneSeen:null,card:null,uMaxAt:'',shard:{},dust:0,season:null,seasons:[],bsave:null,thist:[],first20:null,first20t:null,found:{},endless:{best:0,total:0,runs:0},pvp:{n:0,w:0,l:0,gg:0,foes:{},last:0},tod:{m:0,a:0,e:0},firstPlay:0,settings:{battleMode:'reserve',anim:'still',sound:true,lowfx:false,safe:'auto',zoom:'auto',fit:'auto',imgs:true,defq:true}};}
+ mathEnergy:0,gold:{},shiny:{},shine:0,dmax:{mush:0,soup:{},seen:{},n:0},tamper:0,clockMax:'',gymLoss:{},thread:0,updSeen:0,raid:{cur:null,wins:0,tries:0,last:'',best:0},mini:{tk:0,prog:0,day:'',n:0,best:0,runs:0},mega:{xtal:0,stones:{},seen:{},n:0},garden:{res:[],deco:{},own:{},plots:[null,null,null],berry:{},plate:null,visit:null,vd:{d:'',n:0},eggs:[],album:[],heart:{},hday:{},breath:'',first:0},unl:{},unlNew:{},ach:{},partner:0,bond:{},stoneSeen:null,card:null,uMaxAt:'',shard:{},dust:0,season:null,seasons:[],bsave:null,thist:[],first20:null,first20t:null,found:{},endless:{best:0,total:0,runs:0},pvp:{n:0,w:0,l:0,gg:0,foes:{},last:0},tod:{m:0,a:0,e:0},firstPlay:0,settings:{battleMode:'reserve',anim:'still',sound:true,lowfx:false,safe:'auto',zoom:'auto',fit:'auto',imgs:true,defq:true}};}
 function mergeMeta(m){const d=defaultMeta();if(!m||typeof m!=='object')return d;for(const k in d){if(!(k in m))continue;if(d[k]&&typeof d[k]==='object'&&!Array.isArray(d[k]))d[k]=Object.assign(d[k],m[k]);else d[k]=m[k];}return d;}
 function upgradeMeta(m){
  // v1 → v2: 처음 20문제 기록·개념별 최근 기록이 생겼어요. 옛 기록에서 알 수 있는 만큼 채워요.
@@ -3012,6 +3021,35 @@ async function renderCardScreen(){S.screen='card';const m=S.meta;const sp=cardSp
  if($('#cdPng'))$('#cdPng').onclick=async()=>{await cardPreload(m,sp);cardDownload(renderCard(m,sp,T),`트레이너카드_${(m.name||'').replace(/[\\/:*?"<>|\s]/g,'')}_${T.n}`);};
  if($('#cdPrint'))$('#cdPrint').onclick=async()=>{await cardPreload(m,sp);cardPrint(renderCard(m,sp,T));};}
 
+// ===== 업데이트 소식: 새 업데이트가 나오면 이미 하던 학생에게 한 번 보여 줘요 =====
+// 새 업데이트를 올릴 때: UPDATES 맨 앞에 v를 1 올린 묶음을 하나 추가해요(학생 말투로, 짧게).
+const UPDATES=[
+ {v:1,d:'2026년 11월',t:'11월 큰 업데이트',items:[
+  {ic:'star',h:'✦ 이로치 포켓몬',p:'색이 다른 아주 희귀한 포켓몬이에요! 카드팩에서 가끔(카드 64장에 1장쯤) 나타나요. <b>반짝 가루 15개</b>로 내 카드 하나를 이로치로 바꿀 수도 있어요. 능력은 같고 모습만 반짝! 진화해도 이로치 그대로예요.'},
+  {ic:'flame',h:'거다이맥스',p:'체육관 배지 <b>4개</b>를 모으면 다이맥스 밴드를 받아요. 다이 버섯 <b>8개</b>로 다이수프를 만들면, 배틀에서 한 번 <b>문제를 맞혀</b> 3차례 동안 거대해져요! 공격 +3 · 체력 +3, 변신할 때 상대 포켓몬 모두에게 1 피해.'},
+  {ic:'sword',h:'다이맥스 레이드 (챔피언을 이긴 친구)',p:'하루에 한 번 거대 포켓몬이 나타나요. <b>문제를 맞혀야만</b> 공격할 수 있고, 내가 약한 개념부터 나와요. 아직 없는 거다이맥스 포켓몬이 나오고, 이기면 그 포켓몬 <b>조각 2개</b>!'},
+  {ic:'map',h:'약점 원정',p:'자주 틀렸던 개념만 골라 8문제로 다시 다져요. 잘 맞히면 반짝 가루를 받아요. 틀렸던 문제가 쉬워지는 기분, 느껴 봐요!'},
+  {ic:'bolt',h:'파트너 서바이벌 (챔피언을 이긴 친구)',p:'문제를 <b>5개 맞힐 때마다 티켓 1장</b>. 티켓으로 파트너와 90초 동안 버텨요! 레벨이 오를 때마다 문제를 맞히면 강화를 골라요. 하루 3판까지예요.'},
+  {ic:'leaf',h:'인연의 끈',p:'포켓몬을 <b>자연으로 돌려보내면</b> 인연의 끈이 생겨요. 끈을 모아 <b>내가 원하는 포켓몬</b>을 데려와요. 전설의 포켓몬은 끈이 900개나 필요하지만, 꾸준히 공부하면 꼭 만날 수 있어요. 공부로도 끈이 모여요!'},
+  {ic:'heart',h:'재도전 응원',p:'체육관에서 열심히 문제를 풀었는데 졌다면, 다음 도전에서 내 트레이너 체력이 <b>+1</b>(최대 +4)! 포기하지 않는 트레이너를 응원해요.'},
+  {ic:'medal',h:'새 도전 과제',p:'이로치 수집가 · 거다이맥스 도감 · 레이드 영웅 · 지역 박사 · 약점 탐험가 배지가 생겼어요.'},
+  {ic:'check',h:'모두에게 공정하게',p:'배틀을 바로 포기하면 코인·경험치를 받지 않아요. 끝없는 도전은 <b>맞힌 만큼</b> 보상을 받아요. 저장 파일을 게임 밖에서 고치면 불러올 수 없어요. 열심히 푼 만큼 받는 게임이 더 재밌으니까요!'},
+  {ic:'ball',h:'업데이트 선물',p:'예전부터 함께한 친구들에게 <b>반짝 가루 15개 · 다이 버섯 8개</b>를 드렸어요. 도감에서 이로치와 거다이맥스를 만나 봐요!'}]}];
+const UPD_VER=UPDATES[0].v;
+const UPD_SIGN='- 너희들이 행복하길 바라는 하는교사가 -';
+function showUpdates(after){const u=UPDATES[0];sfx('level');
+ M(`<div class=updPage><div class=updHead><div class=jua style="font-size:14px;opacity:.85">${esc(u.d)} · 업데이트 소식</div><h2 style="margin:2px 0 0">${esc(u.t)}</h2></div>
+  <div class=updList>${u.items.map(x=>`<div class=updItem><div class=updIc>${I(x.ic)}</div><div><b>${x.h}</b><p>${x.p}</p></div></div>`).join('')}</div>
+  <p class=updSign>${esc(UPD_SIGN)}</p>
+  <div class=mbtns><button class="btn gold big" data-a=x>알겠어요!</button></div></div>`,
+  {x:()=>{closeM();updSeen();if(after)after();},_close:()=>{closeM();updSeen();if(after)after();}},{wide:1});}
+function updSeen(){const m=S.meta;if((m.updSeen||0)<UPD_VER){m.updSeen=UPD_VER;autoSave();}}
+// 트레이너 방에 들어올 때: 처음 시작한 친구는 그냥 '본 것'으로, 이미 하던 친구에게만 한 번 보여 줘요
+function updMaybe(){const m=S.meta;if(!m.name||(m.updSeen||0)>=UPD_VER)return;
+ if(!m.stats.q&&!(m.train&&m.train.count)){m.updSeen=UPD_VER;autoSave();return;}
+ const tryShow=()=>{if(S.screen!=='hub')return;if(CO||modalOpen()||$('#unlock').classList.contains('on')||$('#pack').classList.contains('on')){clearTimeout(updMaybe.t);updMaybe.t=setTimeout(tryShow,900);return;}showUpdates();};
+ clearTimeout(updMaybe.t);updMaybe.t=setTimeout(tryShow,700);}
+
 // ===== 화면 =====
 const STARTERS={관동:[1,4,7,25,133],성도:[152,155,158],호연:[252,255,258],신오:[387,390,393],하나:[495,498,501],칼로스:[650,653,656],알로라:[722,725,728],가라르:[810,813,816],팔데아:[906,909,912]};
 const STARTER_DECK=[19,16,10,41,27];
@@ -3063,7 +3101,7 @@ function renderHub(){S.screen='hub';const m=S.meta;if(!codeValid())return render
    <button class="tile main" id=tTrain>${done?'':'<i class=newTag>오늘!</i>'}<span class=ti>${I('flame','ti')}</span><span><span class=tn>오늘의 훈련</span><br><span class=td>${done?'오늘 훈련 완료! 한 번 더 하면 사탕을 더 받아요.':`문제 ${trainN()}개 · 오늘의 카드팩 받기`}${gh?`<br>어제의 나: ${gh.n}문제 중 ${gh.c}개 정답`:''}</span></span></button>
    ${tiles}</div>
   ${next?`<div class=nextFeat>${I('lock')} 다음에 열릴 기능: <b>${next.n}</b> — ${next.how}</div>`:''}
-  <div class=nextFeat>${esc(semName(m.gs))}${m.uMax&&m.uMax<20?` ${m.uMax}단원까지`:''} 범위의 문제만 나와요 · <a href="#" id=hUnit style="color:inherit">배운 단원 바꾸기</a> · <a href="#" id=hCode style="color:inherit">코드 바꾸기</a></div></div>`;
+  <div class=nextFeat>${esc(semName(m.gs))}${m.uMax&&m.uMax<20?` ${m.uMax}단원까지`:''} 범위의 문제만 나와요 · <a href="#" id=hUnit style="color:inherit">배운 단원 바꾸기</a> · <a href="#" id=hCode style="color:inherit">코드 바꾸기</a> · <a href="#" id=hUpd style="color:inherit">${I('star')} 업데이트 소식</a></div></div>`;
  bindHud();
  $('#tTrain').onclick=()=>{sfx('tap');startTraining();};
  $('#hCode').onclick=e=>{e.preventDefault();renderGate(true);};
@@ -3072,6 +3110,8 @@ function renderHub(){S.screen='hub';const m=S.meta;if(!codeValid())return render
  if(m.uMax&&m.uMax<20&&m.uMaxAt&&dayDiff(m.uMaxAt,today())>=14&&!CO&&!modalOpen())setTimeout(()=>{if(S.screen==='hub'&&!modalOpen())askUnit(()=>renderHub(),true);},900);
  if(m.uMax&&!m.uMaxAt){m.uMaxAt=today();autoSave();}
  $('#hPartner').onclick=()=>{sfx('tap');partnerPicker(()=>renderHub());};
+ $('#hUpd').onclick=e=>{e.preventDefault();sfx('tap');showUpdates();};
+ updMaybe();
  $('#stonePanel').onclick=()=>{sfx('tap');stoneInfo();};
  $('#view').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{sfx('tap');const k=b.dataset.f;if(m.unlNew[k]){delete m.unlNew[k];autoSave();}NAV[k]();});
  if(S.lvUp)levelUpFx();
