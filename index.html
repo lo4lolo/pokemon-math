@@ -576,6 +576,11 @@ svg.egg.big{width:110px}
 .updIc{flex:none;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
 .updIc .ic{width:32px;height:32px}
 .updSign{text-align:center;font-family:'Jua';font-size:17px;color:#c2185b;margin:12px 0 4px}
+/* 체험 모드 */
+.demoTag{background:#ff8a3d;color:#fff;border-color:#e06a1d;margin-left:6px}
+/* 지역 모습 */
+.newB.regB{background:linear-gradient(90deg,#3cc47c,#4d9cff);top:-26px}
+.pkRow.multi .newB.regB{top:-20px}
 /* 합체 */
 .fuseBox{background:linear-gradient(160deg,#fff8e1,#f3ecff);border-color:#e6c46a}
 .fuseRow{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;margin:6px 0}
@@ -802,7 +807,8 @@ function clockOk(){const m=S.meta,t=today();if(!m.clockMax||t>m.clockMax){m.cloc
 
 // ===== 저장 · 불러오기 =====
 const STORE_OK=(()=>{try{const k='__pm';localStorage.setItem(k,'1');const ok=localStorage.getItem(k)==='1';localStorage.removeItem(k);return ok;}catch(e){return false;}})();
-function saveLocal(){if(window.__sim)return;try{const js=JSON.stringify(S.meta);localStorage.setItem(SAVE_KEY,'{"meta":'+js+',"sig":"'+sigOf(js)+'"}');}catch(e){}}
+function saveLocal(){if(window.__sim||S.demo)return; // 체험 모드는 저장하지 않아요(학생 기록 보호)
+try{const js=JSON.stringify(S.meta);localStorage.setItem(SAVE_KEY,'{"meta":'+js+',"sig":"'+sigOf(js)+'"}');}catch(e){}}
 // 브라우저 저장이 바뀐 흔적이 있어도 학생 기록은 지키고(불러옴), 선생님 화면에 표시해요
 function loadLocal(){try{const s=localStorage.getItem(SAVE_KEY);if(!s)return;const o=JSON.parse(s);const st=sigState(o);S.meta=upgradeMeta(mergeMeta(o.meta));if(st==='bad'){const m=S.meta;m.tamper=(Number(m.tamper)||0)+1;m.coins=0;m.packs=0;m.dust=0;m.candy=0;m.mathEnergy=0;m.shine=0;if(m.dmax)m.dmax.mush=0;m.mega&&(m.mega.xtal=0);saveLocal();S.tamperMsg=1;}}catch(e){}}
 // 바뀐 흔적이 있으면: 공부 기록·카드는 그대로, 재화(코인·카드팩·별가루·사탕·결정·가루·버섯·학습 에너지)만 0으로. 선생님 표에도 남아요
@@ -810,7 +816,7 @@ let _asT=0;function autoSave(){clearTimeout(_asT);_asT=setTimeout(()=>{saveLocal
 const slotKey=i=>GAME.id+'-slot'+i;
 function slotGet(i){try{const s=localStorage.getItem(slotKey(i));return s?JSON.parse(s):null;}catch(e){return null;}}
 function saveSummary(){const m=S.meta;return `${semName(m.gs)} · Lv.${lvOf(m.xp).lv} · 카드 ${Object.keys(m.col).length}종`;}
-function slotSave(i){try{const js=JSON.stringify(S.meta);localStorage.setItem(slotKey(i),JSON.stringify({t:Date.now(),sum:saveSummary(),name:S.meta.name,meta:S.meta,sig:sigOf(js)}));return true;}catch(e){return false;}}
+function slotSave(i){if(S.demo){toast('체험 모드에서는 저장 칸을 쓰지 않아요');return false;}try{const js=JSON.stringify(S.meta);localStorage.setItem(slotKey(i),JSON.stringify({t:Date.now(),sum:saveSummary(),name:S.meta.name,meta:S.meta,sig:sigOf(js)}));return true;}catch(e){return false;}}
 function fmtWhen(t){const d=new Date(t);return `${d.getMonth()+1}월 ${d.getDate()}일 ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;}
 function b64u(u){let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function ub64u(t){t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';const b=atob(t);const u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
@@ -822,7 +828,7 @@ async function readAny(text){text=String(text||'').trim();if(!text)throw new Err
  const m=text.replace(/\s+/g,'').match(/PKMT([AZ]):([A-Za-z0-9_-]+)/);if(!m)throw new Error('저장 코드 모양이 아니에요 (PKMT로 시작해요)');
  let b=ub64u(m[2]);if(m[1]==='Z'){if(!window.DecompressionStream)throw new Error('이 브라우저는 이 코드를 읽지 못해요');b=new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer());}
  const o=JSON.parse(new TextDecoder().decode(b));if(o.game!==GAME.id)throw new Error(GAME.title+' 코드가 아니에요');return o;}
-function applyLoaded(o,msg){if(sigState(o)==='bad'){toast(SIG_BAD_MSG);return;}S.meta=upgradeMeta(mergeMeta(o.meta));saveLocal();applySafe();closeM();closeM(1);toast(msg||'불러왔어요!');goStart();}
+function applyLoaded(o,msg){if(sigState(o)==='bad'){toast(SIG_BAD_MSG);return;}S.demo=false;S.meta=upgradeMeta(mergeMeta(o.meta));saveLocal();applySafe();closeM();closeM(1);toast(msg||'불러왔어요!');goStart();}
 async function copyText(t,ta){try{await navigator.clipboard.writeText(t);toast('복사했어요! 메모장이나 채팅방에 붙여 두세요');return;}catch(e){}
  try{if(ta){ta.focus();ta.select();ta.setSelectionRange(0,t.length);}if(document.execCommand('copy')){toast('복사했어요! 메모장이나 채팅방에 붙여 두세요');return;}}catch(e){}
  if(ta){ta.focus();ta.select();}toast('자동 복사가 막혀 있어요. 칸 안의 글자를 길게 눌러 직접 복사해 주세요');}
@@ -894,8 +900,8 @@ const TYPE_KO=["노말", "불꽃", "물", "풀", "전기", "얼음", "격투", "
 const TYPE_CHART=[[1,1,1,1,1,1,1,1,1,1,1,1,0.5,0,1,1,0.5,1],[1,0.5,0.5,2,1,2,1,1,1,1,1,2,0.5,1,0.5,1,2,1],[1,2,0.5,0.5,1,1,1,1,2,1,1,1,2,1,0.5,1,1,1],[1,0.5,2,0.5,1,1,1,0.5,2,0.5,1,0.5,2,1,0.5,1,0.5,1],[1,1,2,0.5,0.5,1,1,1,0,2,1,1,1,1,0.5,1,1,1],[1,0.5,0.5,2,1,0.5,1,1,2,2,1,1,1,1,2,1,0.5,1],[2,1,1,1,1,2,1,0.5,1,0.5,0.5,0.5,2,0,1,2,2,0.5],[1,1,1,2,1,1,1,0.5,0.5,1,1,1,0.5,0.5,1,1,0,2],[1,2,1,0.5,2,1,1,2,1,0,1,0.5,2,1,1,1,2,1],[1,1,1,2,0.5,1,2,1,1,1,1,2,0.5,1,1,1,0.5,1],[1,1,1,1,1,1,2,2,1,1,0.5,1,1,1,1,0,0.5,1],[1,0.5,1,2,1,1,0.5,0.5,1,0.5,2,1,1,0.5,1,2,0.5,0.5],[1,2,1,1,1,2,0.5,1,0.5,2,1,2,1,1,1,1,0.5,1],[0,1,1,1,1,1,1,1,1,1,2,1,1,2,1,0.5,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,0.5,0],[1,1,1,1,1,1,0.5,1,1,1,2,1,1,2,1,0.5,1,0.5],[1,0.5,0.5,1,0.5,2,1,1,1,1,1,1,2,1,1,1,0.5,2],[1,0.5,1,1,1,1,2,0.5,1,1,1,1,1,1,2,2,0.5,1]];
 
 /* 특별한 모습 카드(2026-11-12, PokeAPI 능력치로 gen_data.py와 같은 식). 카드팩에는 안 나와요.
-   행: [그림 번호, 이름, 타입들, 진화 전 번호, 진화 단계, 희귀도, 비용, 공격, 체력, 분류, 설명(새로 씀), 키, 몸무게, 기본 종, 합체 재료] */
-const FORM_RAW=[[10126,"한밤중 루가루암",[12],744,1,3,4,5,6,"늑대포켓몬","달이 뜬 밤에 진화한 루가루암. 붉은 눈으로 상대를 노려보며, 다쳐도 물러서지 않는 끈기가 있어요.",1.1,25.0,745,0],[10152,"황혼 루가루암",[12],744,1,3,4,6,5,"늑대포켓몬","해가 질 무렵에 진화한 루가루암. 차분하지만 싸울 때는 누구보다 빠르게 달려들어요.",0.8,25.0,745,0],[10155,"황혼의 갈기 네크로즈마",[10,16],0,0,5,6,9,9,"프리즘포켓몬","네크로즈마가 솔가레오와 합체한 모습. 태양의 힘을 갑옷처럼 두르고 있어요. 언제든 다시 둘로 나눌 수 있어요.",3.8,460.0,800,[800,791]],[10156,"새벽의 날개 네크로즈마",[10,13],0,0,5,6,9,9,"프리즘포켓몬","네크로즈마가 루나아라와 합체한 모습. 달의 힘으로 커다란 날개를 펼쳐요. 언제든 다시 둘로 나눌 수 있어요.",4.2,350.0,800,[800,792]],[10022,"블랙큐레무",[14,5],0,0,5,6,9,9,"경계포켓몬","큐레무가 제크로무와 합체한 모습. 얼음과 번개의 힘을 함께 써요. 언제든 다시 둘로 나눌 수 있어요.",3.3,325.0,646,[646,644]],[10023,"화이트큐레무",[14,5],0,0,5,6,9,9,"경계포켓몬","큐레무가 레시라무와 합체한 모습. 얼음과 불꽃의 힘을 함께 써요. 언제든 다시 둘로 나눌 수 있어요.",3.6,325.0,646,[646,643]],[10193,"버드렉스(백마)",[10,5],0,0,5,6,8,10,"킹포켓몬","버드렉스가 블리자포스에 올라탄 모습. 차가운 힘으로 상대를 꼼짝 못 하게 해요. 언제든 다시 둘로 나눌 수 있어요.",2.4,809.1,898,[898,896]],[10194,"버드렉스(흑마)",[10,13],0,0,5,6,10,8,"킹포켓몬","버드렉스가 레이스포스에 올라탄 모습. 그림자처럼 조용하고 빨라요. 언제든 다시 둘로 나눌 수 있어요.",2.4,53.6,898,[898,897]]];
+   행: [그림 번호, 이름, 타입들, 진화 전 번호, 진화 단계, 희귀도, 비용, 공격, 체력, 분류, 설명(새로 씀), 키, 몸무게, 기본 종, 합체 재료, 지역 모습] */
+const FORM_RAW=[[10126,"한밤중 루가루암",[12],744,1,3,4,5,6,"늑대포켓몬","달이 뜬 밤에 진화한 루가루암. 붉은 눈으로 상대를 노려보며, 다쳐도 물러서지 않는 끈기가 있어요.",1.1,25.0,745,0],[10152,"황혼 루가루암",[12],744,1,3,4,6,5,"늑대포켓몬","해가 질 무렵에 진화한 루가루암. 차분하지만 싸울 때는 누구보다 빠르게 달려들어요.",0.8,25.0,745,0],[10155,"황혼의 갈기 네크로즈마",[10,16],0,0,5,6,9,9,"프리즘포켓몬","네크로즈마가 솔가레오와 합체한 모습. 태양의 힘을 갑옷처럼 두르고 있어요. 언제든 다시 둘로 나눌 수 있어요.",3.8,460.0,800,[800,791]],[10156,"새벽의 날개 네크로즈마",[10,13],0,0,5,6,9,9,"프리즘포켓몬","네크로즈마가 루나아라와 합체한 모습. 달의 힘으로 커다란 날개를 펼쳐요. 언제든 다시 둘로 나눌 수 있어요.",4.2,350.0,800,[800,792]],[10022,"블랙큐레무",[14,5],0,0,5,6,9,9,"경계포켓몬","큐레무가 제크로무와 합체한 모습. 얼음과 번개의 힘을 함께 써요. 언제든 다시 둘로 나눌 수 있어요.",3.3,325.0,646,[646,644]],[10023,"화이트큐레무",[14,5],0,0,5,6,9,9,"경계포켓몬","큐레무가 레시라무와 합체한 모습. 얼음과 불꽃의 힘을 함께 써요. 언제든 다시 둘로 나눌 수 있어요.",3.6,325.0,646,[646,643]],[10193,"버드렉스(백마)",[10,5],0,0,5,6,8,10,"킹포켓몬","버드렉스가 블리자포스에 올라탄 모습. 차가운 힘으로 상대를 꼼짝 못 하게 해요. 언제든 다시 둘로 나눌 수 있어요.",2.4,809.1,898,[898,896]],[10194,"버드렉스(흑마)",[10,13],0,0,5,6,10,8,"킹포켓몬","버드렉스가 레이스포스에 올라탄 모습. 그림자처럼 조용하고 빨라요. 언제든 다시 둘로 나눌 수 있어요.",2.4,53.6,898,[898,897]],[10091,"알로라 꼬렛",[15,0],0,0,1,1,3,2,"쥐포켓몬","알로라 지방에 사는 꼬렛. 그곳의 자연에 맞춰 모습이 달라져 악·노말 타입이 되었어요.",0.3,3.8,19,0,"alola"],[10092,"알로라 레트라",[15,0],10091,1,2,3,4,5,"쥐포켓몬","알로라 지방에 사는 레트라. 그곳의 자연에 맞춰 모습이 달라져 악·노말 타입이 되었어요.",0.7,25.5,20,0,"alola"],[10100,"알로라 라이츄",[4,10],25,2,3,4,6,5,"쥐포켓몬","알로라 지방에 사는 라이츄. 그곳의 자연에 맞춰 모습이 달라져 전기·에스퍼 타입이 되었어요.",0.7,21.0,26,0,"alola"],[10101,"알로라 모래두지",[5,16],0,0,1,1,2,3,"쥐포켓몬","알로라 지방에 사는 모래두지. 그곳의 자연에 맞춰 모습이 달라져 얼음·강철 타입이 되었어요.",0.7,40.0,27,0,"alola"],[10102,"알로라 고지",[5,16],10101,1,2,3,4,5,"쥐포켓몬","알로라 지방에 사는 고지. 그곳의 자연에 맞춰 모습이 달라져 얼음·강철 타입이 되었어요.",1.2,55.0,28,0,"alola"],[10103,"알로라 식스테일",[5],0,0,1,1,2,3,"여우포켓몬","알로라 지방에 사는 식스테일. 그곳의 자연에 맞춰 모습이 달라져 얼음 타입이 되었어요.",0.6,9.9,37,0,"alola"],[10104,"알로라 나인테일",[5,17],10103,1,3,4,5,6,"여우포켓몬","알로라 지방에 사는 나인테일. 그곳의 자연에 맞춰 모습이 달라져 얼음·페어리 타입이 되었어요.",1.1,19.9,38,0,"alola"],[10105,"알로라 디그다",[8,16],0,0,1,1,3,2,"두더지포켓몬","알로라 지방에 사는 디그다. 그곳의 자연에 맞춰 모습이 달라져 땅·강철 타입이 되었어요.",0.2,1.0,50,0,"alola"],[10106,"알로라 닥트리오",[8,16],10105,1,2,3,5,4,"두더지포켓몬","알로라 지방에 사는 닥트리오. 그곳의 자연에 맞춰 모습이 달라져 땅·강철 타입이 되었어요.",0.7,66.6,51,0,"alola"],[10107,"알로라 나옹",[15],0,0,1,1,3,2,"요괴고양이포켓몬","알로라 지방에 사는 나옹. 그곳의 자연에 맞춰 모습이 달라져 악 타입이 되었어요.",0.4,4.2,52,0,"alola"],[10108,"알로라 페르시온",[15],10107,1,2,3,4,5,"샴고양이포켓몬","알로라 지방에 사는 페르시온. 그곳의 자연에 맞춰 모습이 달라져 악 타입이 되었어요.",1.1,33.0,53,0,"alola"],[10109,"알로라 꼬마돌",[12,4],0,0,1,1,2,3,"암석포켓몬","알로라 지방에 사는 꼬마돌. 그곳의 자연에 맞춰 모습이 달라져 바위·전기 타입이 되었어요.",0.4,20.3,74,0,"alola"],[10110,"알로라 데구리",[12,4],10109,1,2,3,4,5,"암석포켓몬","알로라 지방에 사는 데구리. 그곳의 자연에 맞춰 모습이 달라져 바위·전기 타입이 되었어요.",1.0,110.0,75,0,"alola"],[10111,"알로라 딱구리",[12,4],10110,2,3,4,5,6,"메가톤포켓몬","알로라 지방에 사는 딱구리. 그곳의 자연에 맞춰 모습이 달라져 바위·전기 타입이 되었어요.",1.7,316.0,76,0,"alola"],[10112,"알로라 질퍽이",[7,15],0,0,1,2,3,4,"진흙포켓몬","알로라 지방에 사는 질퍽이. 그곳의 자연에 맞춰 모습이 달라져 독·악 타입이 되었어요.",0.7,42.0,88,0,"alola"],[10113,"알로라 질뻐기",[7,15],10112,1,3,4,4,7,"진흙포켓몬","알로라 지방에 사는 질뻐기. 그곳의 자연에 맞춰 모습이 달라져 독·악 타입이 되었어요.",1.0,52.0,89,0,"alola"],[10114,"알로라 나시",[3,14],102,1,4,5,6,7,"야자열매포켓몬","알로라 지방에 사는 나시. 그곳의 자연에 맞춰 모습이 달라져 풀·드래곤 타입이 되었어요.",10.9,415.6,103,0,"alola"],[10115,"알로라 텅구리",[1,13],104,1,2,3,4,5,"뼈다귀포켓몬","알로라 지방에 사는 텅구리. 그곳의 자연에 맞춰 모습이 달라져 불꽃·고스트 타입이 되었어요.",1.0,34.0,105,0,"alola"],[10161,"가라르 나옹",[16],0,0,1,1,2,3,"요괴고양이포켓몬","가라르 지방에 사는 나옹. 그곳의 자연에 맞춰 모습이 달라져 강철 타입이 되었어요.",0.4,7.5,52,0,"galar"],[10162,"가라르 포니타",[10],0,0,2,3,5,4,"불의말포켓몬","가라르 지방에 사는 포니타. 그곳의 자연에 맞춰 모습이 달라져 에스퍼 타입이 되었어요.",0.8,24.0,77,0,"galar"],[10163,"가라르 날쌩마",[10,17],10162,1,3,4,6,5,"불의말포켓몬","가라르 지방에 사는 날쌩마. 그곳의 자연에 맞춰 모습이 달라져 에스퍼·페어리 타입이 되었어요.",1.7,80.0,78,0,"galar"],[10164,"가라르 야돈",[10],0,0,1,2,2,5,"얼간이포켓몬","가라르 지방에 사는 야돈. 그곳의 자연에 맞춰 모습이 달라져 에스퍼 타입이 되었어요.",1.2,36.0,79,0,"galar"],[10165,"가라르 야도란",[7,10],10164,1,3,4,4,7,"기생포켓몬","가라르 지방에 사는 야도란. 그곳의 자연에 맞춰 모습이 달라져 독·에스퍼 타입이 되었어요.",1.6,70.5,80,0,"galar"],[10166,"가라르 파오리",[6],0,0,1,2,4,3,"청둥오리포켓몬","가라르 지방에 사는 파오리. 그곳의 자연에 맞춰 모습이 달라져 격투 타입이 되었어요.",0.8,42.0,83,0,"galar"],[10167,"가라르 또도가스",[7,17],109,1,3,4,5,6,"독가스포켓몬","가라르 지방에 사는 또도가스. 그곳의 자연에 맞춰 모습이 달라져 독·페어리 타입이 되었어요.",3.0,16.0,110,0,"galar"],[10168,"가라르 마임맨",[5,10],439,1,3,4,6,5,"배리어포켓몬","가라르 지방에 사는 마임맨. 그곳의 자연에 맞춰 모습이 달라져 얼음·에스퍼 타입이 되었어요.",1.4,56.8,122,0,"galar"],[10169,"가라르 프리져",[10,9],0,0,5,5,7,7,"냉동포켓몬","가라르 지방에 사는 프리져. 그곳의 자연에 맞춰 모습이 달라져 에스퍼·비행 타입이 되었어요.",1.7,50.9,144,0,"galar"],[10170,"가라르 썬더",[6,9],0,0,5,5,7,7,"전기포켓몬","가라르 지방에 사는 썬더. 그곳의 자연에 맞춰 모습이 달라져 격투·비행 타입이 되었어요.",1.6,58.2,145,0,"galar"],[10171,"가라르 파이어",[15,9],0,0,5,5,6,8,"화염포켓몬","가라르 지방에 사는 파이어. 그곳의 자연에 맞춰 모습이 달라져 악·비행 타입이 되었어요.",2.0,66.0,146,0,"galar"],[10172,"가라르 야도킹",[7,10],10164,1,3,4,4,7,"임금포켓몬","가라르 지방에 사는 야도킹. 그곳의 자연에 맞춰 모습이 달라져 독·에스퍼 타입이 되었어요.",1.8,79.5,199,0,"galar"],[10173,"가라르 코산호",[13],0,0,2,3,3,6,"산호포켓몬","가라르 지방에 사는 코산호. 그곳의 자연에 맞춰 모습이 달라져 고스트 타입이 되었어요.",0.6,0.5,222,0,"galar"],[10174,"가라르 지그제구리",[15,0],0,0,1,1,2,3,"앙증너구리포켓몬","가라르 지방에 사는 지그제구리. 그곳의 자연에 맞춰 모습이 달라져 악·노말 타입이 되었어요.",0.4,17.5,263,0,"galar"],[10175,"가라르 직구리",[15,0],10174,1,2,3,4,5,"돌진포켓몬","가라르 지방에 사는 직구리. 그곳의 자연에 맞춰 모습이 달라져 악·노말 타입이 되었어요.",0.5,32.5,264,0,"galar"],[10176,"가라르 달막화",[5],0,0,1,2,3,4,"달마포켓몬","가라르 지방에 사는 달막화. 그곳의 자연에 맞춰 모습이 달라져 얼음 타입이 되었어요.",0.7,40.0,554,0,"galar"],[10177,"가라르 불비달마",[5],10176,1,3,4,6,5,"염상포켓몬","가라르 지방에 사는 불비달마. 그곳의 자연에 맞춰 모습이 달라져 얼음 타입이 되었어요.",1.7,120.0,555,0,"galar"],[10179,"가라르 데스마스",[8,13],0,0,1,2,3,4,"영혼포켓몬","가라르 지방에 사는 데스마스. 그곳의 자연에 맞춰 모습이 달라져 땅·고스트 타입이 되었어요.",0.5,1.5,562,0,"galar"],[10180,"가라르 메더",[8,16],0,0,3,4,4,7,"트랩포켓몬","가라르 지방에 사는 메더. 그곳의 자연에 맞춰 모습이 달라져 땅·강철 타입이 되었어요.",0.7,20.5,618,0,"galar"],[10229,"히스이 가디",[1,12],0,0,1,2,3,4,"강아지포켓몬","히스이 지방에 사는 가디. 그곳의 자연에 맞춰 모습이 달라져 불꽃·바위 타입이 되었어요.",0.8,22.7,58,0,"hisui"],[10230,"히스이 윈디",[1,12],10229,1,4,5,6,7,"전설포켓몬","히스이 지방에 사는 윈디. 그곳의 자연에 맞춰 모습이 달라져 불꽃·바위 타입이 되었어요.",2.0,168.0,59,0,"hisui"],[10231,"히스이 찌리리공",[4,3],0,0,1,2,3,4,"볼포켓몬","히스이 지방에 사는 찌리리공. 그곳의 자연에 맞춰 모습이 달라져 전기·풀 타입이 되었어요.",0.5,13.0,100,0,"hisui"],[10232,"히스이 붐볼",[4,3],10231,1,3,4,5,6,"볼포켓몬","히스이 지방에 사는 붐볼. 그곳의 자연에 맞춰 모습이 달라져 전기·풀 타입이 되었어요.",1.2,71.0,101,0,"hisui"],[10233,"히스이 블레이범",[1,13],156,2,4,5,7,6,"화산포켓몬","히스이 지방에 사는 블레이범. 그곳의 자연에 맞춰 모습이 달라져 불꽃·고스트 타입이 되었어요.",1.6,69.8,157,0,"hisui"],[10234,"히스이 침바루",[15,7],0,0,2,3,4,5,"풍선포켓몬","히스이 지방에 사는 침바루. 그곳의 자연에 맞춰 모습이 달라져 악·독 타입이 되었어요.",0.5,3.9,211,0,"hisui"],[10235,"히스이 포푸니",[6,7],0,0,2,3,5,4,"갈고리손톱포켓몬","히스이 지방에 사는 포푸니. 그곳의 자연에 맞춰 모습이 달라져 격투·독 타입이 되었어요.",0.9,27.0,215,0,"hisui"],[10236,"히스이 대검귀",[2,15],502,2,4,5,6,7,"관록포켓몬","히스이 지방에 사는 대검귀. 그곳의 자연에 맞춰 모습이 달라져 물·악 타입이 되었어요.",1.5,58.2,503,0,"hisui"],[10237,"히스이 드레디어",[3,6],548,1,3,4,6,5,"꽃장식포켓몬","히스이 지방에 사는 드레디어. 그곳의 자연에 맞춰 모습이 달라져 풀·격투 타입이 되었어요.",1.2,19.2,549,0,"hisui"],[10238,"히스이 조로아",[0,13],0,0,1,2,4,3,"나쁜여우포켓몬","히스이 지방에 사는 조로아. 그곳의 자연에 맞춰 모습이 달라져 노말·고스트 타입이 되었어요.",0.7,12.5,570,0,"hisui"],[10239,"히스이 조로아크",[0,13],10238,1,3,4,7,4,"요괴여우포켓몬","히스이 지방에 사는 조로아크. 그곳의 자연에 맞춰 모습이 달라져 노말·고스트 타입이 되었어요.",1.6,73.0,571,0,"hisui"],[10240,"히스이 워글",[10,9],627,1,3,4,5,6,"용맹포켓몬","히스이 지방에 사는 워글. 그곳의 자연에 맞춰 모습이 달라져 에스퍼·비행 타입이 되었어요.",1.7,43.4,628,0,"hisui"],[10241,"히스이 미끄네일",[16,14],704,1,3,4,4,7,"연체포켓몬","히스이 지방에 사는 미끄네일. 그곳의 자연에 맞춰 모습이 달라져 강철·드래곤 타입이 되었어요.",0.7,68.5,705,0,"hisui"],[10242,"히스이 미끄래곤",[16,14],10241,2,4,6,6,9,"드래곤포켓몬","히스이 지방에 사는 미끄래곤. 그곳의 자연에 맞춰 모습이 달라져 강철·드래곤 타입이 되었어요.",1.7,334.1,706,0,"hisui"],[10243,"히스이 크레베이스",[5,12],712,1,4,5,6,7,"빙산포켓몬","히스이 지방에 사는 크레베이스. 그곳의 자연에 맞춰 모습이 달라져 얼음·바위 타입이 되었어요.",1.4,262.4,713,0,"hisui"],[10244,"히스이 모크나이퍼",[3,6],723,2,4,5,6,7,"화살깃포켓몬","히스이 지방에 사는 모크나이퍼. 그곳의 자연에 맞춰 모습이 달라져 풀·격투 타입이 되었어요.",1.6,37.0,724,0,"hisui"],[10250,"팔데아 켄타로스(컴뱃)",[6],0,0,3,4,5,6,"성난소포켓몬","팔데아 지방에 사는 켄타로스. 그곳의 자연에 맞춰 모습이 달라져 격투 타입이 되었어요.",1.4,115.0,128,0,"paldea"],[10251,"팔데아 켄타로스(블레이즈)",[6,1],0,0,3,4,5,6,"성난소포켓몬","팔데아 지방에 사는 켄타로스. 그곳의 자연에 맞춰 모습이 달라져 격투·불꽃 타입이 되었어요.",1.4,85.0,128,0,"paldea"],[10252,"팔데아 켄타로스(워터)",[6,2],0,0,3,4,5,6,"성난소포켓몬","팔데아 지방에 사는 켄타로스. 그곳의 자연에 맞춰 모습이 달라져 격투·물 타입이 되었어요.",1.4,110.0,128,0,"paldea"],[10253,"팔데아 우파",[7,8],0,0,1,1,2,3,"수어포켓몬","팔데아 지방에 사는 우파. 그곳의 자연에 맞춰 모습이 달라져 독·땅 타입이 되었어요.",0.4,11.0,194,0,"paldea"]];
 /* 새 메가진화(PokeAPI 10278~10326): [기본 종, 그림 번호, 꼬리말] */
 const MEGA_NEW=[[36,10278,""],[71,10279,""],[121,10280,""],[149,10281,""],[154,10282,""],[160,10283,""],[227,10284,""],[478,10285,""],[500,10286,""],[530,10287,""],[545,10288,""],[560,10289,""],[604,10290,""],[609,10291,""],[652,10292,""],[655,10293,""],[658,10294,""],[668,10295,""],[670,10296,""],[687,10297,""],[689,10298,""],[691,10299,""],[701,10300,""],[718,10301,""],[780,10302,""],[870,10303,""],[26,10304,"X"],[26,10305,"Y"],[358,10306,""],[359,10307,"Z"],[398,10308,""],[445,10309,"Z"],[448,10310,"Z"],[485,10311,""],[491,10312,""],[623,10313,""],[678,10314,"♂"],[740,10315,""],[768,10316,""],[801,10317,""],[801,10318,"(500년 전의 색)"],[807,10319,""],[952,10320,""],[970,10321,""],[978,10322,"(젖힌 모습)"],[978,10323,"(늘어진 모습)"],[978,10324,"(뻗은 모습)"],[998,10325,""],[678,10326,"♀"]];
 
@@ -1409,7 +1415,13 @@ const MON={};const MON_IDS=[];
 PACK_RAW.forEach(r=>{const[id,name,types,from,stage,rar,cost,atk,hp,genus,flavor,ht,wt]=r;MON[id]={id,name,types,from,stage,rar,cost,atk,hp,genus,flavor,ht,wt,to:[]};MON_IDS.push(id);});
 MON_IDS.forEach(id=>{const f=MON[id].from;if(f&&MON[f])MON[f].to.push(id);});
 // 특별한 모습 카드(루가루암 한밤중·황혼, 합체한 모습): 카드팩에는 나오지 않고, 진화·합체로 만나요. 도감 「특별한 모습」 탭
-const FORM_IDS=[];(typeof FORM_RAW!=='undefined'?FORM_RAW:[]).forEach(r=>{const[id,name,types,from,stage,rar,cost,atk,hp,genus,flavor,ht,wt,base,parts]=r;MON[id]={id,name,types,from,stage,rar,cost,atk,hp,genus,flavor,ht,wt,to:[],base,parts:parts||0,form:1};FORM_IDS.push(id);if(from&&MON[from])MON[from].to.push(id);});
+const FORM_IDS=[];(typeof FORM_RAW!=='undefined'?FORM_RAW:[]).forEach(r=>{const[id,name,types,from,stage,rar,cost,atk,hp,genus,flavor,ht,wt,base,parts,reg]=r;MON[id]={id,name,types,from,stage,rar,cost,atk,hp,genus,flavor,ht,wt,to:[],base,parts:parts||0,form:1,reg:reg||''};FORM_IDS.push(id);if(from&&MON[from])MON[from].to.push(id);});
+// 지역 모습에서 진화하는 포켓몬은 진화 전을 바로잡아요(예: 나이킹은 가라르 나옹에서). 예전에는 보통 모습에서 진화했어요
+const REG_EVO_FIX={863:10161,865:10166,866:10168,862:10175,864:10173,867:10179,903:10235,904:10234,980:10253};
+for(const sp in REG_EVO_FIX){const nf=REG_EVO_FIX[sp],s=MON[sp];if(!s||!MON[nf])continue;const of=MON[s.from];if(of)of.to=of.to.filter(x=>x!==+sp);s.from=nf;MON[nf].to.push(+sp);}
+// 카드팩에서 지역 모습 만나기: 지역 모습이 있는 포켓몬이 나오면 20%는 지역 모습으로(카드팩 확률은 그대로)
+const REG_KO={alola:'알로라',galar:'가라르',hisui:'히스이',paldea:'팔데아'};const REGION_RATE=.2;
+const REGIONAL_OF={};FORM_IDS.forEach(id=>{const m=MON[id];if(m.reg)(REGIONAL_OF[m.base]=REGIONAL_OF[m.base]||[]).push(id);});
 // ---- 여러 가지 진화 ----
 // 메가진화·원시회귀: 배틀에서 한 번, 문제를 맞히면 잠깐 더 강한 모습이 돼요. [기본 번호, PokeAPI 그림 번호, 꼬리말, 종류]
 const MEGA=[[3,10033],[6,10034,'X'],[6,10035,'Y'],[9,10036],[15,10090],[18,10073],[65,10037],[80,10071],[94,10038],[115,10039],[127,10040],[130,10041],[142,10042],[150,10043,'X'],[150,10044,'Y'],[181,10045],[208,10072],[212,10046],[214,10047],[229,10048],[248,10049],[254,10065],[257,10050],[260,10064],[282,10051],[302,10066],[303,10052],[306,10053],[308,10054],[310,10055],[319,10070],[323,10087],[334,10067],[354,10056],[359,10057],[362,10074],[373,10089],[376,10076],[380,10062],[381,10063],[382,10077,'','primal'],[383,10078,'','primal'],[384,10079],[428,10088],[445,10058],[448,10059],[460,10060],[475,10068],[531,10069],[719,10075]]
@@ -1501,7 +1513,8 @@ function tiltOn(el){if(!el||S.meta.settings.lowfx)return;let raf=0;el.classList.
 // 일반·고급은 한 번에 얻고, 희귀 3조각·영웅 5조각·전설 8조각을 모아야 내 카드가 돼요. 이미 있는 카드는 코인·별가루로 바뀌어요.
 const SHARD_NEED={3:3,4:5,5:8};
 const deckLim=id=>S.meta.col[id]?(MON[id].rar>=4?1:2):0;
-function gainCard(id,noPull){const g=gainCard0(id,noPull);const m=S.meta;
+function gainCard(id,noPull){let reg=0;if(!noPull&&!window.__sim&&REGIONAL_OF[id]&&rnd()<REGION_RATE){id=rpick(REGIONAL_OF[id]);reg=1;}
+ const g=gainCard0(id,noPull);if(reg)g.reg=1;const m=S.meta;
  if(!window.__sim&&(g.k==='new'||g.k==='dup'||g.k==='done')&&!hasShiny(g.id)&&rnd()<SHINY_RATE){m.shiny=m.shiny||{};m.shiny[g.id]=1;g.shiny=1;m.stats.shinyPack=(m.stats.shinyPack||0)+1;}
  return g;}
 function gainCard0(id,noPull){const m=S.meta;let r=MON[id].rar;m.shard=m.shard||{};
@@ -1523,7 +1536,7 @@ function addCard(id,n=1){const c=S.meta.col;const isNew=!c[id];c[id]=(c[id]||0)+
 const ownCount=()=>Object.keys(S.meta.col).length;
 // 지역(세대): 번호 범위
 const REGIONS=[['관동',1,151],['성도',152,251],['호연',252,386],['신오',387,493],['하나',494,649],['칼로스',650,721],['알로라',722,809],['가라르',810,905],['팔데아',906,1025]].filter(r=>MON[r[1]]);
-const regionOf=id=>{if(MON[id]&&MON[id].form)id=MON[id].base;const r=REGIONS.find(r=>id>=r[1]&&id<=r[2]);return r?r[0]:'';};
+const regionOf=id=>{if(MON[id]&&MON[id].reg)return REG_KO[MON[id].reg];if(MON[id]&&MON[id].form)id=MON[id].base;const r=REGIONS.find(r=>id>=r[1]&&id<=r[2]);return r?r[0]:'';};
 // 파트너: 함께 공부하는 포켓몬 (가진 카드 중 아무나)
 function partnerId(){const m=S.meta;if(m.partner&&m.col[m.partner])return m.partner;let p=m.starter||25;let id=p;const seen=new Set();while(MON[id]&&MON[id].to.length&&!seen.has(id)){seen.add(id);const nx=MON[id].to.find(t=>m.col[t]);if(!nx)break;id=nx;}return m.col[id]?id:p;}
 function setPartner(id){S.meta.partner=id;autoSave();sfx('level');toast(`${josa(esc(MON[id].name),'와과')} 함께 공부해요!`);}
@@ -1583,7 +1596,7 @@ async function openPack(){const m=S.meta;if(m.packs<=0){toast('카드팩이 없�
  const P=$('#pack');const top=Math.max(...cards.map(id=>MON[id].rar));
  P.innerHTML=`<div class=pkInfo>카드팩을 눌러서 열어요!</div><div class=pkBag id=pkBag><div class=bl></div></div><button class="btn ghost sm" id=pkSkip>한 번에 열기</button>`;P.classList.add('on');
  let opened=false;
- const tag=g=>(g.shiny?'<span class="newB shyB">✦ 이로치!</span>':'')+(g.k==='new'?'<span class=newB>NEW!</span>':g.k==='done'?'<span class=newB style="background:#ffb321">조각 완성! NEW</span>':g.k==='shard'?`<span class=newB style="background:#9a6bff">조각 ${g.n}/${g.need}</span>`:`<span class=newB style="background:#7a86a8">+코인 ${g.coin} · 별가루 ${g.dust}</span>`);
+ const tag=g=>(g.shiny?'<span class="newB shyB">✦ 이로치!</span>':'')+(g.reg?`<span class="newB regB">${REG_KO[MON[g.id].reg]}의 모습!</span>`:'')+(g.k==='new'?'<span class=newB>NEW!</span>':g.k==='done'?'<span class=newB style="background:#ffb321">조각 완성! NEW</span>':g.k==='shard'?`<span class=newB style="background:#9a6bff">조각 ${g.n}/${g.need}</span>`:`<span class=newB style="background:#7a86a8">+코인 ${g.coin} · 별가루 ${g.dust}</span>`);
  const face=(id,g)=>g.k==='shard'?`<div class="card r${MON[id].rar} shardCard" data-id="${id}" style="--tc:${TYPE_COL[MON[id].types[0]]};--tc2:#fff"><div class=cTop><span class=cName>${esc(MON[id].name)}</span></div><div class=art>${monImg(id)}<div class=shardMask style="--p:${g.n/g.need}"></div></div><div class=kw style="font-size:12px">조각을 ${g.need}개 모으면<br>내 카드가 돼요!</div><div class=stats><span class=rar>${'★'.repeat(MON[id].rar)}</span></div></div>`:cardHTML(id,{plain:1,shiny:!!g.shiny});
  const reveal=async(all)=>{if(opened)return;opened=true;const bag=$('#pkBag');bag.classList.add('shake');if(top>=4)bag.classList.add('hard');sfx('shake');
   if(!all){await wait(top>=4?1300:800);}
@@ -1654,7 +1667,7 @@ function releaseCard(id){const me=S.meta;if(releaseBlock(id))return 0;const r=MO
  me.col[id]--;if(me.col[id]<=0)delete me.col[id];threadGain(g);me.stats.released=(me.stats.released||0)+1;autoSave();return g;}
 function threadGet(id){const me=S.meta,c=THREAD_COST[MON[id].rar];if(me.col[id])return false;if((me.thread||0)<c){toast(`인연의 끈이 ${c-(me.thread||0)}개 모자라요`);return false;}
  me.thread-=c;if(me.shard)delete me.shard[id];me.col[id]=1;me.dexSeen[id]=1;me.stats.threadGet=(me.stats.threadGet||0)+1;autoSave();return true;}
-function threadPanel(id){const me=S.meta,m=MON[id],own=me.col[id]||0,t=me.thread||0;if(!own&&m.form)return '';
+function threadPanel(id){const me=S.meta,m=MON[id],own=me.col[id]||0,t=me.thread||0;if(!own&&m.parts)return '';
  if(own){const why=releaseBlock(id);return `<div class="explain threadBox" style="font-size:14px;width:100%"><b style="color:#2f8f6b">${I('leaf')} 자연으로 돌려보내기</b> <span class=mut style="font-size:12px">돌려보내면 인연의 끈 <b>${THREAD_GIVE[m.rar]}개</b>를 받아요. 다시 만나려면 카드팩·조각·끈으로 데려와야 해요.</span>
   <div class=mbtns>${why?`<span class=mut style="font-size:13px">${I('lock')} ${esc(why)}</span>`:`<button class="btn green sm" data-a=rel>${own>1?'1장 ':''}자연으로 돌려보내기 (+${THREAD_GIVE[m.rar]})</button>`}</div></div>`;}
  const c=THREAD_COST[m.rar];
@@ -1750,8 +1763,8 @@ function showCard(id){const m=MON[id],me=S.meta,own=me.col[id]||0;const kw=kwOf(
  megas.forEach(x=>acts['ms'+x.sid]=async()=>{if(!(await confirmBox(`메가 결정 ${MEGA_XTAL}개로 <b>${esc(x.name)}</b>의 메가스톤을 만들까요?`,'만들기','나중에')))return;if(craftStone(x.sid)){sfx('evolve');confetti(40);toast(`${esc(x.name)} 메가스톤을 얻었어요!`);}showCard(id);});
  M(`<div style="display:flex;flex-direction:column;align-items:center;gap:10px">${own?cardHTML(id,{size:'lg'}):`<div class="card lg locked">${''}<div class=art>${monImg(id,'front')}</div></div>`}
   <div style="text-align:center"><b class=jua style="font-size:22px">No.${m.id} ${esc(m.name)}</b> <span class=mut>${esc(m.genus)}</span><br>${own?`<span class=mut>가지고 있는 카드 ${own}장 · 키 ${m.ht}m · 몸무게 ${m.wt}kg</span>`:'<span class=mut>아직 없는 카드예요</span>'}</div>
-  ${!own&&!m.form&&(me.dexSeen[id]||sh)?`<div class=explain style="font-size:14px;width:100%">${need?`조각 <b>${sh} / ${need}</b> <span class=xpBar style="display:inline-block;width:120px;vertical-align:middle"><i style="width:${sh/need*100}%"></i></span><br>`:''}${I('star')} 별가루 ${DUST_COST[m.rar]}개로 ${need?'조각 1개':'카드'}를 만들 수 있어요 (지금 ${me.dust||0}개)<div class=mbtns><button class="btn purple sm" data-a=craft ${(me.dust||0)>=DUST_COST[m.rar]?'':'disabled'}>만들기</button></div></div>`:''}
-  ${!own&&!m.form&&(me.dexSeen[id]||sh)?(m.rar>=5?`<div class=explain style="font-size:13px;width:100%;background:#fff3c4">${I('lock')} <b>전설의 포켓몬</b>은 살 수 없어요. 열심히 문제를 풀어 <b>조각</b>을 모아 만나요!</div>`:`<div class=explain style="font-size:13px;width:100%">${I('coin')} 이 카드의 가치는 <b>${CARD_VALUE[m.rar]}코인</b>이에요. 너무너무 갖고 싶다면 <b>${BUY_X}배인 ${buyPrice(id)}코인</b>으로 바로 데려올 수 있어요. (지금 ${me.coins}코인)<div class=mbtns><button class="btn red sm" data-a=buy ${me.coins>=buyPrice(id)?'':'disabled'}>${buyPrice(id)}코인으로 데려오기</button></div></div>`):''}
+  ${!own&&!m.parts&&(me.dexSeen[id]||sh)?`<div class=explain style="font-size:14px;width:100%">${need?`조각 <b>${sh} / ${need}</b> <span class=xpBar style="display:inline-block;width:120px;vertical-align:middle"><i style="width:${sh/need*100}%"></i></span><br>`:''}${I('star')} 별가루 ${DUST_COST[m.rar]}개로 ${need?'조각 1개':'카드'}를 만들 수 있어요 (지금 ${me.dust||0}개)<div class=mbtns><button class="btn purple sm" data-a=craft ${(me.dust||0)>=DUST_COST[m.rar]?'':'disabled'}>만들기</button></div></div>`:''}
+  ${!own&&!m.parts&&(me.dexSeen[id]||sh)?(m.rar>=5?`<div class=explain style="font-size:13px;width:100%;background:#fff3c4">${I('lock')} <b>전설의 포켓몬</b>은 살 수 없어요. 열심히 문제를 풀어 <b>조각</b>을 모아 만나요!</div>`:`<div class=explain style="font-size:13px;width:100%">${I('coin')} 이 카드의 가치는 <b>${CARD_VALUE[m.rar]}코인</b>이에요. 너무너무 갖고 싶다면 <b>${BUY_X}배인 ${buyPrice(id)}코인</b>으로 바로 데려올 수 있어요. (지금 ${me.coins}코인)<div class=mbtns><button class="btn red sm" data-a=buy ${me.coins>=buyPrice(id)?'':'disabled'}>${buyPrice(id)}코인으로 데려오기</button></div></div>`):''}
   ${own&&m.flavor?`<div class=explain style="font-size:14px">${esc(m.flavor)}</div>`:''}
   ${own?`<div class=explain style="font-size:14px;background:#eef6ff;border-color:#9fc3ff">${I(kw.ic)} <b style="color:#2f62b5">${kw.n}</b> — ${kw.d}<br>희귀도 ${RAR_NAME[m.rar]} · 비용 ${m.cost} · 공격 ${m.atk} · 체력 ${m.hp}</div>`:''}
   ${m.to.length||m.from||megas.length?`<div style="width:100%"><div class=mut style="font-size:13px;margin-bottom:4px">${I('up')} 진화 계보 <small>(눌러서 보기)</small></div>${evoTree(id)}</div>`:''}
@@ -1771,10 +1784,10 @@ function showCard(id){const m=MON[id],me=S.meta,own=me.col[id]||0;const kw=kwOf(
 let DEXF='all',DEXR=0;
 function renderDex(){S.screen='dex';const me=S.meta;const own=ownCount();
  const inR=id=>DEXR<0||(id>=REGIONS[DEXR][1]&&id<=REGIONS[DEXR][2]);
- const fl=(DEXF==='all'?MON_IDS.filter(inR):DEXF==='own'?MON_IDS.concat(FORM_IDS).filter(id=>me.col[id]):DEXF==='evo'?MON_IDS.filter(id=>me.col[id]&&MON[id].to.length):DEXF==='mega'?MON_IDS.filter(id=>MEGA_OF[id]&&inR(id)):DEXF==='gold'?MON_IDS.filter(id=>goldOf(id)&&me.col[id]):DEXF==='form'?FORM_IDS.slice():DEXF==='shiny'?MON_IDS.concat(FORM_IDS).filter(id=>hasShiny(id)&&me.col[id]):DEXF==='gmax'?MON_IDS.filter(id=>GMAX_OF[id]&&inR(id)):MON_IDS.filter(id=>inR(id)&&MON[id].types.includes(+DEXF)));
+ const fl=(DEXF==='all'?MON_IDS.filter(inR):DEXF==='own'?MON_IDS.concat(FORM_IDS).filter(id=>me.col[id]):DEXF==='evo'?MON_IDS.filter(id=>me.col[id]&&MON[id].to.length):DEXF==='mega'?MON_IDS.filter(id=>MEGA_OF[id]&&inR(id)):DEXF==='gold'?MON_IDS.filter(id=>goldOf(id)&&me.col[id]):DEXF==='form'?FORM_IDS.filter(id=>!MON[id].reg):DEXF==='reg'?FORM_IDS.filter(id=>MON[id].reg):DEXF==='shiny'?MON_IDS.concat(FORM_IDS).filter(id=>hasShiny(id)&&me.col[id]):DEXF==='gmax'?MON_IDS.filter(id=>GMAX_OF[id]&&inR(id)):MON_IDS.filter(id=>inR(id)&&MON[id].types.includes(+DEXF)));
  $('#view').innerHTML=hudHTML()+`<div class=wrap><div class=panel><div class=row style="align-items:center"><h2 style="margin:0">${I('book')} 도감</h2><span class=hudSp></span><span class=pill>${own} / ${MON_IDS.length}</span><span class=pill title="별가루">${I('star')} 별가루 ${me.dust||0}</span><span class=pill title="메가 결정 20개 = 메가스톤 1개" style="border-color:#b98cff">${I('star')} 메가 결정 ${megaSt().xtal||0}</span><span class=pill title="포켓몬을 자연으로 돌려보내면 생겨요" style="border-color:#3cc47c">${I('leaf')} 인연의 끈 ${me.thread||0}</span><span class=pill title="반짝 가루 15개 = 이로치 1번" style="border-color:#ffb321">✦ 반짝 가루 ${me.shine||0}</span><span class=pill title="다이 버섯 8개 = 다이수프 1개" style="border-color:#ff7a95">${I('flame')} 다이 버섯 ${dmaxSt().mush||0}</span></div>
   <div class=filters style="margin:8px 0">${REGIONS.map((r,i)=>`<button class="fbtn${DEXR===i?' on':''}" data-r="${i}">${r[0]} <small>${MON_IDS.filter(id=>id>=r[1]&&id<=r[2]&&me.col[id]).length}/${r[2]-r[1]+1}</small></button>`).join('')}<button class="fbtn${DEXR<0?' on':''}" data-r="-1">모든 지역</button></div>
-  <div class=filters style="margin:8px 0">${[['all','전체'],['own','가진 카드'],['evo','진화 가능'],['form','특별한 모습'],['mega','메가진화'],['gmax','거다이맥스'],['shiny','이로치'],['gold','보물 카드']].map(([k,n])=>`<button class="fbtn${DEXF===k?' on':''}" data-f="${k}">${n}</button>`).join('')}${TYPE_KO.map((n,i)=>`<button class="fbtn${DEXF===String(i)?' on':''}" data-f="${i}" style="${DEXF===String(i)?`background:${TYPE_COL[i]};border-color:${TYPE_COL[i]}`:''}">${n}</button>`).join('')}</div>
+  <div class=filters style="margin:8px 0">${[['all','전체'],['own','가진 카드'],['evo','진화 가능'],['form','특별한 모습'],['reg','지역 모습'],['mega','메가진화'],['gmax','거다이맥스'],['shiny','이로치'],['gold','보물 카드']].map(([k,n])=>`<button class="fbtn${DEXF===k?' on':''}" data-f="${k}">${n}</button>`).join('')}${TYPE_KO.map((n,i)=>`<button class="fbtn${DEXF===String(i)?' on':''}" data-f="${i}" style="${DEXF===String(i)?`background:${TYPE_COL[i]};border-color:${TYPE_COL[i]}`:''}">${n}</button>`).join('')}</div>
   <div class=mbtns style="justify-content:flex-start;margin:0 0 8px"><button class="btn green sm" id=relBtn>${I('leaf')} 여러 마리 자연으로 돌려보내기</button><span class=mut style="font-size:12px">인연의 끈을 모아 원하는 포켓몬을 데려와요 (도감에서 없는 포켓몬을 눌러요)</span></div><div class=mut style="font-size:12px;margin-bottom:8px">일반·고급은 한 번에, 희귀는 조각 3개·영웅 5개·전설 8개를 모아야 내 카드가 돼요. 본 적 있는 포켓몬은 별가루로 조각을 만들 수 있어요. 카드팩에서 전설 조각이 나올 확률은 장마다 ${PACK_W[5]}%예요. 카드팩 40개 안에는 꼭 1장 나와요(지금 ${me.pity.p5}/40). 영웅 이상은 10팩 안에 꼭(지금 ${me.pity.p4}/10).</div>
   <div class=dexGrid>${fl.map(id=>{const n=me.col[id]||0,seen=me.dexSeen[id];const gl=n?goldOf(id):0;return `<div class="dexCell ${n?'':seen?'seen':'none'}${gl?' gold'+gl:''}${MEGA_OF[id]&&n?' canMega':''}${GMAX_OF[id]&&n?' canGmax':''}${n&&hasShiny(id)?' shiny':''}" data-id="${id}"><span class=no>${MON[id].form?MON[id].base:id}</span>${!n&&me.shard&&me.shard[id]?`<span class=n2 style="color:#9a6bff">${me.shard[id]}/${SHARD_NEED[MON[id].rar]}</span>`:''}${monImg(id)}<span class=nm>${n||seen?esc(MON[id].name):'???'}</span></div>`;}).join('')||'<p class=mut>아직 없어요</p>'}</div></div></div>`;
  bindHud();
@@ -3059,6 +3072,10 @@ async function renderCardScreen(){S.screen='card';const m=S.meta;const sp=cardSp
 // ===== 업데이트 소식: 새 업데이트가 나오면 이미 하던 학생에게 한 번 보여 줘요 =====
 // 새 업데이트를 올릴 때: UPDATES 맨 앞에 v를 1 올린 묶음을 하나 추가해요(학생 말투로, 짧게).
 const UPDATES=[
+ {v:3,d:'2026년 11월',t:'지역 모습이 찾아왔어요',items:[
+  {ic:'map',h:'지역 모습 57가지',p:'<b>알로라 · 가라르 · 히스이 · 팔데아</b> 지방의 모습이 생겼어요! 알로라 식스테일, 가라르 나옹, 히스이 가디, 팔데아 우파…. 도감 <b>「지역 모습」</b> 탭에서 볼 수 있어요.'},
+  {ic:'ball',h:'카드팩에서 만나요',p:'지역 모습이 있는 포켓몬이 카드팩에서 나오면, <b>5번 중 1번쯤</b> 지역 모습으로 나타나요. 인연의 끈으로 데려올 수도 있어요.'},
+  {ic:'up',h:'진짜처럼 진화해요',p:'피카츄는 <b>알로라 라이츄</b>로도 진화할 수 있어요. 그리고 나이킹은 이제 <b>가라르 나옹</b>에서, 토오는 <b>팔데아 우파</b>에서 진화해요(원래 게임과 똑같이).'}]},
  {v:2,d:'2026년 11월',t:'여러분의 건의로 만든 업데이트',items:[
   {ic:'heart',h:'건의해 줘서 고마워요!',p:'"루가루암 진화체 추가해 주시면 안 되나요?", "개굴닌자 유대진화도!", "솔가레오 합체도!" — 여러분이 보내 준 건의로 만든 업데이트예요.'},
   {ic:'rock',h:'루가루암의 세 가지 모습',p:'암멍이가 진화할 때 <b>한낮 · 한밤중 · 황혼</b> 중 하나를 골라요! 도감의 <b>「특별한 모습」</b> 탭에서 볼 수 있어요.'},
@@ -3092,11 +3109,61 @@ function updMaybe(){const m=S.meta;if(!m.name||(m.updSeen||0)>=UPD_VER)return;
  const tryShow=()=>{if(S.screen!=='hub')return;if(CO||modalOpen()||$('#unlock').classList.contains('on')||$('#pack').classList.contains('on')){clearTimeout(updMaybe.t);updMaybe.t=setTimeout(tryShow,900);return;}showUpdates();};
  clearTimeout(updMaybe.t);updMaybe.t=setTimeout(tryShow,700);}
 
+// ===== 체험 코드: 다른 선생님·학부모에게 기능을 보여 줄 때 =====
+// 선생님 코드 칸에 TEST-2026(또는 TEST)을 넣으면, 한 달쯤 공부한 '체험 트레이너'로 들어가요.
+// 체험 기록은 저장하지 않아요(이 기기의 학생 기록은 그대로). 새로고침하거나 「체험 끝내기」를 누르면 끝나요.
+const DEMO_CODES=['TEST2026','TEST'];
+const isDemoCode=v=>DEMO_CODES.includes(String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,''));
+function demoDay(k){return today(new Date(Date.now()-k*864e5));}
+function buildDemo(){const keep=S.meta;const m=defaultMeta();S.meta=m; // allowedSkills 등이 S.meta를 보므로 잠깐 바꿔 둬요
+ try{
+ const code=makeTeacherCode(4,1,'TST');const pc=parseCode(code);
+ Object.assign(m,{name:'체험 트레이너',code:pc.code,gs:pc.gs,cls:'TST',starter:25,created:Date.now()-30*864e5,firstPlay:Date.now()-30*864e5,uMax:20,uMaxAt:today(),partner:25});
+ // --- 공부 기록: 처음엔 60%, 지금은 90% ---
+ let q=0,c=0;const days={};for(let k=29;k>=1;k--){if(k>8&&k%6===3)continue;const n=12+Math.round((29-k)*.6)+(k%3);const r=.58+(29-k)*.011;const cc=Math.min(n,Math.round(n*r));days[demoDay(k)]={n,c:cc,ms:cc*(9000-(29-k)*120),t:1+(k%4===0?1:0),tt:n*11000};q+=n;c+=cc;}
+ m.days=days;m.hist=[];m.thist=[];for(let i=0;i<200;i++){const p=.6+i/200*.32;m.hist.push(((i*7919)%100)/100<p?1:0);m.thist.push(Math.round((11-i/200*4.5)*10)/10);}
+ m.first20=m.hist.slice(0,20);m.first20t=m.thist.slice(0,20);
+ // --- 개념별 별 · 약점 · 석산 쌓기(부족한 바탕 개념 복습) ---
+ const al=allowedSkills();al.forEach((s,i)=>{const st=i%11===0?1:i%5===0?2:i%3===0?5:i%2===0?4:3;m.sk[s.id]={c:6+st*4,x:st<=1?5:1,st,run:0,last:demoDay(i%9+1),w:st<=1?2:0,r:st<=1?'0101101':'1111011'};});
+ const withPre=al.filter(s=>preOf(s.id).length);const F=withPre.length?withPre[withPre.length-1].id:null; // 이 학기의 어려운 개념 하나
+ if(F){const v=m.sk[F];v.st=1;v.w=3;v.r='0010100';v.x=7;m.found[F]={d:demoDay(4),n:5};preOf(F).forEach((p,i)=>{m.sk[p]=Object.assign(m.sk[p]||{c:0,x:0,last:'',run:0,w:0},{st:i?2:3,r:i?'0111':'1101',c:8,x:3});});}
+ const misc=Object.keys(typeof ES_MIS!=='undefined'?ES_MIS:{}).slice(0,3);misc.forEach((k,i)=>m.misc[k]=3-i);
+ const ukeys=Object.keys(unitsWithSkills());ukeys.slice(0,Math.ceil(ukeys.length*.6)).forEach((k,i)=>m.badges[k]=demoDay(20-i%18));
+ m.train={last:demoDay(1),best:10,count:26,daily:demoDay(1),lastRes:null,hist:Array.from({length:20},(_,i)=>({d:demoDay(20-i),n:10,c:Math.min(10,6+Math.floor(i/4)),ms:90000-i*1500,combo:3+(i%5),rt:1,gw:0}))};
+ Object.assign(m.stats,{q,c,streak:4,bestCombo:14,bestStreak:9,guessWrong:3,guessAlert:1,careful:6,lowerStar:4,shardDone:6,crafted:5,foundDone:3,superEff:40,gymTry:16,retryOk:28,bounce:33,fast:20,better:9,perfect:6,quickTrain:2,practice:7,comeback:2,flawless:3,defOk:12,candyAll:820,evolved:14,opened:42,exped:4,released:15,threadGet:1,shinyMade:1,fused:1,mega:6,gmax:3,miniRuns:5,gVisit:6});
+ m.tod={m:30,a:260,e:110};m.endless={best:42,total:330,runs:9};m.pvp={n:6,w:4,l:2,gg:5,foes:{'번개친구':3,'수학왕':3},last:Date.now()-3*864e5};
+ // --- 레벨·재화 ---
+ let xp=0;for(let l=1;l<32;l++)xp+=lvNeed(l);m.xp=xp+40;
+ Object.assign(m,{coins:2500,candy:650,packs:3,dust:600,thread:420,shine:18,mathEnergy:24});
+ m.gyms={};for(let i=0;i<9;i++)m.gyms[i]=demoDay(26-i*2);m.battles={w:31,l:8};
+ // --- 카드: 관동·성도 일반~희귀 대부분 + 전설 몇 + 특별한 모습 ---
+ MON_IDS.filter(id=>id<=251&&MON[id].rar<=3&&id%5!==0).forEach(id=>m.col[id]=1);[150,151,249,250,384,658,744,800,791,646,644,643,6,9,25,133].forEach(id=>m.col[id]=(m.col[id]||0)+1);
+ [10126,10103,10161,10155].forEach(id=>{if(MON[id])m.col[id]=1;});m.col[791]=1;m.col[744]=1;
+ Object.keys(m.col).forEach(id=>m.dexSeen[id]=1);MON_IDS.filter(id=>id<=400).forEach(id=>m.dexSeen[id]=1);
+ m.shard={245:5,243:3};m.pity={p4:4,p5:21};
+ m.shiny={25:1,6:1,133:1,10103:1};m.gold={25:2,6:1};m.bond={25:320,658:60,6:140,133:40};
+ m.mega={xtal:25,stones:{10034:demoDay(9),10036:demoDay(5)},seen:{10034:1,10036:1},n:6};
+ m.dmax={mush:12,soup:{6:demoDay(6),25:demoDay(3)},seen:{10196:1,10199:1,10197:1},n:3};
+ m.deck=autoDeck();
+ // --- 기능별 진행 ---
+ m.raid={cur:null,wins:3,tries:5,last:demoDay(1),best:14};const rc=raidCur();Object.assign(rc,{hp:9,n:12,c:11,combo:2});
+ m.garden=Object.assign(m.garden,{first:Date.now()-20*864e5,berry:{oran:3,razz:2,lum:1},own:{flower:1,pond:1,tree:1},deco:{0:'flower',2:'pond',4:'tree'},plots:[{b:'oran',at:c-3},{b:'pecha',at:c-10},null],eggs:[{t:4,at:c-24}],album:[25,133,7,1,4,39].map((id,i)=>({id,d:demoDay(18-i*3)})),heart:{25:6,133:2}});
+ m.mini={tk:3,prog:2,day:today(),n:0,best:64,runs:5};
+ newSeason(m);m.season.xp=2600;
+ for(const f of FEAT)m.unl[f.k]=1;m.unlNew={};['c_battle','c_endless','c_evo','c_hub','c_pvp','c_train'].forEach(k=>m.seen[k]=1);
+ m.updSeen=0; // 업데이트 소식도 한 번 보여 줘요
+ for(const a of ACH){const t=achTier(a,m);if(t)m.ach[a.k]={t,d:Array.from({length:t},(_,i)=>demoDay(15-i*4))};}
+ return m;}finally{S.meta=keep;}}
+function startDemo(){const m=buildDemo();S.meta=m;S.demo=true;try{clearTimeout(_asT);}catch(e){}sfx('rare');
+ toast('체험 모드예요! 한 달쯤 공부한 트레이너로 둘러봐요. 기록은 저장되지 않고, 새로고침하면 끝나요.');renderHub();}
+// 끝낼 때 S.demo를 끄지 않아요: 끄면 새로고침 직전의 저장(pagehide·beforeunload)이 체험 기록을 학생 기록 자리에 써 버려요
+function endDemo(){location.reload();}
+
 // ===== 화면 =====
 const STARTERS={관동:[1,4,7,25,133],성도:[152,155,158],호연:[252,255,258],신오:[387,390,393],하나:[495,498,501],칼로스:[650,653,656],알로라:[722,725,728],가라르:[810,813,816],팔데아:[906,909,912]};
 const STARTER_DECK=[19,16,10,41,27];
 function hudHTML(){const m=S.meta,L=lvOf(m.xp);
- return `<div class=hud><button class="btn ghost sm" id=hHome>${I('ball')} 방</button><div class=lvBox><span class=lvNum>Lv.${L.lv}</span><div class=xpBar title="${L.cur}/${L.need}"><i style="width:${L.cur/L.need*100}%"></i></div></div><span class=gsTag>${esc(semName(m.gs))}</span><span class=hudSp></span>
+ return `<div class=hud><button class="btn ghost sm" id=hHome>${I('ball')} 방</button><div class=lvBox><span class=lvNum>Lv.${L.lv}</span><div class=xpBar title="${L.cur}/${L.need}"><i style="width:${L.cur/L.need*100}%"></i></div></div><span class=gsTag>${esc(semName(m.gs))}</span>${S.demo?`<button class="btn sm demoTag" onclick="endDemo()" title="체험을 끝내고 원래 화면으로">체험 중 · 끝내기</button>`:''}<span class=hudSp></span>
  <span class=pill title="사탕">${I('candy')}${m.candy}</span><span class=pill title="코인">${I('coin')}${m.coins}</span><span class=pill title="카드팩">${I('ball')}${m.packs}</span><button class="btn green sm" id=hSave title="누르면 바로 저장돼요. 저장 코드·파일은 길게 누르거나 설정에서">${I('disk')} 저장</button><button class="btn ghost sm" id=hSet>${I('gear')}</button></div>`;}
 function bindHud(){if(typeof closeInfo==='function')closeInfo();const h=$('#hHome');if(h)h.onclick=()=>{sfx('tap');renderHub();};const s=$('#hSave');if(s){s.onclick=()=>{sfx('coin');quickSave();};s.oncontextmenu=e=>{e.preventDefault();showSaveBox();};}const t=$('#hSet');if(t)t.onclick=()=>{sfx('tap');showSettings();};}
 
@@ -3263,7 +3330,7 @@ function renderGate(change){S.screen='gate';const m=S.meta;const old=m.code&&par
   <button class="btn red big" id=gOk style="width:100%">확인</button><div class=row style="width:100%"><button class="btn ghost" id=gBack>뒤로</button><button class="btn ghost" id=gLoad>${I('disk')} 저장 불러오기</button></div>
   <p class=mut style="font-size:12px;text-align:center">코드에는 학년과 학기가 들어 있어요. 배우지 않은 학년의 문제는 나오지 않아요(선행 방지).</p></div></div>`;
  const inp=$('#gCode');setTimeout(()=>inp.focus(),100);
- const ok=()=>{const c=parseCode(inp.value);if(!c){toast('코드 모양이 아니에요. 예: 31-ABC-XYZ');return;}if(c.bad){toast(c.old?'지난 학년도 코드예요. 새 코드를 받아 주세요':'코드가 맞지 않아요');sfx('wrong');return;}
+ const ok=()=>{if(isDemoCode(inp.value)){sfx('ok');return startDemo();}const c=parseCode(inp.value);if(!c){toast('코드 모양이 아니에요. 예: 31-ABC-XYZ');return;}if(c.bad){toast(c.old?'지난 학년도 코드예요. 새 코드를 받아 주세요':'코드가 맞지 않아요');sfx('wrong');return;}
   const prev=m.gs;m.code=c.code;m.gs=c.gs;m.cls=c.cls;if(prev!==c.gs){m.uMax=null;m.focus=null;}sfx('ok');autoSave();toast(`${semName(c.gs)} 코드 확인!`);
   if(m.name&&m.starter&&prev!==c.gs)return askUnit(()=>renderHub());goStart();};
  $('#gOk').onclick=ok;inp.onkeydown=e=>{if(e.key==='Enter')ok();};$('#gBack').onclick=()=>{sfx('tap');m.name&&codeValid()?renderHub():renderTitle();};$('#gLoad').onclick=()=>{sfx('tap');showSaveBox();};}
