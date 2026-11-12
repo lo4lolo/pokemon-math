@@ -575,6 +575,7 @@ svg.egg.big{width:110px}
 .updItem p{margin:2px 0 0;font-size:14px;line-height:1.55}
 .updIc{flex:none;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
 .updIc .ic{width:32px;height:32px}
+.updSub{font-family:'Jua';font-size:15px;color:#7a86a8;margin:10px 2px 0;padding-top:8px;border-top:2px dashed var(--line)}
 .updSign{text-align:center;font-family:'Jua';font-size:17px;color:#c2185b;margin:12px 0 4px}
 /* 체험 모드 */
 .demoTag{background:#ff8a3d;color:#fff;border-color:#e06a1d;margin-left:6px}
@@ -3071,19 +3072,21 @@ async function renderCardScreen(){S.screen='card';const m=S.meta;const sp=cardSp
 
 // ===== 업데이트 소식: 새 업데이트가 나오면 이미 하던 학생에게 한 번 보여 줘요 =====
 // 새 업데이트를 올릴 때: UPDATES 맨 앞에 v를 1 올린 묶음을 하나 추가해요(학생 말투로, 짧게).
+// 같은 날 여러 번 배포하면 그날 것은 한 묶음으로 합치고 v만 올려요(학생은 하루에 한 번만 안내를 봐요).
+// 체험 코드(TEST-2026)는 학생에게 안내하지 않아요.
 const UPDATES=[
- {v:3,d:'2026년 11월',t:'지역 모습이 찾아왔어요',items:[
-  {ic:'map',h:'지역 모습 57가지',p:'<b>알로라 · 가라르 · 히스이 · 팔데아</b> 지방의 모습이 생겼어요! 알로라 식스테일, 가라르 나옹, 히스이 가디, 팔데아 우파…. 도감 <b>「지역 모습」</b> 탭에서 볼 수 있어요.'},
-  {ic:'ball',h:'카드팩에서 만나요',p:'지역 모습이 있는 포켓몬이 카드팩에서 나오면, <b>5번 중 1번쯤</b> 지역 모습으로 나타나요. 인연의 끈으로 데려올 수도 있어요.'},
-  {ic:'up',h:'진짜처럼 진화해요',p:'피카츄는 <b>알로라 라이츄</b>로도 진화할 수 있어요. 그리고 나이킹은 이제 <b>가라르 나옹</b>에서, 토오는 <b>팔데아 우파</b>에서 진화해요(원래 게임과 똑같이).'}]},
- {v:2,d:'2026년 11월',t:'여러분의 건의로 만든 업데이트',items:[
+ {v:4,d:'2026년 11월 12일',t:'여러분의 건의 + 지역 모습 업데이트',items:[
+
   {ic:'heart',h:'건의해 줘서 고마워요!',p:'"루가루암 진화체 추가해 주시면 안 되나요?", "개굴닌자 유대진화도!", "솔가레오 합체도!" — 여러분이 보내 준 건의로 만든 업데이트예요.'},
   {ic:'rock',h:'루가루암의 세 가지 모습',p:'암멍이가 진화할 때 <b>한낮 · 한밤중 · 황혼</b> 중 하나를 골라요! 도감의 <b>「특별한 모습」</b> 탭에서 볼 수 있어요.'},
   {ic:'drop',h:'지우개굴닌자 (유대변화)',p:'개굴닌자를 <b>파트너로 함께 문제를 50개</b> 풀면, 메가스톤 없이 배틀에서 지우개굴닌자로 변신할 수 있어요. 함께 공부한 만큼 깊어지는 인연!'},
   {ic:'star',h:'합체!',p:'<b>네크로즈마 + 솔가레오 = 황혼의 갈기</b>, 네크로즈마 + 루나아라 = 새벽의 날개, 큐레무 + 제크로무·레시라무 = 블랙·화이트큐레무, 버드렉스 + 블리자포스·레이스포스 = 백마·흑마! 두 카드가 있으면 카드 창에서 합체하고, 언제든 다시 나눌 수 있어요.'},
   {ic:'bolt',h:'울트라버스트',p:'합체한 네크로즈마는 키스톤만 있으면 배틀에서 <b>울트라네크로즈마</b>로 변신해요.'},
-  {ic:'medal',h:'새 메가진화 49가지',p:'메가개굴닌자, 메가망나뇽, 메가라이츄 X·Y, 메가앱솔 Z 등 새 메가진화가 생겼어요. 메가 결정 20개로 메가스톤을 만들어요.'}]},
- {v:1,d:'2026년 11월',t:'11월 큰 업데이트',items:[
+  {ic:'medal',h:'새 메가진화 49가지',p:'메가개굴닌자, 메가망나뇽, 메가라이츄 X·Y, 메가앱솔 Z 등 새 메가진화가 생겼어요. 메가 결정 20개로 메가스톤을 만들어요.'},
+{ic:'map',h:'지역 모습 57가지',p:'<b>알로라 · 가라르 · 히스이 · 팔데아</b> 지방의 모습이 생겼어요! 알로라 식스테일, 가라르 나옹, 히스이 가디, 팔데아 우파…. 도감 <b>「지역 모습」</b> 탭에서 볼 수 있어요.'},
+  {ic:'ball',h:'카드팩에서 만나요',p:'지역 모습이 있는 포켓몬이 카드팩에서 나오면, <b>5번 중 1번쯤</b> 지역 모습으로 나타나요. 인연의 끈으로 데려올 수도 있어요.'},
+  {ic:'up',h:'진짜처럼 진화해요',p:'피카츄는 <b>알로라 라이츄</b>로도 진화할 수 있어요. 그리고 나이킹은 이제 <b>가라르 나옹</b>에서, 토오는 <b>팔데아 우파</b>에서 진화해요(원래 게임과 똑같이).'}]},
+ {v:1,d:'2026년 11월 9일',t:'11월 큰 업데이트',items:[
   {ic:'star',h:'✦ 이로치 포켓몬',p:'색이 다른 아주 희귀한 포켓몬이에요! 카드팩에서 가끔(카드 64장에 1장쯤) 나타나요. <b>반짝 가루 15개</b>로 내 카드 하나를 이로치로 바꿀 수도 있어요. 능력은 같고 모습만 반짝! 진화해도 이로치 그대로예요.'},
   {ic:'flame',h:'거다이맥스',p:'체육관 배지 <b>4개</b>를 모으면 다이맥스 밴드를 받아요. 다이 버섯 <b>8개</b>로 다이수프를 만들면, 배틀에서 한 번 <b>문제를 맞혀</b> 3차례 동안 거대해져요! 공격 +3 · 체력 +3, 변신할 때 상대 포켓몬 모두에게 1 피해.'},
   {ic:'sword',h:'다이맥스 레이드 (챔피언을 이긴 친구)',p:'하루에 한 번 거대 포켓몬이 나타나요. <b>문제를 맞혀야만</b> 공격할 수 있고, 내가 약한 개념부터 나와요. 아직 없는 거다이맥스 포켓몬이 나오고, 이기면 그 포켓몬 <b>조각 2개</b>!'},
@@ -3096,9 +3099,11 @@ const UPDATES=[
   {ic:'ball',h:'업데이트 선물',p:'예전부터 함께한 친구들에게 <b>반짝 가루 15개 · 다이 버섯 8개</b>를 드렸어요. 도감에서 이로치와 거다이맥스를 만나 봐요!'}]}];
 const UPD_VER=UPDATES[0].v;
 const UPD_SIGN='- 너희들이 행복하길 바라는 하는교사가 -';
-function showUpdates(after){const u=UPDATES[0];sfx('level');
+// all: 지금까지의 소식을 모두(링크로 열 때). 아니면 아직 안 본 소식만(여러 개면 최근 것부터 이어서)
+function showUpdates(after,all){const seen=S.meta.updSeen||0;let list=all?UPDATES:UPDATES.filter(u=>u.v>seen);if(!list.length)list=[UPDATES[0]];const u=list[0];sfx('level');
+ const sec=(x,i)=>`${i?`<div class=updSub>${esc(x.d)} · ${esc(x.t)}</div>`:''}${x.items.map(y=>`<div class=updItem><div class=updIc>${I(y.ic)}</div><div><b>${y.h}</b><p>${y.p}</p></div></div>`).join('')}`;
  M(`<div class=updPage><div class=updHead><div class=jua style="font-size:14px;opacity:.85">${esc(u.d)} · 업데이트 소식</div><h2 style="margin:2px 0 0">${esc(u.t)}</h2></div>
-  <div class=updList>${u.items.map(x=>`<div class=updItem><div class=updIc>${I(x.ic)}</div><div><b>${x.h}</b><p>${x.p}</p></div></div>`).join('')}</div>
+  <div class=updList>${list.map(sec).join('')}</div>
   <p class=updSign>${esc(UPD_SIGN)}</p>
   <div class=mbtns><button class="btn gold big" data-a=x>알겠어요!</button></div></div>`,
   {x:()=>{closeM();updSeen();if(after)after();},_close:()=>{closeM();updSeen();if(after)after();}},{wide:1});}
@@ -3221,7 +3226,7 @@ function renderHub(){S.screen='hub';const m=S.meta;if(!codeValid())return render
  // 학기는 정해졌는데 배운 단원을 아직 안 골랐으면(선생님이 코드를 바꿔 준 기록 등) 처음 고르기처럼 물어봐요
  else if(!m.uMax&&(UNITS[m.gs]||[]).length&&!CO&&!modalOpen())setTimeout(()=>{if(S.screen==='hub'&&!m.uMax&&!modalOpen()&&!CO)askUnit(()=>renderHub());},900);
  $('#hPartner').onclick=()=>{sfx('tap');partnerPicker(()=>renderHub());};
- $('#hUpd').onclick=e=>{e.preventDefault();sfx('tap');showUpdates();};
+ $('#hUpd').onclick=e=>{e.preventDefault();sfx('tap');showUpdates(null,true);};
  updMaybe();
  $('#stonePanel').onclick=()=>{sfx('tap');stoneInfo();};
  $('#view').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{sfx('tap');const k=b.dataset.f;if(m.unlNew[k]){delete m.unlNew[k];autoSave();}NAV[k]();});
