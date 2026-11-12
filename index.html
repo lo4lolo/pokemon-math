@@ -3109,6 +3109,8 @@ function renderHub(){S.screen='hub';const m=S.meta;if(!codeValid())return render
  // 진도는 계속 나가요: 단원을 고른 지 2주가 지나면 한 번 물어봐요
  if(m.uMax&&m.uMax<20&&m.uMaxAt&&dayDiff(m.uMaxAt,today())>=14&&!CO&&!modalOpen())setTimeout(()=>{if(S.screen==='hub'&&!modalOpen())askUnit(()=>renderHub(),true);},900);
  if(m.uMax&&!m.uMaxAt){m.uMaxAt=today();autoSave();}
+ // 학기는 정해졌는데 배운 단원을 아직 안 골랐으면(선생님이 코드를 바꿔 준 기록 등) 처음 고르기처럼 물어봐요
+ else if(!m.uMax&&(UNITS[m.gs]||[]).length&&!CO&&!modalOpen())setTimeout(()=>{if(S.screen==='hub'&&!m.uMax&&!modalOpen()&&!CO)askUnit(()=>renderHub());},900);
  $('#hPartner').onclick=()=>{sfx('tap');partnerPicker(()=>renderHub());};
  $('#hUpd').onclick=e=>{e.preventDefault();sfx('tap');showUpdates();};
  updMaybe();
