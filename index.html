@@ -616,6 +616,9 @@ svg.egg.big{width:110px}
 .actionViewport{width:min(100%,max(310px,calc((100dvh - 250px)*1.60714)));margin:0 auto}
 .actionViewport canvas{width:100%;height:auto;max-height:none;aspect-ratio:900/560}
 @media(max-width:700px){.actionViewport{width:100%}.actionViewport canvas{max-height:none}}
+.actionCollection{margin-top:32px}.actionFilters{display:flex;gap:12px;flex-wrap:wrap}.actionFilters label{display:grid;gap:8px;font-size:12px;color:#c1d6e6;flex:1;min-width:130px}.actionFilters input,.actionFilters select{width:100%;box-sizing:border-box;min-height:46px;background:#172b40;border:1px solid #58758e;color:#eef8ff;border-radius:8px;padding:10px;font:16px system-ui}.actionFilters select option{background:#172b40}.actionPagination{display:flex;gap:20px;align-items:center;justify-content:center;margin:16px 0}.actionPagination button{min-height:44px;min-width:70px}.actionPagination span,#actionCount{font-size:12px;color:#a8c4d5}.actionPagination button:disabled{opacity:.4}.actionLoadout{display:flex;gap:20px;align-items:center;margin-top:0}.actionSelectedMon{display:flex;flex-direction:column;align-items:center;flex:none;width:150px;font-size:12px;color:#f6da8f}.actionSelectedMon img{width:150px;height:150px;object-fit:contain}.actionSelectedInfo{min-width:0;flex:1}.actionTypes{display:flex;gap:8px;flex-wrap:wrap}.actionTypes button{min-height:44px;border-color:var(--type-color)}.actionTypes button[aria-pressed=true]{box-shadow:inset 0 -3px var(--type-color);background:#294259}.actionShiny{display:flex;align-items:center;gap:10px;min-height:44px;font-size:13px;color:#ffe6a1;cursor:pointer}.actionShiny input{width:22px;height:22px}.actionEmpty{grid-column:1/-1;padding:24px}.actionPick{min-width:0}.actionPick img{height:85px}.actionPick small{text-align:center;line-height:1.6}.actionShell,.actionTouch{overscroll-behavior:contain}.actionTouch{touch-action:none;-webkit-user-select:none;user-select:none}.actionTouch button,.actionStick{-webkit-touch-callout:none}.actionHUD .tacBtn{min-height:44px;min-width:50px}.actionLoadout h2{overflow-wrap:anywhere}
+@media(max-width:700px){.actionLoadout{flex-direction:column;gap:8px}.actionSelectedMon{flex-direction:row;width:auto;gap:10px}.actionSelectedMon img{width:80px;height:80px}.actionSelectedInfo{width:100%}.actionRoster{grid-template-columns:repeat(3,minmax(0,1fr))}.actionPick{padding:10px 4px}.actionPick img{height:65px}.actionPick b{font-size:12px}.actionPick small{font-size:9px}.actionFilters label:first-child{flex:2}.actionViewport{width:100%}.actionButtons button{min-width:54px;min-height:54px}.actionHUD>div{width:auto;flex:1}.actionHUD>span{flex-basis:100%;order:4;text-align:left}.actionStats{gap:5px}.actionStats span{padding:7px}.actionHero{padding:22px 0}}
+@media(max-height:550px) and (orientation:landscape){.actionShell{padding:4px 12px}.actionHUD{padding:0 0 6px;flex-wrap:nowrap}.actionHUD>span{order:0;flex-basis:auto;text-align:right}.actionHUD>div{width:auto}.actionHUD .tacKicker{display:none}.actionViewport{width:min(100%,calc((100dvh - 78px)*1.60714));overflow:visible}.actionViewport canvas{border-radius:12px}.actionTouch{position:absolute;left:0;right:0;bottom:0;background:transparent;border:0;pointer-events:none;padding:6px}.actionTouch>*{pointer-events:auto;opacity:.85}.actionStick{width:72px;height:72px}.actionStick i{left:18px;top:18px}.actionButtons button{width:54px;height:54px;font-size:10px}.actionFooter{display:none}.actionOverlay{border-radius:12px}}
 
 </style>
 </head>
@@ -2457,23 +2460,61 @@ const ACT_KITS={
  658:{name:'개굴닌자',role:'기동 / 분산 공격',color:'#77e9ed',basic:'물수리검',skill:'연속 물수리검',shape:'fan',damage:4,rate:.26,speed:640,range:390,cast:.18,cd:3.8,power:11,radius:10,reach:430,desc:'짧은 시전으로 수리검 3발. 가까운 적에게 중첩 적중.'}
 };
 const ACT_MODS={power:{n:'출력 증폭',d:'모든 피해 +18%',max:3},haste:{n:'고속 회로',d:'공격·스킬 대기시간 −12% (최대 30%)',max:3},wide:{n:'범위 증폭',d:'스킬 범위·투사체 크기 +18%',max:2},echo:{n:'잔향 탄도',d:'기본 공격에 위력 45%의 측면 탄환 2발',max:1},frost:{n:'냉각 코팅',d:'적중한 적을 0.8초간 감속',max:1},armor:{n:'재생 장갑',d:'최대 체력 +12, 즉시 체력 +25',max:2},dash:{n:'순간 가속',d:'회피 재사용 −25%, 회피 직후 스킬 1초 단축',max:1}};
+// Arena-only type techniques; these are not the main-series learnsets.
+const ACT_TYPES=[
+ ['노말 파동','ring',26,.35,4.6,150,150,'pulse'],
+ ['화염방사','cone',19,.45,4.6,190,190,'flame','burn'],
+ ['물의 파동','orb',32,.65,5,20,540,'water'],
+ ['잎날 폭풍','fan',10,.25,4,11,440,'leaf'],
+ ['번개','storm',28,.65,6,92,310,'bolt','slow'],
+ ['얼음 결정','fan',9,.4,4.8,12,440,'ice','slow'],
+ ['기합 파동','orb',36,.85,5.2,22,580,'pulse'],
+ ['독 안개','storm',20,.55,5.6,88,320,'poison','poison'],
+ ['지진 파동','ring',32,.75,5.8,180,180,'earth'],
+ ['에어 커터','fan',10,.2,4,10,460,'wind'],
+ ['사이코 파동','orb',34,.75,5.2,24,560,'psychic'],
+ ['벌레 바늘','fan',10,.22,3.9,9,420,'needle'],
+ ['암석 낙하','storm',34,.9,6,86,340,'rock'],
+ ['섀도볼','orb',33,.65,5.1,23,550,'ghost'],
+ ['용의 숨결','cone',30,.6,4.8,220,220,'dragon'],
+ ['어둠의 파동','ring',28,.45,4.9,165,165,'dark'],
+ ['강철 탄막','fan',12,.6,5,10,480,'metal'],
+ ['요정의 빛','storm',27,.55,5.3,100,300,'star']
+];
+const ACT_KIT_CACHE={};
+function actKit(id,type){const mon=MON[id];if(!mon)return null;type=mon.types.includes(type)?type:mon.types[0];const key=id+':'+type;if(ACT_KIT_CACHE[key])return ACT_KIT_CACHE[key];
+ const [skill,shape,power,cast,cd,radius,reach,motif,status]=ACT_TYPES[type];
+ const role={ring:'주변 범위',cone:'전방 부채꼴',storm:'지점 범위',orb:'관통 투사체',fan:'3방향 투사체'}[shape];
+ const k={name:mon.name,type,color:TYPE_COL[type],skill,shape,power,cast,cd,radius,reach,motif,status,role,damage:5,rate:.34,speed:560,range:440,move:1,desc:role+' 기술.'};
+ if(ACT_KITS[id]&&type===mon.types[0])Object.assign(k,ACT_KITS[id]);
+ if(id===658&&type===2){k.motif='shuriken';k.move=1.1;}
+ k.desc=({ring:'주변 범위',cone:'전방 부채꼴',storm:'지점 범위',orb:'관통 투사체',fan:'3방향 투사체'}[k.shape])+' · '+(status==='burn'?'3초간 초당 4 화상 피해.':status==='poison'?'3초간 초당 3 독 피해.':status==='slow'?'1.2초 감속.':'범위와 시전 시간을 활용하세요.');
+ return ACT_KIT_CACHE[key]=k;
+}
+function actOwned(){return Object.keys(S.meta.col||{}).map(Number).filter(id=>MON[id]&&S.meta.col[id]>0).sort((a,b)=>a-b);}
+function actRoster(query='',type=-1){const q=query.trim().toLowerCase();return actOwned().filter(id=>(type<0||MON[id].types.includes(type))&&(!q||MON[id].name.toLowerCase().includes(q)||String(id)===q));}
+function actChoose(id,type,shiny){if(!MON[id]||!(S.meta.col[id]>0))return false;ACT_SELECTION=id;ACT_TYPE=MON[id].types.includes(type)?type:MON[id].types[0];ACT_SHINY=hasShiny(id)&&(shiny==null?shinyOf(id):!!shiny);return true;}
+function actStatusHit(e,k){if(k.status==='slow')e.slow=Math.max(e.slow||0,1.2);if(k.status==='burn')e.burn=3;if(k.status==='poison')e.poison=3;}
+function actSpriteSources(id,shiny){if(!S.meta.settings.imgs)return[fallbackSprite(id)];const form=formOf(id);return [...new Set([spriteURL(id,'front',shiny),spriteURL(id,'art',shiny),...(shiny&&form?[spriteURL(form.base,'front',true)]:[]),fallbackSprite(id)])];}
 function actRand(r){r.seed=(Math.imul(r.seed,1664525)+1013904223)>>>0;return r.seed/4294967296;}
-function actNew(id=25,paid=false,seed=Date.now()){return{id,paid,seed:seed>>>0,t:0,stage:1,stageT:0,bossSpawned:false,kills:0,xp:0,level:1,nextXP:6,score:0,correct:0,questions:0,paused:false,pending:'',over:false,win:false,claimed:false,spawn:0,serial:0,mods:{},enemies:[],bullets:[],hazards:[],fx:[],p:{x:450,y:380,hp:100,max:100,inv:0,angle:-Math.PI/2,attack:0,skill:0,dash:0,dashing:0,dx:0,dy:0,cast:null}};}
+function actNew(id=25,paid=false,seed=Date.now(),type){return{id,paid,type:actKit(id,type).type,shiny:false,seed:seed>>>0,t:0,stage:1,stageT:0,bossSpawned:false,kills:0,xp:0,level:1,nextXP:6,score:0,correct:0,questions:0,paused:false,pending:'',over:false,win:false,claimed:false,spawn:0,serial:0,mods:{},enemies:[],bullets:[],hazards:[],fx:[],p:{x:450,y:380,hp:100,max:100,inv:0,angle:-Math.PI/2,attack:0,skill:0,dash:0,dashing:0,dx:0,dy:0,cast:null}};}
 const actDist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 function actAim(r,input){const p=r.p;if(input.aim){p.angle=Math.atan2(input.aim.y-p.y,input.aim.x-p.x);return;}const near=r.enemies.filter(e=>e.hp>0).sort((a,b)=>actDist(a,p)-actDist(b,p))[0];if(near)p.angle=Math.atan2(near.y-p.y,near.x-p.x);}
-function actBullet(r,x,y,angle,damage,speed,range,radius=6,foe=false,pierce=false,color){r.bullets.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:range/speed,damage,radius,foe,pierce,hit:[],color:color||(foe?'#ff7192':ACT_KITS[r.id].color)});}
+function actBullet(r,x,y,angle,damage,speed,range,radius=6,foe=false,pierce=false,color){r.bullets.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:range/speed,damage,radius,foe,pierce,hit:[],motif:foe?null:actKit(r.id,r.type).motif,color:color||(foe?'#ff7192':actKit(r.id,r.type).color)});}
 function actHit(r,e,damage){e.hp-=damage*(1+(r.mods.power||0)*.18);e.flash=.1;if(r.mods.frost)e.slow=Math.max(e.slow||0,.8);}
-function actCast(r,c){const k=ACT_KITS[r.id],p=r.p,wide=1+(r.mods.wide||0)*.18;
- if(k.shape==='storm'){r.fx.push({kind:'storm',x:c.tx,y:c.ty,r:k.radius*wide,life:.45,max:.45,color:k.color});r.enemies.forEach(e=>{if(Math.hypot(e.x-c.tx,e.y-c.ty)<k.radius*wide+e.r){actHit(r,e,k.power);e.slow=1.2;}});}
- if(k.shape==='cone'){r.fx.push({kind:'cone',x:p.x,y:p.y,a:c.a,r:k.radius*wide,life:.4,max:.4,color:k.color});r.enemies.forEach(e=>{const delta=Math.atan2(Math.sin(Math.atan2(e.y-p.y,e.x-p.x)-c.a),Math.cos(Math.atan2(e.y-p.y,e.x-p.x)-c.a));if(actDist(p,e)<k.radius*wide+e.r&&Math.abs(delta)<.65){actHit(r,e,k.power);e.burn=3;}});}
+function actCast(r,c){const k=actKit(r.id,r.type),p=r.p,wide=1+(r.mods.wide||0)*.18;
+ if(k.shape==='storm'){r.fx.push({kind:'storm',x:c.tx,y:c.ty,r:k.radius*wide,life:.45,max:.45,color:k.color,motif:k.motif});r.enemies.forEach(e=>{if(Math.hypot(e.x-c.tx,e.y-c.ty)<k.radius*wide+e.r){actHit(r,e,k.power);actStatusHit(e,k);}});}
+ if(k.shape==='ring'){r.fx.push({kind:'ring',x:p.x,y:p.y,r:k.radius*wide,life:.5,max:.5,color:k.color,motif:k.motif});r.enemies.forEach(e=>{if(actDist(p,e)<k.radius*wide+e.r){actHit(r,e,k.power);actStatusHit(e,k);}});}
+ if(k.shape==='cone'){r.fx.push({kind:'cone',x:p.x,y:p.y,a:c.a,r:k.radius*wide,life:.4,max:.4,color:k.color,motif:k.motif});r.enemies.forEach(e=>{const delta=Math.atan2(Math.sin(Math.atan2(e.y-p.y,e.x-p.x)-c.a),Math.cos(Math.atan2(e.y-p.y,e.x-p.x)-c.a));if(actDist(p,e)<k.radius*wide+e.r&&Math.abs(delta)<.65){actHit(r,e,k.power);actStatusHit(e,k);}});}
  if(k.shape==='orb')actBullet(r,p.x,p.y,c.a,k.power,360,k.reach,k.radius*wide,false,true,k.color);
  if(k.shape==='fan')[-.2,0,.2].forEach(a=>actBullet(r,p.x,p.y,c.a+a,k.power,540,k.reach,k.radius*wide,false,false,k.color));
+ if(k.shape==='orb'||k.shape==='fan')r.bullets.slice(-(k.shape==='fan'?3:1)).forEach(b=>b.status=k.status);
 }
-function actControls(r,input,dt){const p=r.p,k=ACT_KITS[r.id];actAim(r,input);const cd=Math.max(.7,1-(r.mods.haste||0)*.12);
+function actControls(r,input,dt){const p=r.p,k=actKit(r.id,r.type);actAim(r,input);const cd=Math.max(.7,1-(r.mods.haste||0)*.12);
  if(input.dash&&p.dash<=0&&!p.cast){const moving=Math.hypot(input.x||0,input.y||0)>0;let x=moving?input.x:Math.cos(p.angle),y=moving?input.y:Math.sin(p.angle),l=Math.hypot(x,y)||1;p.dx=x/l;p.dy=y/l;p.dashing=.2;p.inv=.28;p.dash=r.mods.dash?2.25:3;if(r.mods.dash)p.skill=Math.max(0,p.skill-1);}
  if(input.skill&&p.skill<=0&&!p.cast&&p.dashing<=0){const range=k.reach,nearest=r.enemies.filter(e=>e.hp>0).sort((a,b)=>actDist(a,p)-actDist(b,p))[0],aim=input.aim||nearest||{x:p.x+Math.cos(p.angle)*220,y:p.y+Math.sin(p.angle)*220},dist=Math.min(range,actDist(p,aim));p.cast={left:k.cast,total:k.cast,a:p.angle,tx:clamp(p.x+Math.cos(p.angle)*dist,20,880),ty:clamp(p.y+Math.sin(p.angle)*dist,20,540)};p.skill=k.cd*cd;}
  if(input.fire&&p.attack<=0&&!p.cast&&p.dashing<=0){actBullet(r,p.x,p.y,p.angle,k.damage,k.speed,k.range,6);if(r.mods.echo)[-.18,.18].forEach(a=>actBullet(r,p.x,p.y,p.angle+a,k.damage*.45,k.speed,k.range,5));p.attack=k.rate*cd;}
- const l=Math.hypot(input.x||0,input.y||0);let speed=195*(r.id===658?1.1:1)*(p.cast ? .35 : 1);
+ const l=Math.hypot(input.x||0,input.y||0);let speed=195*(k.move||1)*Math.min(1,l||1)*(p.cast ? .35 : 1);
  if(p.dashing>0){p.x+=p.dx*650*dt;p.y+=p.dy*650*dt;}
  else if(l){p.x+=(input.x/l)*speed*dt;p.y+=(input.y/l)*speed*dt;}
  p.x=clamp(p.x,20,880);p.y=clamp(p.y,20,540);
@@ -2493,7 +2534,7 @@ function actStep(r,input,dt){if(r.paused||r.pending||r.over)return;dt=Math.min(.
  actControls(r,input,dt);if(p.cast){p.cast.left-=dt;if(p.cast.left<=0){actCast(r,p.cast);p.cast=null;}}
  if(!r.bossSpawned&&r.stageT>=22)actSpawn(r,true);
  if(r.spawn<=0&&r.enemies.length<(r.bossSpawned?5:16)){actSpawn(r);r.spawn=r.bossSpawned?3:Math.max(.8,1.7-r.stage*.2);}
- r.enemies.forEach(e=>{e.flash=Math.max(0,e.flash-dt);e.slow=Math.max(0,e.slow-dt);if(e.burn>0){e.burn-=dt;actHit(r,e,4*dt);}if(e.hp<=0)return;
+ r.enemies.forEach(e=>{e.flash=Math.max(0,e.flash-dt);e.slow=Math.max(0,e.slow-dt);if(e.burn>0){e.burn-=dt;actHit(r,e,4*dt);}if(e.poison>0){e.poison-=dt;actHit(r,e,3*dt);}if(e.hp<=0)return;
   if(e.boss){e.cd-=dt;if(e.cd<=0)actBossPattern(r,e);}
   const a=Math.atan2(p.y-e.y,p.x-e.x),speed=(e.boss?24:45+r.stage*8)*(e.slow>0?.35:1);e.x+=Math.cos(a)*speed*dt;e.y+=Math.sin(a)*speed*dt;
   if(actDist(e,p)<e.r+12)actHurt(r,e.boss?14:8);
@@ -2502,7 +2543,7 @@ function actStep(r,input,dt){if(r.paused||r.pending||r.over)return;dt=Math.min(.
   if(h.kind==='circle'&&actDist(p,h)<h.r+12)actHurt(r,h.damage);
   if((h.kind==='beam'||h.kind==='dash')&&actSegmentDistance(p,h)<h.w+12)actHurt(r,h.damage);h.life-=dt;
  });r.hazards=r.hazards.filter(h=>h.life>0);
- r.bullets.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;if(b.foe){if(actDist(b,p)<b.radius+12){actHurt(r,b.damage);b.life=0;}}else for(const e of r.enemies){if(e.hp>0&&!b.hit.includes(e.uid)&&actDist(b,e)<e.r+b.radius){actHit(r,e,b.damage);b.hit.push(e.uid);if(!b.pierce){b.life=0;break;}}}});
+ r.bullets.forEach(b=>{b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;if(b.foe){if(actDist(b,p)<b.radius+12){actHurt(r,b.damage);b.life=0;}}else for(const e of r.enemies){if(e.hp>0&&!b.hit.includes(e.uid)&&actDist(b,e)<e.r+b.radius){actHit(r,e,b.damage);if(b.status)actStatusHit(e,{status:b.status});b.hit.push(e.uid);if(!b.pierce){b.life=0;break;}}}});
  r.bullets=r.bullets.filter(b=>b.life>0&&b.x>-30&&b.x<930&&b.y>-30&&b.y<590);
  let bossDown=false;r.enemies=r.enemies.filter(e=>{if(e.hp>0)return true;r.kills++;r.xp+=e.boss?5:1;r.score+=e.boss?300:10;r.fx.push({kind:'ring',x:e.x,y:e.y,r:e.boss?70:25,life:.4,max:.4,color:e.boss?'#f6d77c':'#75dec4'});if(e.boss)bossDown=true;return false;});
  r.fx.forEach(f=>f.life-=dt);r.fx=r.fx.filter(f=>f.life>0);
@@ -2512,29 +2553,68 @@ function actStep(r,input,dt){if(r.paused||r.pending||r.over)return;dt=Math.min(.
 }
 function actUpgrade(r,key){const mod=ACT_MODS[key];if(!r.pending||!mod||(r.mods[key]||0)>=mod.max)return false;r.mods[key]=(r.mods[key]||0)+1;if(key==='armor'){r.p.max+=12;r.p.hp=Math.min(r.p.max,r.p.hp+25);}r.pending='';r.paused=false;return true;}
 function actClaim(r){if(r.claimed)return 0;r.claimed=true;const a=arcadeState();a.action=a.action||{best:{},runs:0};a.action.runs++;const key=r.gs+':'+r.id+':'+(r.paid?'challenge':'practice');a.action.best[key]=Math.max(a.action.best[key]||0,r.score);let dust=0;if(r.over&&r.win&&r.paid&&r.correct>=2){dust=12;S.meta.dust=(S.meta.dust||0)+dust;}return dust;}
-let ACT=null,ACT_STOP=null,ACT_SELECTION=25;
-function renderMiniHome(){S.screen='minihome';S.inMini=0;const g=miniSt(),k=ACT_KITS[ACT_SELECTION],can=g.tk>0&&g.n<MINI_DAY;
- $('#view').innerHTML=hudHTML()+`<div class="wrap actionLobby"><header class=actionHero><span class=tacKicker>RIFT ARENA / DIRECT CONTROL</span><h1>움직이고. 피하고.<br>빈틈을 노리세요.</h1><p>3명의 보스 · 직접 조준과 공격 · 한 판 최대 3분<br>레벨업과 보스 격파 후, 수학으로 장비를 강화합니다.</p></header><div class=actionRoster>${Object.entries(ACT_KITS).map(([id,c])=>`<button class="actionPick ${+id===ACT_SELECTION?'on':''}" data-action-mon=${id}>${monImg(+id,'art','',shinyOf(+id))}<b>${c.name}</b><small>${c.role}</small></button>`).join('')}</div><section class=actionLoadout><div><span class=tacKicker>SKILL PROFILE</span><h2>${k.name} · ${k.skill}</h2><p>${k.desc}</p><div class=actionStats><span>기본 피해 <b>${k.damage}</b></span><span>스킬 피해 <b>${k.power}${k.shape==='fan'?' ×3':''}</b></span><span>시전 <b>${k.cast}초</b></span><span>재사용 <b>${k.cd}초</b></span><span>기본 사거리 <b>${k.range}</b></span></div><p class=actionFine>시전 중 이동 속도 35%, 공격·회피 불가. 강한 관통기는 긴 시전, 빠른 수리검은 분산 피해로 균형을 맞췄습니다. 스킬 수치는 이 미니게임 전용입니다.</p></div></section><div class=actionLaunchRow><button class=tacLaunch id=actionPractice>자유 연습 · 티켓 없이 시작</button><button class=tacLaunch id=actionChallenge ${can?'':'disabled'}>티켓 도전 · ${g.tk}장 / 오늘 ${g.n}/3판</button></div><section class=actionInstructions><b>PC</b><p>WASD / 방향키 이동 · 마우스 조준 · 클릭 유지 또는 J 공격 · K 스킬 · Space 회피</p><b>태블릿·모바일</b><p>왼쪽 이동 패드 + 오른쪽 공격·스킬·회피 버튼. 별도 조준이 없으면 가까운 적을 향합니다. 공격 버튼을 눌러야 발사됩니다.</p><p>위험 범위가 붉게 표시된 뒤 공격이 발동합니다. 문제를 풀거나 장비를 선택하는 동안 전투와 대기시간은 멈춥니다. 연습은 추가 재화 보상 없이 무제한, 티켓 도전에서 보스 3명을 모두 격파하고 수학 2문제 이상 정답이면 별가루 12개.</p><button class=tacBtn id=actionBack>아케이드로</button></section></div>`;
- bindHud();$('#view').scrollTop=0;document.querySelectorAll('[data-action-mon]').forEach(b=>b.onclick=()=>{ACT_SELECTION=+b.dataset.actionMon;renderMiniHome();});$('#actionPractice').onclick=()=>startMini(false);$('#actionChallenge').onclick=()=>startMini(true);$('#actionBack').onclick=()=>renderArcade();
+let ACT=null,ACT_STOP=null,ACT_SELECTION=null,ACT_TYPE=null,ACT_SHINY=false;
+function renderMiniHome(){
+ S.screen='minihome';S.inMini=0;const g=miniSt(),owned=actOwned(),saved=arcadeState().arenaChoice;
+ if(!actChoose(ACT_SELECTION,ACT_TYPE,ACT_SHINY)){
+  if(!saved||!actChoose(saved.id,saved.type,saved.shiny))actChoose(owned.includes(partnerId())?partnerId():owned[0]);
+ }
+ const valid=owned.includes(ACT_SELECTION);let page=0;
+ $('#view').innerHTML=hudHTML()+`<div class="wrap actionLobby"><header class=actionHero><span class=tacKicker>MY COLLECTION / RIFT ARENA</span><h1>내 포켓몬과 함께.<br>아레나를 돌파하세요.</h1><p>보유한 ${owned.length}종으로 도전 · 세 보스 · 한 판 최대 3분<br>레벨업과 보스 격파 후 수학으로 장비를 강화합니다.</p></header><section id=actionSelected class=actionLoadout aria-label="출전 포켓몬"></section><div class=actionLaunchRow><button class=tacLaunch id=actionPractice ${valid?'':'disabled'}>자유 연습 · 티켓 없이 시작</button><button class=tacLaunch id=actionChallenge ${valid&&g.tk>0&&g.n<MINI_DAY?'':'disabled'}>티켓 도전 · ${g.tk}장 / 오늘 ${g.n}/3판</button></div><section class=actionCollection aria-label="보유 포켓몬 선택"><h2>내 포켓몬 선택</h2><div class=actionFilters><label>이름·도감 번호<input id=actionSearch type=search placeholder="예: 이상해씨 또는 1" autocomplete=off></label><label>타입<select id=actionFilter><option value=-1>모든 타입</option>${TYPE_KO.map((t,i)=>`<option value=${i}>${t}</option>`).join('')}</select></label></div><p id=actionCount aria-live=polite></p><div id=actionRoster class=actionRoster></div><div class=actionPagination><button class=tacBtn id=actionPrev>이전</button><span id=actionPage></span><button class=tacBtn id=actionNext>다음</button></div></section><section class=actionInstructions><b>PC</b><p>WASD / 방향키 이동 · 마우스 조준 · 클릭 유지 또는 J 공격 · K 스킬 · Space 회피</p><b>모바일·태블릿</b><p>왼쪽 이동 패드를 누른 채 오른쪽 공격·스킬·회피를 함께 누르세요. 가볍게 밀면 천천히 움직입니다. 공격 버튼은 누르는 동안 발사하며 가까운 적을 조준합니다.</p><p>18개 타입을 바탕으로 만든 아레나 전용 기술입니다. 복합 타입은 출전 전에 한 타입을 고릅니다. 원작의 개별 기술 습득 목록과는 다르며, 카드 희귀도나 이로치 여부로 능력이 달라지지 않습니다.</p><p>문제 풀이·강화·일시정지 중에는 전투 시간이 멈춥니다. 자유 연습은 무제한. 티켓 도전은 하루 3판이며, 보스 3명을 격파하고 수학 2문제 이상 정답이면 별가루 12개를 받습니다. 수집한 카드가 소모되지는 않습니다.</p><button class=tacBtn id=actionBack>아케이드로</button></section></div>`;
+ const paintSelected=()=>{
+  const id=ACT_SELECTION,k=valid?actKit(id,ACT_TYPE):null;
+  $('#actionSelected').innerHTML=k?`<div class=actionSelectedMon>${monImg(id,'art','',ACT_SHINY)}<span>${ACT_SHINY?'✦ 이로치':'일반 모습'}</span></div><div class=actionSelectedInfo><span class=tacKicker>READY / #${id}</span><h2>${esc(k.name)} · ${k.skill}</h2><div class=actionTypes aria-label="출전 기술 타입">${MON[id].types.map(t=>`<button class=tacBtn data-action-type=${t} aria-pressed="${t===ACT_TYPE}" style="--type-color:${TYPE_COL[t]}">${TYPE_KO[t]} 기술</button>`).join('')}</div><p>${k.desc}</p><div class=actionStats><span>기본 피해 <b>${k.damage}</b></span><span>스킬 피해 <b>${k.power}${k.shape==='fan'?' ×3':''}</b></span><span>시전 <b>${k.cast}초</b></span><span>재사용 <b>${k.cd}초</b></span><span>스킬 사거리 <b>${k.reach}</b></span></div>${hasShiny(id)?`<label class=actionShiny><input id=actionShiny type=checkbox ${ACT_SHINY?'checked':''}>보유한 이로치 모습으로 출전</label>`:'<p class=actionFine>이로치를 획득하면 이곳에서 모습을 선택할 수 있어요.</p>'}<p class=actionFine>시전 중 이동 속도 35%, 공격·회피 불가. 이 모습 선택은 아레나에만 적용됩니다.</p></div>`:'<p>아직 보유한 포켓몬이 없습니다. 카드팩에서 포켓몬을 얻은 뒤 찾아와 주세요.</p>';
+  document.querySelectorAll('[data-action-type]').forEach(b=>b.onclick=()=>{actChoose(id,+b.dataset.actionType,ACT_SHINY);paintSelected();});
+  if($('#actionShiny'))$('#actionShiny').onchange=e=>{ACT_SHINY=e.target.checked;paintSelected();paintRoster();};
+ };
+ const paintRoster=()=>{
+  const ids=actRoster($('#actionSearch').value,+$('#actionFilter').value),pages=Math.max(1,Math.ceil(ids.length/12));page=clamp(page,0,pages-1);
+  $('#actionCount').textContent=ids.length+'종 / 보유 '+owned.length+'종';$('#actionPage').textContent=(page+1)+' / '+pages;$('#actionPrev').disabled=page===0;$('#actionNext').disabled=page>=pages-1;
+  $('#actionRoster').innerHTML=ids.length?ids.slice(page*12,page*12+12).map(id=>`<button class="actionPick ${id===ACT_SELECTION?'on':''}" data-action-mon=${id} aria-pressed="${id===ACT_SELECTION}">${monImg(id,'front','',id===ACT_SELECTION?ACT_SHINY:shinyOf(id))}<b>${esc(MON[id].name)}</b><small>${MON[id].types.map(t=>TYPE_KO[t]).join(' / ')}${hasShiny(id)?' · ✦ 이로치 보유':''}</small></button>`).join(''):'<p class=actionEmpty>검색 결과가 없습니다. 이름이나 타입을 바꿔 보세요.</p>';
+  document.querySelectorAll('[data-action-mon]').forEach(b=>b.onclick=()=>{actChoose(+b.dataset.actionMon);paintSelected();paintRoster();$('#actionSelected').scrollIntoView({behavior:'smooth',block:'start'});});
+ };
+ bindHud();$('#view').scrollTop=0;paintSelected();paintRoster();
+ $('#actionSearch').oninput=$('#actionFilter').onchange=()=>{page=0;paintRoster();};
+ $('#actionPrev').onclick=()=>{page--;paintRoster();};$('#actionNext').onclick=()=>{page++;paintRoster();};
+ $('#actionPractice').onclick=()=>startMini(false);$('#actionChallenge').onclick=()=>startMini(true);$('#actionBack').onclick=()=>renderArcade();
 }
-function startMini(paid=false){if(ACT_STOP)ACT_STOP();const g=miniSt();if(paid&&(g.tk<1||g.n>=MINI_DAY))return;if(!clockOk()){toast('기기 날짜를 확인해 주세요.');return;}if(!allowedSkills().some(s=>s.s===S.meta.gs)){toast('배우는 단원을 먼저 선택해 주세요.');return;}if(paid){g.tk--;g.n++;g.runs++;saveLocal();}
- const r=ACT=actNew(ACT_SELECTION,paid);r.gs=S.meta.gs;S.screen='mini';S.inMini=1;const input={x:0,y:0,aim:null,fire:false,skill:false,dash:false},keys={},taps={};let ended=false,last=performance.now(),raf=0,upgrading=false,cancelQuestion=null;
- $('#view').innerHTML=`<div class=actionShell><header class=actionHUD><div><span class=tacKicker>RIFT ARENA</span><b>${ACT_KITS[r.id].name} / ${paid?'티켓 도전':'자유 연습'}</b></div><span id=actStatus></span><button class=tacBtn id=actPause>일시정지</button><button class=tacBtn id=actExit>종료</button></header><div class=actionViewport><canvas id=actCanvas width=900 height=560 aria-label="직접 조작하는 보스 아레나"></canvas><div class=actionOverlay id=actOverlay hidden></div><div class=actionTouch><div id=actStick class=actionStick role=application aria-label="이동 패드"><span>MOVE</span><i></i></div><div class=actionButtons><button data-act=fire>공격<br><small>J / 클릭</small></button><button data-act=skill>스킬<br><small id=actSkillCD>K</small></button><button data-act=dash>회피<br><small id=actDashCD>Space</small></button></div></div></div><div class=actionFooter id=actFooter>WASD / 방향키 이동 · 마우스 조준 · J 공격 · K 스킬 · Space 회피</div></div>`;
+
+// One pointer owns each control. Independent ownership permits multitouch.
+function actBindPointers(cv,stick,buttons,input,taps,blocked){
+ let stickId=null;const held=new Map(),knob=stick.querySelector('i'),targets=[cv,stick,...buttons];
+ const capture=(el,e)=>{e.preventDefault();el.setPointerCapture(e.pointerId);};
+ const point=e=>{const b=cv.getBoundingClientRect();return{x:(e.clientX-b.left)/b.width*ACT_W,y:(e.clientY-b.top)/b.height*ACT_H};};
+ const refresh=()=>{for(const action of ['fire','skill','dash'])input[action]=[...held.values()].some(v=>v.action===action);};
+ const end=e=>{const owner=held.get(e.pointerId);if(!owner||owner.el!==e.currentTarget)return;held.delete(e.pointerId);if(e.type!=='pointerup')delete taps[owner.action];refresh();};
+ const bindAction=(el,action)=>{
+  el.onpointerdown=e=>{if(blocked())return;if(held.has(e.pointerId))return;held.set(e.pointerId,{el,action});if(el===cv)input.aim=point(e);else if(e.pointerType!=='mouse')input.aim=null;taps[action]=true;refresh();capture(el,e);};
+  el.onpointerup=el.onpointercancel=el.onlostpointercapture=end;
+ };
+ bindAction(cv,'fire');cv.onpointermove=e=>{if(!blocked()&&e.pointerType==='mouse')input.aim=point(e);};
+ buttons.forEach(el=>bindAction(el,el.dataset.act));
+ const move=e=>{if(stickId!==e.pointerId||blocked())return;const b=stick.getBoundingClientRect(),x=e.clientX-b.left-b.width/2,y=e.clientY-b.top-b.height/2,l=Math.hypot(x,y),travel=Math.min(35,b.width*.34),m=Math.min(l,travel);input.x=l>4?x/l*m/travel:0;input.y=l>4?y/l*m/travel:0;input.aim=null;knob.style.transform='translate('+(l?x/l*m:0)+'px,'+(l?y/l*m:0)+'px)';};
+ stick.onpointerdown=e=>{if(blocked()||stickId!==null)return;stickId=e.pointerId;capture(stick,e);move(e);};stick.onpointermove=move;
+ const endStick=e=>{if(stickId!==e.pointerId)return;stickId=null;input.x=0;input.y=0;knob.style.transform='translate(0,0)';};
+ stick.onpointerup=stick.onpointercancel=stick.onlostpointercapture=endStick;
+ const reset=()=>{stickId=null;held.clear();input.x=input.y=0;refresh();Object.keys(taps).forEach(k=>delete taps[k]);knob.style.transform='translate(0,0)';};
+ targets.forEach(el=>el.oncontextmenu=e=>e.preventDefault());
+ return{reset,dispose(){reset();targets.forEach(el=>{for(const key of ['onpointerdown','onpointermove','onpointerup','onpointercancel','onlostpointercapture','oncontextmenu'])el[key]=null;});}};
+}
+
+function startMini(paid=false){if(!actChoose(ACT_SELECTION,ACT_TYPE,ACT_SHINY)){toast('보유한 포켓몬을 먼저 선택해 주세요.');renderMiniHome();return;}if(ACT_STOP)ACT_STOP();const g=miniSt();if(paid&&(g.tk<1||g.n>=MINI_DAY))return;if(!clockOk()){toast('기기 날짜를 확인해 주세요.');return;}if(!allowedSkills().some(s=>s.s===S.meta.gs)){toast('배우는 단원을 먼저 선택해 주세요.');return;}if(paid){g.tk--;g.n++;g.runs++;saveLocal();}
+ const r=ACT=actNew(ACT_SELECTION,paid,Date.now(),ACT_TYPE);r.shiny=ACT_SHINY;arcadeState().arenaChoice={id:r.id,type:r.type,shiny:r.shiny};saveLocal();r.gs=S.meta.gs;S.screen='mini';S.inMini=1;const input={x:0,y:0,aim:null,fire:false,skill:false,dash:false},keys={},taps={};let ended=false,last=performance.now(),raf=0,upgrading=false,cancelQuestion=null;
+ $('#view').innerHTML=`<div class=actionShell><header class=actionHUD><div><span class=tacKicker>RIFT ARENA</span><b>${r.shiny?'✦ ':''}${actKit(r.id,r.type).name} · ${TYPE_KO[r.type]} / ${paid?'티켓 도전':'자유 연습'}</b></div><span id=actStatus></span><button class=tacBtn id=actPause>일시정지</button><button class=tacBtn id=actExit>종료</button></header><div class=actionViewport><canvas id=actCanvas width=900 height=560 aria-label="직접 조작하는 보스 아레나"></canvas><div class=actionOverlay id=actOverlay hidden></div><div class=actionTouch><div id=actStick class=actionStick role=application aria-label="이동 패드"><span>MOVE</span><i></i></div><div class=actionButtons><button data-act=fire>공격<br><small>J / 클릭</small></button><button data-act=skill>스킬<br><small id=actSkillCD>K</small></button><button data-act=dash>회피<br><small id=actDashCD>Space</small></button></div></div></div><div class=actionFooter id=actFooter>WASD / 방향키 이동 · 마우스 조준 · J 공격 · K 스킬 · Space 회피</div></div>`;
  $('#view').scrollTop=0;const cv=$('#actCanvas'),ctx=cv.getContext('2d'),overlay=$('#actOverlay'),stick=$('#actStick'),ims={};
- const imageFor=id=>{if(!ims[id]){const im=new Image();im.src=spriteURL(id,'front',id===r.id&&shinyOf(id));im.onerror=()=>{im.onerror=null;im.src=fallbackSprite(id);};ims[id]=im;}return ims[id];};[r.id,94,445,150,41,92,104,215].forEach(imageFor);
- const resetInput=()=>{Object.keys(keys).forEach(k=>delete keys[k]);Object.keys(taps).forEach(k=>delete taps[k]);input.x=0;input.y=0;input.fire=false;input.skill=false;input.dash=false;stick.querySelector('i').style.transform='translate(0,0)';};
- const cleanup=()=>{cancelAnimationFrame(raf);removeEventListener('keydown',down);removeEventListener('keyup',up);removeEventListener('blur',blur);document.removeEventListener('visibilitychange',visibility);resetInput();if(cancelQuestion)cancelQuestion();if(ACT===r){ACT=null;ACT_STOP=null;}S.inMini=0;};
+ const imageFor=(id,shiny=false)=>{const key=id+':'+shiny;if(!ims[key]){const im=new Image(),sources=actSpriteSources(id,shiny);let ix=0;im.onerror=()=>{if(++ix<sources.length)im.src=sources[ix];else im.onerror=null;};im.src=sources[0];ims[key]=im;}return ims[key];};imageFor(r.id,r.shiny);[94,445,150,41,92,104,215].forEach(id=>imageFor(id));
+ const pointers=actBindPointers(cv,stick,Array.from(document.querySelectorAll('[data-act]')),input,taps,()=>ended||upgrading||r.paused||!!r.pending);
+ const resetInput=()=>{pointers.reset();Object.keys(keys).forEach(k=>delete keys[k]);Object.keys(taps).forEach(k=>delete taps[k]);input.x=0;input.y=0;input.fire=false;input.skill=false;input.dash=false;stick.querySelector('i').style.transform='translate(0,0)';};
+ const cleanup=()=>{pointers.dispose();cancelAnimationFrame(raf);removeEventListener('resize',pause);removeEventListener('keydown',down);removeEventListener('keyup',up);removeEventListener('blur',blur);document.removeEventListener('visibilitychange',visibility);resetInput();if(cancelQuestion)cancelQuestion();if(ACT===r){ACT=null;ACT_STOP=null;}S.inMini=0;};
  const finish=quit=>{if(ended)return;ended=true;cleanup();if(upgrading)closeM();if(quit){renderMiniHome();return;}const reward=actClaim(r);S.meta.stats.miniRuns=(S.meta.stats.miniRuns||0)+1;autoSave();renderMiniHome();M(`<div class=actionResult><span class=tacKicker>${r.win?'ARENA CLEARED':'RUN COMPLETE'}</span><h2>${r.win?'보스 3명 격파':'아레나 종료'}</h2><p>${r.score}점 · Lv.${r.level} · 수학 ${r.correct}/${r.questions} 정답</p><p>${reward?'별가루 +12':r.paid?'보스 3명 격파 + 수학 2문제 정답 시 보상이 지급됩니다.':'자유 연습 기록입니다. 티켓 도전에서 완주 보상을 받을 수 있습니다.'}</p><button class=tacLaunch data-a=x>확인</button></div>`,{x:()=>closeM(),_close:()=>closeM()});};
  ACT_STOP=()=>finish(true);
  const pause=()=>{if(ended||upgrading)return;r.paused=true;resetInput();overlay.hidden=false;overlay.innerHTML='<h2>PAUSED</h2><p>전투 시간이 멈췄습니다.</p><button class=tacLaunch id=actResume>계속하기</button>';$('#actResume').onclick=()=>{r.paused=false;overlay.hidden=true;last=performance.now();};};
  const down=e=>{if(S.screen!=='mini'||ended||upgrading||r.paused)return;const k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' ','w','a','s','d','j','k'].includes(k))e.preventDefault();keys[k]=true;if(!e.repeat){if(k==='j')taps.fire=true;if(k==='k')taps.skill=true;if(k===' ')taps.dash=true;}};
- const up=e=>{delete keys[e.key.toLowerCase()];};const blur=()=>pause(),visibility=()=>{if(document.hidden)pause();};addEventListener('keydown',down);addEventListener('keyup',up);addEventListener('blur',blur);document.addEventListener('visibilitychange',visibility);
+ const up=e=>{delete keys[e.key.toLowerCase()];};const blur=()=>pause(),visibility=()=>{if(document.hidden)pause();};addEventListener('keydown',down);addEventListener('keyup',up);addEventListener('blur',blur);addEventListener('resize',pause);document.addEventListener('visibilitychange',visibility);
  $('#actPause').onclick=pause;$('#actExit').onclick=()=>finish(true);
- const point=e=>{const b=cv.getBoundingClientRect();return{x:(e.clientX-b.left)/b.width*ACT_W,y:(e.clientY-b.top)/b.height*ACT_H};};
- cv.onpointermove=e=>{if(e.pointerType==='mouse')input.aim=point(e);};cv.onpointerdown=e=>{if(r.paused)return;input.aim=point(e);input.fire=true;taps.fire=true;cv.setPointerCapture(e.pointerId);};cv.onpointerup=cv.onpointercancel=()=>input.fire=false;
- let stickId=null;const moveStick=e=>{if(stickId!==e.pointerId)return;const b=stick.getBoundingClientRect(),x=e.clientX-b.left-b.width/2,y=e.clientY-b.top-b.height/2,l=Math.hypot(x,y)||1,m=Math.min(l,35);input.x=x/l*m/35;input.y=y/l*m/35;input.aim=null;stick.querySelector('i').style.transform='translate('+x/l*m+'px,'+y/l*m+'px)';};
- stick.onpointerdown=e=>{stickId=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e);};stick.onpointermove=moveStick;stick.onpointerup=stick.onpointercancel=()=>{stickId=null;input.x=0;input.y=0;stick.querySelector('i').style.transform='translate(0,0)';};
- document.querySelectorAll('[data-act]').forEach(b=>{b.onpointerdown=e=>{if(r.paused)return;e.preventDefault();input[b.dataset.act]=true;taps[b.dataset.act]=true;b.setPointerCapture(e.pointerId);};b.onpointerup=b.onpointercancel=()=>input[b.dataset.act]=false;});
  const upgrade=async()=>{upgrading=true;resetInput();const q=pickQ({pool:allowedSkills().filter(s=>s.s===r.gs)});let good=false;
   if(q){M(`<h2>${r.pending==='boss'?'보스 격파 · 장비 정비':'레벨 업 · 장비 강화'}</h2><p>정답이면 모듈을 선택합니다. 전투와 대기시간은 멈춰 있습니다.</p><div id=actQuestion></div><button class="btn ghost" data-a=quit>이번 도전 종료</button>`,{quit:()=>finish(true),_close:()=>{}});let cancel;const stopped=new Promise(resolve=>cancel=()=>resolve(null));cancelQuestion=cancel;const a=await Promise.race([askQ($('#actQuestion'),q,{noRetry:true}),stopped]);cancelQuestion=null;if(ended||!a)return;r.questions++;good=a.ok;if(good)r.correct++;recordAnswer(q,a.ok,a.ms,{choice:a.choice,guess:a.guess});closeM();}
   if(ended)return;
@@ -2551,16 +2631,24 @@ function startMini(paid=false){if(ACT_STOP)ACT_STOP();const g=miniSt();if(paid&&
   if(r.over){finish(false);return;}if(r.pending&&!upgrading)upgrade();raf=requestAnimationFrame(loop);
  };raf=requestAnimationFrame(loop);
 }
-function actDraw(c,r,imageFor){const k=ACT_KITS[r.id],p=r.p;c.clearRect(0,0,ACT_W,ACT_H);const grad=c.createRadialGradient(450,280,20,450,280,550);grad.addColorStop(0,'#20374d');grad.addColorStop(1,'#080e1b');c.fillStyle=grad;c.fillRect(0,0,ACT_W,ACT_H);
+function actGlyph(c,motif,x,y,size,color,t){c.save();c.translate(x,y);c.rotate(t*2);c.strokeStyle=color;c.fillStyle=color;c.lineWidth=2;c.beginPath();
+ if(['leaf','wind'].includes(motif)){c.ellipse(0,0,size,size*.38,.4,0,Math.PI*2);c.fill();c.moveTo(-size,0);c.lineTo(size,0);c.stroke();}
+ else if(['star','ice','metal','rock','needle','earth'].includes(motif)){const n=motif==='star'?8:motif==='ice'?6:4;for(let i=0;i<n;i++){const a=i*Math.PI*2/n,r=motif==='star'&&i%2?size*.4:size;c.lineTo(Math.cos(a)*r,Math.sin(a)*r);}c.closePath();c.stroke();if(motif==='rock'||motif==='metal')c.fill();}
+ else if(motif==='bolt'){c.moveTo(-size,-size);c.lineTo(size*.3,0);c.lineTo(-size*.3,0);c.lineTo(size,size);c.stroke();}
+ else if(motif==='flame'||motif==='dragon'){c.moveTo(0,-size);c.quadraticCurveTo(size*1.7,size,0,size);c.quadraticCurveTo(-size*1.7,size,0,-size);c.fill();}
+ else{c.arc(0,0,size,0,Math.PI*2);c.stroke();c.globalAlpha=.4;c.fill();if(['poison','ghost','dark','psychic'].includes(motif)){c.beginPath();c.arc(size*.6,-size*.6,size*.55,0,Math.PI*2);c.stroke();}}
+ c.restore();}
+function actDraw(c,r,imageFor){const k=actKit(r.id,r.type),p=r.p;c.clearRect(0,0,ACT_W,ACT_H);const grad=c.createRadialGradient(450,280,20,450,280,550);grad.addColorStop(0,'#20374d');grad.addColorStop(1,'#080e1b');c.fillStyle=grad;c.fillRect(0,0,ACT_W,ACT_H);
  c.strokeStyle='#69cce51b';c.lineWidth=1;for(let x=0;x<=900;x+=50){c.beginPath();c.moveTo(x,0);c.lineTo(x,560);c.stroke();}for(let y=0;y<=560;y+=50){c.beginPath();c.moveTo(0,y);c.lineTo(900,y);c.stroke();}c.strokeStyle='#5ce4d15c';c.lineWidth=3;c.strokeRect(12,12,876,536);c.beginPath();c.ellipse(450,280,230,180,0,0,Math.PI*2);c.stroke();
  const circle=(x,y,rad,fill,stroke)=>{c.beginPath();c.arc(x,y,rad,0,Math.PI*2);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.strokeStyle=stroke;c.stroke();}};
  r.hazards.forEach(h=>{c.save();const warned=h.delay>0;c.fillStyle=warned?'#ff53752c':'#ff7498b0';c.strokeStyle=warned?'#ff829c':'#ffe4ea';c.lineWidth=2;if(warned)c.setLineDash([8,6]);if(h.kind==='circle'||h.kind==='burst')circle(h.x,h.y,h.r,c.fillStyle,c.strokeStyle);else{const a=Math.atan2(h.ty-h.y,h.tx-h.x),dx=Math.sin(a)*h.w,dy=-Math.cos(a)*h.w;c.beginPath();c.moveTo(h.x+dx,h.y+dy);c.lineTo(h.tx+dx,h.ty+dy);c.lineTo(h.tx-dx,h.ty-dy);c.lineTo(h.x-dx,h.y-dy);c.closePath();c.fill();c.stroke();}c.restore();});
- r.fx.forEach(f=>{c.save();c.globalAlpha=f.life/f.max;c.strokeStyle=f.color;c.fillStyle=f.color+'45';c.lineWidth=4;if(f.kind==='cone'){c.beginPath();c.moveTo(f.x,f.y);c.arc(f.x,f.y,f.r,f.a-.65,f.a+.65);c.closePath();c.fill();c.stroke();}else{circle(f.x,f.y,f.r*(1-f.life/f.max*.25),f.kind==='storm'?c.fillStyle:null,f.color);if(f.kind==='storm'){for(let i=0;i<6;i++){const a=i*Math.PI/3;c.beginPath();c.moveTo(f.x+Math.cos(a)*f.r*.7,f.y+Math.sin(a)*f.r*.7-45);c.lineTo(f.x+Math.cos(a)*f.r*.5+8,f.y+Math.sin(a)*f.r*.5);c.lineTo(f.x+Math.cos(a)*f.r*.5-8,f.y+Math.sin(a)*f.r*.5+10);c.stroke();}}}c.restore();});
- r.bullets.forEach(b=>{c.save();c.strokeStyle=b.color;c.fillStyle=b.color;c.lineWidth=b.radius;c.beginPath();c.moveTo(b.x-b.vx*.025,b.y-b.vy*.025);c.lineTo(b.x,b.y);c.stroke();if(!b.foe&&r.id===658){c.translate(b.x,b.y);c.rotate(r.t*15);c.fillRect(-b.radius*1.4,-2,b.radius*2.8,4);c.fillRect(-2,-b.radius*1.4,4,b.radius*2.8);}else circle(b.x,b.y,b.radius,b.color);c.restore();});
- const drawMon=(id,x,y,size,flash=0)=>{circle(x,y+size*.27,size*.32,'#0006');const im=imageFor(id);if(im.complete&&im.naturalWidth){c.save();if(flash>0)c.globalAlpha=.55;c.imageSmoothingEnabled=false;c.drawImage(im,x-size/2,y-size/2,size,size);c.restore();}else circle(x,y,size*.24,TYPE_COL[MON[id].types[0]]);};
+ r.fx.forEach(f=>{c.save();c.globalAlpha=f.life/f.max;c.strokeStyle=f.color;c.fillStyle=f.color+'45';c.lineWidth=4;if(f.kind==='cone'){c.beginPath();c.moveTo(f.x,f.y);c.arc(f.x,f.y,f.r,f.a-.65,f.a+.65);c.closePath();c.fill();c.stroke();}else{circle(f.x,f.y,f.r*(1-f.life/f.max*.25),f.kind==='storm'?c.fillStyle:null,f.color);if(f.kind==='storm'&&f.motif==='bolt'){for(let i=0;i<6;i++){const a=i*Math.PI/3;c.beginPath();c.moveTo(f.x+Math.cos(a)*f.r*.7,f.y+Math.sin(a)*f.r*.7-45);c.lineTo(f.x+Math.cos(a)*f.r*.5+8,f.y+Math.sin(a)*f.r*.5);c.lineTo(f.x+Math.cos(a)*f.r*.5-8,f.y+Math.sin(a)*f.r*.5+10);c.stroke();}}}if(f.motif&&f.motif!=='bolt'){for(let i=0;i<7;i++){const a=i*Math.PI*2/7+r.t*.5;actGlyph(c,f.motif,f.x+Math.cos(a)*f.r*.65,f.y+Math.sin(a)*f.r*.65,10,f.color,r.t);}}c.restore();});
+ r.bullets.forEach(b=>{c.save();c.strokeStyle=b.color;c.fillStyle=b.color;c.lineWidth=b.radius;c.beginPath();c.moveTo(b.x-b.vx*.025,b.y-b.vy*.025);c.lineTo(b.x,b.y);c.stroke();if(!b.foe&&b.motif==='shuriken'){c.translate(b.x,b.y);c.rotate(r.t*15);c.fillRect(-b.radius*1.4,-2,b.radius*2.8,4);c.fillRect(-2,-b.radius*1.4,4,b.radius*2.8);}else if(b.foe)circle(b.x,b.y,b.radius,b.color);else actGlyph(c,b.motif,b.x,b.y,b.radius*1.5,b.color,r.t);c.restore();});
+ const drawMon=(id,x,y,size,flash=0,shiny=false)=>{circle(x,y+size*.27,size*.32,'#0006');const im=imageFor(id,shiny);if(im.complete&&im.naturalWidth){c.save();if(flash>0)c.globalAlpha=.55;c.imageSmoothingEnabled=false;c.drawImage(im,x-size/2,y-size/2,size,size);c.restore();}else circle(x,y,size*.24,TYPE_COL[MON[id].types[0]]);};
  r.enemies.forEach(e=>{drawMon(e.id,e.x,e.y,e.boss?100:54,e.flash);c.fillStyle='#131b2b';c.fillRect(e.x-e.r,e.y-e.r-10,e.r*2,4);c.fillStyle=e.boss?'#f69aaa':'#91c9ca';c.fillRect(e.x-e.r,e.y-e.r-10,e.r*2*Math.max(0,e.hp/e.max),4);if(e.slow>0)circle(e.x,e.y,e.r+4,null,'#84e5ff');});
- c.save();if(p.inv>0)c.globalAlpha=.6;drawMon(r.id,p.x,p.y,68);c.restore();circle(p.x,p.y,27,null,k.color);c.strokeStyle=k.color;c.lineWidth=2;c.beginPath();c.moveTo(p.x+Math.cos(p.angle)*30,p.y+Math.sin(p.angle)*30);c.lineTo(p.x+Math.cos(p.angle)*46,p.y+Math.sin(p.angle)*46);c.stroke();
- if(p.cast){const f=1-p.cast.left/p.cast.total;c.strokeStyle=k.color;c.lineWidth=5;c.beginPath();c.arc(p.x,p.y,35,-Math.PI/2,-Math.PI/2+f*Math.PI*2);c.stroke();if(k.shape==='storm')circle(p.cast.tx,p.cast.ty,k.radius*(1+(r.mods.wide||0)*.18),'#ffe16422',k.color);}
+ c.save();if(p.inv>0)c.globalAlpha=.6;drawMon(r.id,p.x,p.y,68,0,r.shiny);c.restore();circle(p.x,p.y,27,null,k.color);c.strokeStyle=k.color;c.lineWidth=2;c.beginPath();c.moveTo(p.x+Math.cos(p.angle)*30,p.y+Math.sin(p.angle)*30);c.lineTo(p.x+Math.cos(p.angle)*46,p.y+Math.sin(p.angle)*46);c.stroke();
+ if(r.shiny){for(let i=0;i<3;i++){const a=r.t*1.5+i*Math.PI*2/3;actGlyph(c,'star',p.x+Math.cos(a)*34,p.y+Math.sin(a)*34,4,'#ffe7a0',r.t);}}
+ if(p.cast){const f=1-p.cast.left/p.cast.total;c.strokeStyle=k.color;c.lineWidth=5;c.beginPath();c.arc(p.x,p.y,35,-Math.PI/2,-Math.PI/2+f*Math.PI*2);c.stroke();if(k.shape==='storm')circle(p.cast.tx,p.cast.ty,k.radius*(1+(r.mods.wide||0)*.18),k.color+'22',k.color);}
  const boss=r.enemies.find(e=>e.boss);if(boss){c.fillStyle='#08101de6';c.fillRect(230,18,440,39);c.font='bold 13px sans-serif';c.fillStyle='#ffd9df';c.textAlign='center';c.fillText(MON[boss.id].name+(boss.hp<boss.max*.5?' / PHASE 2':''),450,35);c.fillStyle='#f57d98';c.fillRect(240,43,420*Math.max(0,boss.hp/boss.max),5);}
  if(r.bannerT>0){c.fillStyle='#07111ddd';c.fillRect(200,220,500,65);c.fillStyle='#f6d98c';c.font='bold 26px sans-serif';c.textAlign='center';c.fillText(r.banner,450,261);}
 }
@@ -3144,6 +3232,11 @@ async function renderCardScreen(){S.screen='card';const m=S.meta;const sp=cardSp
 // 같은 날 여러 번 배포하면 그날 것은 한 묶음으로 합치고 v만 올려요(학생은 하루에 한 번만 안내를 봐요).
 // 체험 코드(TEST-2026)는 학생에게 안내하지 않아요.
 const UPDATES=[
+ {v:8,d:'2026년 11월 15일',t:'내 포켓몬으로 보스 아레나에!',items:[
+ {ic:'dex',h:'보유 도감 전체에서 출전',p:'이제 모은 포켓몬을 직접 조작할 수 있어요. 이름·도감 번호로 검색하거나 타입으로 골라 보세요. 카드와 조각은 소모하지 않아요.'},
+ {ic:'bolt',h:'18개 타입의 아레나 기술',p:'잎날 폭풍, 얼음 결정, 지진 파동, 섀도볼 등 타입별 범위·색·효과가 달라요. 복합 타입은 출전 전에 사용할 타입을 선택해요. 아레나 전용 기술이며 원작의 개별 습득 기술 목록과는 달라요.'},
+ {ic:'star',h:'보유 이로치로 출전',p:'이로치를 가지고 있다면 아레나에서 일반·이로치 모습을 고를 수 있어요. 모습만 달라지고 능력은 같아요. 마지막 출전 선택을 기억해요.'},
+ {ic:'check',h:'터치 조작 개선',p:'이동 패드를 누른 채 공격·스킬·회피를 함께 사용할 수 있어요. 가볍게 밀면 천천히 이동하고, 손을 떼거나 화면을 전환하면 입력이 해제돼요. 가로 화면에서는 조작 버튼이 전장 위에 놓여요.'}]},
  {v:7,d:'2026년 11월 15일',t:'직접 조작하는 보스 아레나',items:[
  {ic:'bolt',h:'직접 이동하고 공격하세요',p:'피카츄·리자몽·루카리오·개굴닌자 중 하나를 선택하세요. 이동·조준·공격·스킬·회피로 세 보스를 공략합니다. 마우스·키보드와 터치 조작을 지원합니다.'},
  {ic:'flame',h:'스킬마다 다른 범위와 시전',p:'범위 번개, 부채꼴 화염, 관통 파동탄, 분산 수리검! 강한 기술일수록 시전 중 위험도 커집니다. 붉은 예고 범위를 보고 보스의 돌진·탄막·광선을 피하세요.'},
