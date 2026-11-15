@@ -895,12 +895,12 @@ function showSaveBox(){saveLocal();
 
 // ===== 보이는 영역에 맞추기 · 화면 크기 =====
 const FIT={top:0,h:0,z:1};
-function uiZoom(h,w){const st=S.meta.settings.zoom||'auto';if(st!=='auto')return +st||1;let z=1;if(h<560)z=Math.max(.62,h/560);if(w/z<340)z=Math.max(.55,w/340);return Math.round(z*100)/100;}
+function uiZoom(h,w){if(S.screen==='mini')return 1;const st=S.meta.settings.zoom||'auto';if(st!=='auto')return +st||1;let z=1;if(h<560)z=Math.max(.62,h/560);if(w/z<340)z=Math.max(.55,w/340);return Math.round(z*100)/100;}
 function applyFit(top,h){const de=document.documentElement,ds=de.style;const z=uiZoom(h,innerWidth);ds.zoom=z===1?'':String(z);FIT.z=z;
  ds.setProperty('--vt',top/z+'px');ds.setProperty('--vh',h/z+'px');de.classList.toggle('short',h/z<680);}
 const fitMode=()=>S.meta.settings.fit||'auto';
 function refit(){applyFit(fitMode()==='off'?0:FIT.top,fitMode()==='off'||!FIT.h?innerHeight:Math.min(FIT.h,innerHeight));}
-function initFit(){applyFit(0,innerHeight);addEventListener('resize',()=>applyFit(FIT.top,FIT.h>0?Math.min(FIT.h,innerHeight):innerHeight));
+function initFit(){applyFit(0,innerHeight);addEventListener('resize',()=>{if(!EMBED){FIT.top=0;FIT.h=innerHeight;}applyFit(FIT.top,FIT.h>0?Math.min(FIT.h,innerHeight):innerHeight);});
  if(!('IntersectionObserver' in window))return;const el=document.createElement('div');el.style.cssText='position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;visibility:hidden;z-index:-5';document.body.appendChild(el);
  const th=[];for(let i=0;i<=200;i++)th.push(i/200);
  new IntersectionObserver(es=>{const e=es[es.length-1],r=e.intersectionRect,H=innerHeight;let top=0,h=H;
@@ -2555,7 +2555,7 @@ function actUpgrade(r,key){const mod=ACT_MODS[key];if(!r.pending||!mod||(r.mods[
 function actClaim(r){if(r.claimed)return 0;r.claimed=true;const a=arcadeState();a.action=a.action||{best:{},runs:0};a.action.runs++;const key=r.gs+':'+r.id+':'+(r.paid?'challenge':'practice');a.action.best[key]=Math.max(a.action.best[key]||0,r.score);let dust=0;if(r.over&&r.win&&r.paid&&r.correct>=2){dust=12;S.meta.dust=(S.meta.dust||0)+dust;}return dust;}
 let ACT=null,ACT_STOP=null,ACT_SELECTION=null,ACT_TYPE=null,ACT_SHINY=false;
 function renderMiniHome(){
- S.screen='minihome';S.inMini=0;const g=miniSt(),owned=actOwned(),saved=arcadeState().arenaChoice;
+ S.screen='minihome';S.inMini=0;refit();const g=miniSt(),owned=actOwned(),saved=arcadeState().arenaChoice;
  if(!actChoose(ACT_SELECTION,ACT_TYPE,ACT_SHINY)){
   if(!saved||!actChoose(saved.id,saved.type,saved.shiny))actChoose(owned.includes(partnerId())?partnerId():owned[0]);
  }
@@ -2602,7 +2602,7 @@ function actBindPointers(cv,stick,buttons,input,taps,blocked){
 }
 
 function startMini(paid=false){if(!actChoose(ACT_SELECTION,ACT_TYPE,ACT_SHINY)){toast('보유한 포켓몬을 먼저 선택해 주세요.');renderMiniHome();return;}if(ACT_STOP)ACT_STOP();const g=miniSt();if(paid&&(g.tk<1||g.n>=MINI_DAY))return;if(!clockOk()){toast('기기 날짜를 확인해 주세요.');return;}if(!allowedSkills().some(s=>s.s===S.meta.gs)){toast('배우는 단원을 먼저 선택해 주세요.');return;}if(paid){g.tk--;g.n++;g.runs++;saveLocal();}
- const r=ACT=actNew(ACT_SELECTION,paid,Date.now(),ACT_TYPE);r.shiny=ACT_SHINY;arcadeState().arenaChoice={id:r.id,type:r.type,shiny:r.shiny};saveLocal();r.gs=S.meta.gs;S.screen='mini';S.inMini=1;const input={x:0,y:0,aim:null,fire:false,skill:false,dash:false},keys={},taps={};let ended=false,last=performance.now(),raf=0,upgrading=false,cancelQuestion=null;
+ const r=ACT=actNew(ACT_SELECTION,paid,Date.now(),ACT_TYPE);r.shiny=ACT_SHINY;arcadeState().arenaChoice={id:r.id,type:r.type,shiny:r.shiny};saveLocal();r.gs=S.meta.gs;S.screen='mini';S.inMini=1;refit();const input={x:0,y:0,aim:null,fire:false,skill:false,dash:false},keys={},taps={};let ended=false,last=performance.now(),raf=0,upgrading=false,cancelQuestion=null;
  $('#view').innerHTML=`<div class=actionShell><header class=actionHUD><div><span class=tacKicker>RIFT ARENA</span><b>${r.shiny?'✦ ':''}${actKit(r.id,r.type).name} · ${TYPE_KO[r.type]} / ${paid?'티켓 도전':'자유 연습'}</b></div><span id=actStatus></span><button class=tacBtn id=actPause>일시정지</button><button class=tacBtn id=actExit>종료</button></header><div class=actionViewport><canvas id=actCanvas width=900 height=560 aria-label="직접 조작하는 보스 아레나"></canvas><div class=actionOverlay id=actOverlay hidden></div><div class=actionTouch><div id=actStick class=actionStick role=application aria-label="이동 패드"><span>MOVE</span><i></i></div><div class=actionButtons><button data-act=fire>공격<br><small>J / 클릭</small></button><button data-act=skill>스킬<br><small id=actSkillCD>K</small></button><button data-act=dash>회피<br><small id=actDashCD>Space</small></button></div></div></div><div class=actionFooter id=actFooter>WASD / 방향키 이동 · 마우스 조준 · J 공격 · K 스킬 · Space 회피</div></div>`;
  $('#view').scrollTop=0;const cv=$('#actCanvas'),ctx=cv.getContext('2d'),overlay=$('#actOverlay'),stick=$('#actStick'),ims={};
  const imageFor=(id,shiny=false)=>{const key=id+':'+shiny;if(!ims[key]){const im=new Image(),sources=actSpriteSources(id,shiny);let ix=0;im.onerror=()=>{if(++ix<sources.length)im.src=sources[ix];else im.onerror=null;};im.src=sources[0];ims[key]=im;}return ims[key];};imageFor(r.id,r.shiny);[94,445,150,41,92,104,215].forEach(id=>imageFor(id));
