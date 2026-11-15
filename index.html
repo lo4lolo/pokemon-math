@@ -3475,7 +3475,7 @@ function tacUnit(id,level=1){const role=['guard','striker','medic'][id%3],max=22
 function tacDraft(r){const ids=TAC_POOL.filter(id=>r.phase!=='draft'||!r.team.some(u=>u.id===id)),out=[];while(out.length<3&&ids.length)out.push(ids.splice(Math.floor(tacRandom(r)*ids.length),1)[0]);return out;}
 function tacNew(mode){const cfg=ARCADE_MODES[mode];if(!cfg)return null;const r={v:1,mode,gs:S.meta.gs,day:today(),seed:seedHash(mode==='daily'?today()+':'+S.meta.gs:Date.now()+':'+Math.random()),stage:1,phase:'draft',team:[],foes:[],mods:{power:0,armor:0,heal:0},score:0,correct:0,answered:0,route:'normal',claimed:false};r.offers=tacDraft(r);return r;}
 function tacRecruit(r,id,slot=0){
- if(!r.offers.includes(id))return false;
+ if(!['draft','loot'].includes(r.phase)||!r.offers.includes(id)||!Number.isInteger(slot)||slot<0||slot>2)return false;
  const same=r.team.find(u=>u.id===id);
  if(same){same.level++;same.atk+=2;same.max+=5;same.hp=Math.min(same.max,same.hp+10);}
  else if(r.team.length<3)r.team.push(tacUnit(id));else r.team[slot]=tacUnit(id,1+Math.floor(r.stage/3));
@@ -3504,7 +3504,7 @@ function tacSimulate(r){
  }
  return{win:alive(me)&&!alive(fo),team:me,events};
 }
-function tacCommitBattle(r,result){if(r.phase!=='ready')return false;r.team=result.team;r.lastWin=result.win;
+function tacCommitBattle(r,result){if(r.phase!=='ready')return false;r.team=result.team;r.team.forEach(u=>u.shield=0);r.lastWin=result.win;
  if(result.win){r.score+=({normal:100,elite:180,camp:60,boss:300}[r.route]||100)+r.team.reduce((n,u)=>n+u.hp,0);r.phase=r.stage===ARCADE_MODES[r.mode].n?'done':'loot';if(r.phase==='loot')r.offers=tacDraft(r);}
  else r.phase='done';return true;
 }
@@ -3517,7 +3517,7 @@ function tacBest(mode){const a=arcadeState(),key=S.meta.gs+':'+mode+(mode==='dai
 function renderArcade(){S.screen='arcade';S.inMini=0;const a=arcadeState(),run=a.run;
  $('#view').innerHTML=hudHTML()+`<div class="wrap tacHub"><header class=tacHero><div><span class=tacKicker>TACTICAL LAB / SEASON 01</span><h1>승리는, 선택에서.</h1><p>세 마리의 팀. 매번 달라지는 강화.<br>수학으로 장비를 가동하고 균열을 돌파하세요.</p></div><div class=tacHeroMon>${monImg(448,'art','',false)}</div></header>${run&&run.gs===S.meta.gs&&run.phase!=='done'?`<button class="tacResume" id=tacResume>진행 중인 ${ARCADE_MODES[run.mode].name} · ${run.stage}구역 이어하기 →</button>`:''}<div class=tacModeGrid>${Object.entries(ARCADE_MODES).map(([k,v])=>`<button class="tacMode ${k}" data-tac-mode=${k}><div class=tacModeArt>${monImg(k==='daily'?376:445,'art','',false)}</div><span class=tacKicker>${v.tag}</span><h2>${v.name}</h2><p>${v.desc}</p><footer><b>${v.n}구역 / 약 5–8분</b><span>최고 ${tacBest(k)}점 ↗</span></footer></button>`).join('')}</div><div class=tacRules><b>PLAY YOUR BUILD</b><p>영입 → 전열 배치 → 경로 선택 → 수학 분석 → 장비 강화 → 자동 전투.<br>타입 상성·역할·공통 타입 시너지가 전투를 바꿉니다. 전투 중에는 문제를 풀지 않습니다.</p><small>내 학년의 배운 단원 출제 · 시간 제한 없음 · 완주하고 절반 이상 정답이면 50코인 · 오늘 추가 보상 ${a.rewards}/3회<br>원정용 포켓몬은 모두에게 같은 후보군에서 제공됩니다. 기존 카드와 재화는 전투에서 잃지 않습니다. 기록은 이 기기에 저장됩니다.</small></div><details class=tacClassic><summary>기존 파트너 서바이벌</summary><p>직접 움직이며 회피하는 액션 모드. 기존 티켓과 하루 3판 규칙을 사용합니다.</p><button class="btn blue" id=tacSurvival ${featOn('mini')?'':'disabled'}>${featOn('mini')?'서바이벌 열기':'챔피언 승리 후 해금'}</button></details></div>`;
  bindHud();document.querySelectorAll('[data-tac-mode]').forEach(b=>b.onclick=async()=>{if(a.run&&a.run.phase!=='done'&&!await confirmBox('진행 중인 원정을 끝내고 새 팀으로 시작할까요?','새 원정','계속 보관'))return;startTactics(b.dataset.tacMode);});
- const resume=$('#tacResume');if(resume)resume.onclick=()=>renderTactics();$('#tacSurvival').onclick=()=>{if(featOn('mini'))renderMiniHome();};
+ const resume=$('#tacResume');if(resume)resume.onclick=()=>renderTactics();$('#tacSurvival').onclick=()=>{if(featOn('mini'))renderMiniHome();};$('#view').scrollTop=0;
 }
 function startTactics(mode){if(!allowedSkills().some(s=>s.s===S.meta.gs)){toast('배우는 단원을 먼저 선택해 주세요.');return;}if(!clockOk()){toast('기기 날짜를 확인해 주세요.');return;}arcadeState().run=tacNew(mode);autoSave();renderTactics();}
 function tacCard(u,i,mine=true){return `<div class="tacUnit ${u.hp<=0?'down':''}" id="${mine?'tm':'tf'}${i}"><span class=tacRole>${TAC_ROLES[u.role].name} · Lv.${u.level}</span>${monImg(u.id,'front','',mine&&shinyOf(u.id))}<b>${esc(MON[u.id].name)}</b><div class=tacHP><i style="width:${100*Math.max(0,u.hp)/u.max}%"></i></div><small>HP ${u.hp}/${u.max} · ATK ${u.atk}${u.shield?' · 보호막 '+u.shield:''}</small></div>`;}
@@ -3550,6 +3550,7 @@ function renderTactics(){const r=arcadeState().run;if(!r||r.gs!==S.meta.gs)retur
  }else if(r.phase==='done'){
   tacClaim(r);autoSave();main.innerHTML=`<div class=tacResult><span class=tacKicker>${r.lastWin?'EXPEDITION COMPLETE':'SIGNAL LOST'}</span><h1>${r.lastWin?'균열 돌파':'원정 종료'}</h1><strong>${r.score}<small> PT</small></strong><p>${r.stage}구역 · 분석 정답 ${r.correct}/${r.answered}<br>${r.reward?'완주 보상 +'+r.reward+' 코인':r.lastWin?'추가 보상은 절반 이상 정답 및 하루 3회까지 지급됩니다.':'다음 원정에서는 다른 역할과 모듈 조합을 시도해 보세요.'}</p><div class=tacTeam>${r.team.map((u,i)=>tacCard(u,i)).join('')}</div><button class=tacLaunch id=tacDone>아케이드로 돌아가기 →</button></div>`;$('#tacDone').onclick=()=>renderArcade();
  }
+ $('#view').scrollTop=0;
 }
 async function tacFight(r){if(TAC_BUSY||r.phase!=='ready')return;TAC_BUSY=true;$('#tacExit').disabled=true;$('#tacLaunch').disabled=true;const result=tacSimulate(r);tacCommitBattle(r,result);autoSave();
  for(const e of result.events){if(S.screen!=='arcadeplay'||arcadeState().run!==r)break;$('#tacArena').innerHTML=tacBoard(r,e.me,e.fo);$('#tacLog').textContent=e.text;const target=$('#'+(e.mine?'tf':'tm')+e.target);if(target&&!S.meta.settings.lowfx)target.classList.add('tacHit');await wait(S.meta.settings.lowfx?30:150);}
