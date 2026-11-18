@@ -847,8 +847,24 @@ function clockOk(){const m=S.meta,t=today();if(!m.clockMax||t>m.clockMax){m.cloc
 
 // ===== 저장 · 불러오기 =====
 const STORE_OK=(()=>{try{const k='__pm';localStorage.setItem(k,'1');const ok=localStorage.getItem(k)==='1';localStorage.removeItem(k);return ok;}catch(e){return false;}})();
-function saveLocal(){if(window.__sim||S.demo)return; // 체험 모드는 저장하지 않아요(학생 기록 보호)
-try{const js=JSON.stringify(S.meta);localStorage.setItem(SAVE_KEY,'{"meta":'+js+',"sig":"'+sigOf(js)+'"}');}catch(e){}}
+const recoveryKey=GAME.id+'-recovery-v1';
+function recoveryList(){try{const a=JSON.parse(localStorage.getItem(recoveryKey)||'[]');return Array.isArray(a)?a.filter(x=>x&&x.data&&x.data.meta):[];}catch(e){return [];}}
+function keepRecovery(raw,force=false){
+ if(window.__sim||S.demo||!raw)return true;
+ try{const data=JSON.parse(raw);if(!data.meta||!data.meta.name||sigState(data)==='bad')return true;
+ const list=recoveryList(),last=list[0];
+ if(last&&JSON.stringify(last.data)===JSON.stringify(data))return true;
+ if(!force&&last&&Date.now()-last.t<600000)return true;
+ localStorage.setItem(recoveryKey,JSON.stringify([{t:Date.now(),data},...list].slice(0,12)));return true;
+ }catch(e){return false;}
+}
+function saveLocal(){if(window.__sim||S.demo)return false;
+ try{const old=localStorage.getItem(SAVE_KEY);keepRecovery(old);
+ const js=JSON.stringify(S.meta);localStorage.setItem(SAVE_KEY,'{"meta":'+js+',"sig":"'+sigOf(js)+'"}');return true;}catch(e){return false;}}
+function showRecovery(){const list=recoveryList();const acts={x:()=>closeM(),_close:()=>closeM()};
+ const rows=list.map((r,i)=>{const m=r.data.meta;acts['r'+i]=async()=>{if(!(await confirmBox('현재 기록을 백업한 뒤 선택한 시점으로 돌아갈까요?','복구','취소')))return;applyLoaded(r.data,'이전 기록을 복구했어요. .md 파일도 저장해 주세요.');};return `<div class=slot2><div class=sl1><b>${esc(m.name||'트레이너')}</b><div class=mut>${fmtWhen(r.t)} · 정답 ${Number(m.stats&&m.stats.c)||0}개 · 카드 ${Object.keys(m.col||{}).length}종</div></div><button class="btn blue" data-a=r${i}>이 시점 복구</button></div>`;}).join('');
+ M(`<h2>이전 기록 복구</h2><p>이 브라우저에 남은 자동 백업 최대 12개예요. 약 10분 간격으로 이전 저장본을 보관하며, 기록을 불러오기 전에도 백업해요. 브라우저 데이터를 지우면 함께 사라집니다.</p>${rows||'<p>남아 있는 자동 백업이 없어요. 저장 칸 1~3, 다운로드 폴더의 .md 파일, 복사해 둔 저장 코드를 확인해 주세요.</p>'}<div class=mbtns><button class="btn gold" data-a=x>닫기</button></div>`,acts,{wide:1});
+}
 // 브라우저 저장이 바뀐 흔적이 있어도 학생 기록은 지키고(불러옴), 선생님 화면에 표시해요
 function loadLocal(){try{const s=localStorage.getItem(SAVE_KEY);if(!s)return;const o=JSON.parse(s);const st=sigState(o);S.meta=upgradeMeta(mergeMeta(o.meta));if(st==='bad'){const m=S.meta;m.tamper=(Number(m.tamper)||0)+1;m.coins=0;m.packs=0;m.dust=0;m.candy=0;m.mathEnergy=0;m.shine=0;if(m.dmax)m.dmax.mush=0;m.mega&&(m.mega.xtal=0);saveLocal();S.tamperMsg=1;}}catch(e){}}
 // 바뀐 흔적이 있으면: 공부 기록·카드는 그대로, 재화(코인·카드팩·별가루·사탕·결정·가루·버섯·학습 에너지)만 0으로. 선생님 표에도 남아요
@@ -868,7 +884,7 @@ async function readAny(text){text=String(text||'').trim();if(!text)throw new Err
  const m=text.replace(/\s+/g,'').match(/PKMT([AZ]):([A-Za-z0-9_-]+)/);if(!m)throw new Error('저장 코드 모양이 아니에요 (PKMT로 시작해요)');
  let b=ub64u(m[2]);if(m[1]==='Z'){if(!window.DecompressionStream)throw new Error('이 브라우저는 이 코드를 읽지 못해요');b=new Uint8Array(await new Response(new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer());}
  const o=JSON.parse(new TextDecoder().decode(b));if(o.game!==GAME.id)throw new Error(GAME.title+' 코드가 아니에요');return o;}
-function applyLoaded(o,msg){if(sigState(o)==='bad'){toast(SIG_BAD_MSG);return;}S.demo=false;S.meta=upgradeMeta(mergeMeta(o.meta));saveLocal();applySafe();closeM();closeM(1);toast(msg||'불러왔어요!');goStart();}
+function applyLoaded(o,msg){if(!o||!o.meta||typeof o.meta!=='object'){toast('저장 데이터가 없어요');return;}if(sigState(o)==='bad'){toast(SIG_BAD_MSG);return;}if(!S.demo&&!keepRecovery(JSON.stringify({meta:S.meta,sig:sigOf(JSON.stringify(S.meta))}),true)){toast('현재 기록을 백업하지 못했어요. 먼저 .md 파일로 저장해 주세요.');return;}S.demo=false;S.meta=upgradeMeta(mergeMeta(o.meta));const saved=saveLocal();applySafe();if(!saved)msg='불러왔지만 브라우저에 저장하지 못했어요. .md 파일을 저장해 주세요.';closeM();closeM(1);toast(msg||'불러왔어요!');goStart();}
 async function copyText(t,ta){try{await navigator.clipboard.writeText(t);toast('복사했어요! 메모장이나 채팅방에 붙여 두세요');return;}catch(e){}
  try{if(ta){ta.focus();ta.select();ta.setSelectionRange(0,t.length);}if(document.execCommand('copy')){toast('복사했어요! 메모장이나 채팅방에 붙여 두세요');return;}}catch(e){}
  if(ta){ta.focus();ta.select();}toast('자동 복사가 막혀 있어요. 칸 안의 글자를 길게 눌러 직접 복사해 주세요');}
@@ -877,13 +893,13 @@ function buildMD(){const m=S.meta,L=lvOf(m.xp);const d=new Date();
  const sks=Object.keys(m.sk).map(id=>{const s=SKM[id];const v=m.sk[id];return s?`| ${s.s} | ${esc(s.n)} | ${'★'.repeat(v.st||0)} | ${v.c}/${v.c+v.x} |`:'';}).filter(Boolean).join('\n');
  return `# ${GAME.title} 기록 — ${m.name}\n\n> 이 파일을 게임 화면에 끌어다 놓거나 「저장 · 불러오기 → .md 불러오기」로 이어서 할 수 있어요. 맨 아래 저장 데이터 블록은 고치지 마세요.\n\n| 항목 | 값 |\n|---|---|\n| 닉네임 | ${m.name} |\n| 학년·학기 | ${semName(m.gs)} |\n| 저장 시각 | ${d.toLocaleString('ko-KR')} |\n| 트레이너 레벨 | Lv.${L.lv} (${L.title}) |\n| 푼 문제 / 맞힌 문제 | ${m.stats.q} / ${m.stats.c} |\n| 모은 카드 | ${Object.keys(m.col).length}종 |\n| 체육관 배지 | ${Object.keys(m.gyms).length}개 |\n| 도전 과제 배지 | ${ACH.reduce((s,a)=>s+((m.ach[a.k]&&m.ach[a.k].t)||0),0)}개 |\n| 나의 강점 | ${strengths(m).slice(0,2).map(x=>STR[x.k].t).join(', ')||'찾는 중'} |\n| 플레이 스타일 | ${playStyle(m).map(t=>'#'+t[0]).join(' ')||'-'} |\n\n## 최근 공부 기록\n| 날짜 | 푼 문제 | 맞힌 문제 | 정답률 | 문제당 시간 |\n|---|---|---|---|---|\n${days||'| - | - | - | - | - |'}\n\n## 개념별 별\n| 학기 | 개념 | 별 | 맞힘/전체 |\n|---|---|---|---|\n${sks||'| - | - | - | - |'}\n\n> 석산초 SUCCESS 모델의 지원을 받아 제작되었어요.\n\n## 저장 데이터\n\`\`\`json\n${JSON.stringify({game:GAME.id,v:1,saved:Date.now(),meta:m,sig:sigOf(JSON.stringify(m))})}\n\`\`\`\n`;}
 async function saveMD(){const md=buildMD();const nm=(S.meta.name||'트레이너').replace(/[\\/:*?"<>|\s]/g,'');const d=new Date();
- const fn=`${GAME.file}_${nm}_${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}_${pad2(d.getHours())}${pad2(d.getMinutes())}.md`;
+ const fn=`${GAME.file}_${nm}_${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}_${pad2(d.getHours())}${pad2(d.getMinutes())}${pad2(d.getSeconds())}.md`;
  if(window.showSaveFilePicker&&window.self===window.top){try{const h=await showSaveFilePicker({suggestedName:fn,types:[{description:'마크다운 기록',accept:{'text/markdown':['.md']}}]});const w=await h.createWritable();await w.write(md);await w.close();toast('저장했어요: '+esc(h.name));return;}catch(e){if(e&&e.name==='AbortError')return;}}
  const blob=new Blob([md],{type:'text/markdown;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);toast(esc(fn)+' 파일로 내려받았어요');}
-function handleFile(f){if(!f)return;const rd=new FileReader();rd.onload=async()=>{try{const o=await readAny(String(rd.result));applyLoaded(o,'파일에서 불러왔어요!');}catch(e){toast(esc(e.message||'불러오지 못했어요'));}};rd.readAsText(f,'utf-8');}
+function handleFile(f){if(!f)return;const rd=new FileReader();rd.onload=async()=>{try{const o=await readAny(String(rd.result));if(S.meta.name&&!(await confirmBox('현재 기록을 백업한 뒤 파일의 기록으로 바꿀까요?','불러오기','취소')))return;applyLoaded(o,'파일에서 불러왔어요!');}catch(e){toast(esc(e.message||'불러오지 못했어요'));}};rd.readAsText(f,'utf-8');}
 const canNewWin=()=>EMBED&&/^https?:/.test(location.protocol);
-function quickSave(){if(!STORE_OK){showSaveBox();return;}saveLocal();toast(`${I('check')} 저장했어요! 지금 꺼도 다음에 이어서 할 수 있어요 <button class="btn sm ghost" style="margin-left:6px;pointer-events:auto" onclick="showSaveBox()">저장 코드·파일</button>`);}
-function showSaveBox(){saveLocal();
+function quickSave(){if(!STORE_OK){showSaveBox();return;}if(!saveLocal()){toast('브라우저 저장에 실패했어요. .md 파일로 저장해 주세요.');showSaveBox();return;}toast(`${I('check')} 저장했어요! 지금 꺼도 다음에 이어서 할 수 있어요 <button class="btn sm ghost" style="margin-left:6px;pointer-events:auto" onclick="showSaveBox()">저장 코드·파일</button>`);}
+function showSaveBox(){
  const status=STORE_OK?`<div class=saveStatus>${I('check')} <b>자동 저장 켜짐</b> — 문제를 풀거나 카드를 얻을 때마다 이 브라우저에 저장돼요.<br><span class=mut>지금: ${esc(saveSummary())}</span></div>`
   :`<div class="saveStatus bad">${I('lock')} <b>이 화면에서는 브라우저 저장이 막혀 있어요.</b><br>새로고침되면 기록이 사라지니, 아래 <b>저장 코드</b>를 꼭 만들어 두세요.</div>`;
  const slots=STORE_OK?`<h3>저장 칸 <span class=mut style="font-size:12px">(이 기기·이 브라우저에만 남아요)</span></h3>`+[1,2,3].map(i=>{const o=slotGet(i);return `<div class=slot2><div class=sl1><b>${I('disk')} 저장 칸 ${i}</b><div class=mut>${o?esc((o.name?o.name+' · ':'')+o.sum)+' · '+fmtWhen(o.t):'비어 있어요'}</div></div><div class=sl2><button class="btn sm gold" data-a="s${i}">저장</button><button class="btn sm blue" data-a="l${i}" ${o?'':'disabled'}>불러오기</button></div></div>`;}).join(''):'';
@@ -891,16 +907,17 @@ function showSaveBox(){saveLocal();
   mk:async()=>{const c=await makeCode();const ta=$('#codeOut');ta.value=c;copyText(c,ta);},
   share:async()=>{const c=await makeCode();$('#codeOut').value=c;try{await navigator.share({title:GAME.title+' 저장 코드',text:c});}catch(e){copyText(c,$('#codeOut'));}},
   ld:async()=>{try{const o=await readAny($('#codeIn').value);if(S.meta.name&&!(await confirmBox('지금 기록이 코드의 기록으로 바뀌어요. 불러올까요?','불러오기','취소')))return;applyLoaded(o,'저장 코드로 불러왔어요!');}catch(e){toast(esc(e.message||'불러오지 못했어요'));}},
-  mdS:()=>saveMD(),mdL:()=>$('#fileIn').click(),win:()=>{saveLocal();window.open(location.href,'_blank');}};
+  recover:()=>showRecovery(),mdS:()=>saveMD(),mdL:()=>$('#fileIn').click(),win:()=>{saveLocal();window.open(location.href,'_blank');}};
  [1,2,3].forEach(i=>{acts['s'+i]=async()=>{const o=slotGet(i);if(o&&!(await confirmBox(`저장 칸 ${i}의 기록을 지금 기록으로 덮어쓸까요?`,'덮어쓰기','취소')))return;if(slotSave(i)){sfx('coin');toast(`저장 칸 ${i}에 저장했어요`);showSaveBox();}else toast('저장하지 못했어요');};
   acts['l'+i]=async()=>{const o=slotGet(i);if(!o)return;if(!(await confirmBox(`지금 기록 대신 저장 칸 ${i}의 기록을 불러올까요?`,'불러오기','취소')))return;applyLoaded(o,`저장 칸 ${i}을 불러왔어요!`);};});
- M(`<h2>${I('disk')} 저장 · 불러오기</h2>${status}${slots}
+ M(`<h2>${I('disk')} 저장 · 불러오기</h2>${status}
+  <h3>내 기록을 파일로 안전하게 보관</h3><p>브라우저 자동 저장만으로는 기기 변경·데이터 삭제에 대비할 수 없어요. 수업이 끝나면 .md 파일을 저장하고, 내려받은 파일이 있는지 확인해 주세요.</p><div class=row><button class="btn green big" data-a=mdS>${I('disk')} .md 저장본 내려받기</button><button class="btn blue" data-a=mdL>${I('folder')} .md 저장본 불러오기</button><button class="btn ghost" data-a=recover>이전 기록 복구</button></div>${slots}
   <h3>저장 코드 <span class=mut style="font-size:12px">(어디서나 되는 방법 · 다른 기기로 옮길 수 있어요)</span></h3>
   <div class=row><button class="btn green" data-a=mk>코드 만들고 복사</button>${navigator.share?'<button class="btn purple" data-a=share>메신저로 보내기</button>':''}</div>
   <textarea class="inp code" id=codeOut readonly placeholder="'코드 만들고 복사'를 누르면 여기에 저장 코드가 나와요"></textarea>
   <textarea class="inp code" id=codeIn placeholder="저장해 둔 코드(PKMT로 시작)나 .md 파일 내용을 여기에 붙여 넣으세요"></textarea>
   <div class=row style="margin-top:8px"><button class="btn blue" data-a=ld>코드로 불러오기</button></div>
-  <h3>파일</h3><div class=row><button class="btn ghost" data-a=mdS>${I('disk')} .md 파일로 저장</button><button class="btn ghost" data-a=mdL>${I('folder')} .md 파일 불러오기</button></div>
+
   ${canNewWin()?`<h3>새 창</h3><div class=row><button class="btn ghost" data-a=win>새 창에서 크게 열기</button></div>`:''}
   <div class=mbtns><button class="btn gold" data-a=x>닫기</button></div>`,acts,{wide:1});}
 
@@ -3251,7 +3268,7 @@ async function renderCardScreen(){S.screen='card';const m=S.meta;const sp=cardSp
 // 새 업데이트를 올릴 때: UPDATES 맨 앞에 v를 1 올린 묶음을 하나 추가해요(학생 말투로, 짧게).
 // 같은 날 여러 번 배포하면 그날 것은 한 묶음으로 합치고 v만 올려요(학생은 하루에 한 번만 안내를 봐요).
 // 체험 코드(TEST-2026)는 학생에게 안내하지 않아요.
-const UPDATES=[{v:9,d:'2026년 11월 17일',t:'밝은 모험의 광장으로 초대해요',items:[{ic:'leaf',h:'포켓몬 친구들이 기다리는 광장',p:'메인을 맑은 하늘과 초록 들판으로 바꿨어요. 내 파트너와 오늘의 성장을 보고, 좋아하는 모험을 골라 보세요.'},{ic:'check',h:'더 편안하고 또렷하게',p:'아레나와 전략 모드도 밝은 색으로 바꾸고, 한글 안내와 큰 조작 버튼을 유지했어요. 저장 기록과 보유 포켓몬은 그대로예요.'}]},
+const UPDATES=[{v:10,d:'2026년 11월 18일',t:'내 기록을 안전하게 보관해요',items:[{ic:'disk',h:'.md 저장본을 눈에 띄게',p:'저장 · 불러오기 맨 위에서 .md 파일로 내려받고 다시 불러올 수 있어요. 수업 뒤 파일을 저장해 주세요.'},{ic:'clock',h:'이전 기록 복구',p:'이번 업데이트부터 이 브라우저에 이전 저장본을 최대 12개 보관해요. 저장 창의 이전 기록 복구에서 확인하세요. 이미 사라진 기록을 되살리는 기능은 아니며, 브라우저 데이터 삭제에 대비하려면 .md 파일이 필요해요.'}]},{v:9,d:'2026년 11월 17일',t:'밝은 모험의 광장으로 초대해요',items:[{ic:'leaf',h:'포켓몬 친구들이 기다리는 광장',p:'메인을 맑은 하늘과 초록 들판으로 바꿨어요. 내 파트너와 오늘의 성장을 보고, 좋아하는 모험을 골라 보세요.'},{ic:'check',h:'더 편안하고 또렷하게',p:'아레나와 전략 모드도 밝은 색으로 바꾸고, 한글 안내와 큰 조작 버튼을 유지했어요. 저장 기록과 보유 포켓몬은 그대로예요.'}]},
  {v:8,d:'2026년 11월 15일',t:'내 포켓몬으로 보스 아레나에!',items:[
  {ic:'dex',h:'보유 도감 전체에서 출전',p:'이제 모은 포켓몬을 직접 조작할 수 있어요. 이름·도감 번호로 검색하거나 타입으로 골라 보세요. 카드와 조각은 소모하지 않아요.'},
  {ic:'bolt',h:'18개 타입의 아레나 기술',p:'잎날 폭풍, 얼음 결정, 지진 파동, 섀도볼 등 타입별 범위·색·효과가 달라요. 복합 타입은 출전 전에 사용할 타입을 선택해요. 아레나 전용 기술이며 원작의 개별 습득 기술 목록과는 달라요.'},
