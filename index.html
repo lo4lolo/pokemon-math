@@ -728,6 +728,36 @@ svg.egg.big{width:110px}
 .gameHub .hubSettings{padding:10px 14px;margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .gameHub .hubIco{image-rendering:pixelated}
 @media(max-width:700px){.gameHub .sceneMotion{top:8px;right:8px;bottom:auto;min-height:0;padding:5px 10px;font-size:11px}.gameHub .hubHero{min-height:0;padding:14px;padding-top:40px;flex-direction:column;align-items:stretch}.gameHub .hubSign{max-width:none;border-width:40px 22px 26px 22px}.gameHub .hubMetrics{grid-template-columns:1fr 1fr}.gameHub .hubFeatured{grid-template-columns:1fr}.gameHub .hubPartner{width:auto;flex-direction:row;gap:10px;align-self:stretch}.gameHub .hubPartner img{width:72px;height:72px}}
+
+/* ===== 2026-11-27 게임 타이틀 화면(.gameTitle) — 겨울 마을 가득 · 나무 간판 로고 · 큼직한 게임 버튼 ===== */
+#view:has(.gameTitle){background:#cfe3ff}
+.gameTitle{color:#2c3a74;font-family:'Noto Sans KR',system-ui,sans-serif}
+.gameTitle h1,.gameTitle h3,.gameTitle button,.gameTitle .titleKicker{font-family:'Jua','Noto Sans KR',sans-serif;font-weight:normal}
+.gameTitle .titleStage{position:relative;min-height:min(92vh,820px);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:24px 14px 70px}
+.gameTitle .titleStage .villageBackdrop.sunnyScene{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.gameTitle .titleStage .villageArt{width:100%;height:100%;object-fit:cover;object-position:center 60%}
+.gameTitle .titleStage .villageWash{display:none}
+.gameTitle .titleStage .snowIn{z-index:1}
+.gameTitle .sceneMotion{position:absolute;right:12px;bottom:12px;top:auto;z-index:3;background:rgba(44,58,116,.85);color:#fff;border:2px solid #fff;border-radius:999px;font:13px 'Jua',sans-serif;padding:6px 12px;min-height:0}
+.gameTitle .titleCenter{position:relative;z-index:2;width:min(540px,100%);display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.gameTitle .titleLogo{width:100%;border-style:solid;border-width:47px 27px 30px 26px;border-image:url(img/hub_sign.webp) 94 53 58 51 fill / 47px 27px 30px 26px stretch;image-rendering:pixelated;padding:8px 8px 6px;filter:drop-shadow(0 8px 8px rgba(44,58,116,.3))}
+.gameTitle .titleKicker{display:block;color:#c2334a;font-size:18px}
+.gameTitle .titleWord{margin:2px 0 4px;font-size:clamp(44px,9vw,68px);line-height:1.05;color:#ffd34d;letter-spacing:1px;
+ text-shadow:3px 0 0 #6b3a12,-3px 0 0 #6b3a12,0 3px 0 #6b3a12,0 -3px 0 #6b3a12,2px 2px 0 #6b3a12,-2px 2px 0 #6b3a12,2px -2px 0 #6b3a12,-2px -2px 0 #6b3a12,0 7px 0 #6b3a12}
+.gameTitle .titleLogo p{margin:2px 0 0;color:#7a5a3a;font-size:15px;word-break:keep-all}
+.gameTitle .titlePartner{height:110px;margin:-6px 0 -8px}.gameTitle .titlePartner img{height:110px;width:auto;filter:drop-shadow(0 6px 4px rgba(0,0,0,.25))}
+.gameTitle .titleStart{width:100%;font-size:24px;padding:14px 18px;border:4px solid #fff;border-radius:20px;background:linear-gradient(180deg,#ff6b6b,#e03b4b);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25);box-shadow:0 7px 0 #a3222f,0 12px 20px rgba(0,0,0,.2);cursor:pointer;transition:transform .08s}
+.gameTitle .titleStart:active{transform:translateY(4px);box-shadow:0 3px 0 #a3222f}
+.gameTitle .titleRow{display:flex;gap:10px;width:100%;align-items:stretch}
+.gameTitle .titleGold{flex:1;font-size:18px;padding:10px 14px;border:3px solid #fff;border-radius:18px;background:linear-gradient(180deg,#ffe38a,#ffc94a);color:#5a3a1a;box-shadow:0 5px 0 #c79a1c;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.gameTitle .titleRound{width:74px;flex:none;border:3px solid #fff;border-radius:18px;background:#2c3a74;color:#fff;box-shadow:0 5px 0 #18214a;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px}
+.gameTitle .titleRound small{font-size:12px}.gameTitle .titleRound .ic{width:22px;height:22px}
+.gameTitle .titleNote{background:rgba(255,255,255,.88);color:#2c3a74;border-radius:12px;padding:6px 12px;font-size:12px;word-break:keep-all}
+.gameTitle .titleModes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:1100px;margin:18px auto;padding:0 14px}
+.gameTitle .titleModes>div{position:relative;background:#fff;border:3px solid #fff;border-radius:20px;box-shadow:0 5px 0 #c3d3ec;padding:14px 14px 14px 78px;min-height:84px}
+.gameTitle .titleModes img{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:56px;height:56px;image-rendering:pixelated}
+.gameTitle .titleModes span{font:13px 'Jua',sans-serif;color:#c2334a}.gameTitle .titleModes h3{margin:2px 0;color:#2c3a74;font-size:20px}.gameTitle .titleModes p{margin:0;color:#6a76a8;font-size:13px}
+@media(max-width:700px){.gameTitle .titleModes{grid-template-columns:1fr}.gameTitle .titleLogo{border-width:40px 22px 26px 22px}.gameTitle .titleStage{min-height:0;padding-top:20px}}
 </style>
 </head>
 <body>
@@ -3928,7 +3958,15 @@ function showSettings(){const st=S.meta.settings;const seg=(k,opts)=>`<div class
 
 // ---- 타이틀 · 입장 ----
 function renderTitle(){S.screen='title';const m=S.meta;$('#battle').classList.remove('on');
- $('#view').innerHTML=`<div class=landingShell><section class=landingHero><nav class=landingNav><b>포켓몬 수학</b><span>배우고 · 만나고 · 모험하고</span></nav><div class=landingCopy><span class=homeEyebrow>새로운 하루, 새로운 모험</span><h1>좋아하는 포켓몬과,<br>한 걸음 더 멀리.<span>너의 속도로 자라는 수학 모험</span></h1><p>어제 어려웠던 문제가 오늘은 풀리는 순간.<br>포켓몬 친구들과 너만의 성장을 모아 보세요.</p><div class=landingActions><button class=homePrimary id=tGo>${m.name?'이어하기 · '+esc(m.name):'트레이너 여정 시작'}</button><button class=homeSecondary id=tSave>저장 · 불러오기</button></div><div class=landingLinks><button id=tSet>설정</button><button id=tTeach>선생님</button></div><small>시작하려면 선생님께 받은 학년·학기 코드가 필요합니다. 실명 대신 닉네임을 사용하세요.</small></div>${sunnyScene()}${sceneMotionControl()}</section><section class=landingModes><div><span>차근차근 쌓이는 실력</span><h3>실력으로 성장</h3><p>내 학년 진도와 기초를 연결하는 학습</p></div><div><span>내가 고르는 모험</span><h3>선택으로 돌파</h3><p>영입·시너지·모듈을 조합하는 균열 원정</p></div><div><span>함께 뛰는 즐거움</span><h3>컨트롤로 승부</h3><p>직접 움직이며 패턴을 공략하는 보스 아레나</p></div></section>${fanFooter()}${!STORE_OK?'<p class=notice>자동 저장을 사용할 수 없습니다. 저장 코드를 내보내 주세요.</p>':''}</div>`;
+ // 2026-11-27 게임 타이틀 화면(사용자: '첫 화면이 인공지능틱') — 겨울 마을 가득 + 나무 간판 로고 + 큼직한 게임 버튼. 버튼 id는 그대로
+ const pid=m.name&&m.starter?partnerId():0;
+ $('#view').innerHTML=`<div class="landingShell gameTitle"><section class=titleStage>${sunnyScene()}${sceneMotionControl()}
+  <div class=titleCenter><div class=titleLogo><span class=titleKicker>${isWinter()?'❄ 겨울 대모험 ❄':'수학 대모험'}</span><h1 class=titleWord>포켓몬 수학</h1><p>좋아하는 포켓몬과, 한 걸음 더 멀리!</p></div>
+   ${pid?`<div class=titlePartner>${monImg(pid,'art')}</div>`:''}
+   <button class=titleStart id=tGo>${m.name?'▶ 이어하기 · '+esc(m.name):'▶ 모험 시작하기'}</button>
+   <div class=titleRow><button class=titleGold id=tSave>${I('disk')} 저장 · 불러오기</button><button class=titleRound id=tSet title="설정">${I('gear')}<small>설정</small></button><button class=titleRound id=tTeach title="선생님">${I('lock')}<small>선생님</small></button></div>
+   <small class=titleNote>시작하려면 선생님께 받은 학년·학기 코드가 필요해요. 실명 대신 닉네임을 써요.</small></div></section>
+  <section class=titleModes><div><img src="${SV_IMG}ico_grow.webp" alt="" onerror="this.remove()"><span>차근차근 쌓이는 실력</span><h3>실력으로 성장</h3><p>내 학년 진도와 기초를 연결하는 학습</p></div><div><img src="${SV_IMG}ico_deck.webp" alt="" onerror="this.remove()"><span>내가 고르는 모험</span><h3>선택으로 돌파</h3><p>영입·시너지·모듈을 조합하는 균열 원정</p></div><div><img src="${SV_IMG}ico_mini.webp" alt="" onerror="this.remove()"><span>함께 뛰는 즐거움</span><h3>컨트롤로 승부</h3><p>직접 움직이며 패턴을 공략하는 보스 아레나</p></div></section>${fanFooter()}${!STORE_OK?'<p class=notice>자동 저장을 사용할 수 없습니다. 저장 코드를 내보내 주세요.</p>':''}</div>`;
  $('#view').scrollTop=0;bindSceneMotion();$('#tGo').onclick=()=>{sfx('tap');ac();goStart();};$('#tSave').onclick=()=>showSaveBox();$('#tSet').onclick=()=>showSettings();$('#tTeach').onclick=()=>teacherLogin();
 }
 
