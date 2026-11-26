@@ -682,6 +682,52 @@ svg.egg.big{width:110px}
 @media(prefers-reduced-motion:reduce){.villageArt{animation:none!important;transform:none;will-change:auto}.sceneMotion{display:none}}
 .lowfx .villageArt{animation:none;will-change:auto}
 
+
+/* ===== 2026-11-27 게임다운 겨울 메인(.gameHub) — 사용자: '인공지능틱 초록 메인이 싫다' → GPT 그림(간판·아이콘·스테이지) + 게임 글꼴 + 딸기빨강·금색·밤하늘 남색 ===== */
+#view:has(.gameHub){background:linear-gradient(180deg,#cfe3ff 0%,#eef5ff 55%,#f7fbff 100%)}
+.gameHub{color:#2c3a74;font-family:'Noto Sans KR',system-ui,sans-serif}
+.gameHub h1,.gameHub h2,.gameHub b,.gameHub .homeEyebrow,.gameHub button{font-family:'Jua','Noto Sans KR',sans-serif;font-weight:normal}
+.gameHub .hubWrap{max-width:1180px;padding:16px}
+.gameHub .hubHero{border:4px solid #fff;border-radius:26px;min-height:460px;padding:26px;box-shadow:0 8px 0 #a9c0e4,0 14px 30px rgba(44,58,116,.18);background:#dfeeff;align-items:flex-start}
+.gameHub .hubHero .villageArt{width:100%;object-position:center 58%}
+.gameHub .hubHero .villageWash{display:none}
+.gameHub .hubSign{position:relative;z-index:2;max-width:500px;border-style:solid;border-width:47px 27px 30px 26px;border-image:url(img/hub_sign.webp) 94 53 58 51 fill / 47px 27px 30px 26px stretch;image-rendering:pixelated;padding:10px 10px 8px;color:#5a3a1a;filter:drop-shadow(0 6px 6px rgba(44,58,116,.25))}
+.gameHub .hubSign .homeEyebrow{font:16px 'Jua',sans-serif;letter-spacing:0;color:#c2334a}
+.gameHub .hubSign h1{font-size:clamp(26px,3.6vw,38px);line-height:1.2;margin:6px 0;color:#5a3a1a;word-break:keep-all}
+.gameHub .hubSign p{color:#7a5a3a;font-size:14px;line-height:1.6;margin:4px 0 10px;word-break:keep-all}
+.gameHub .landingActions{display:flex;flex-wrap:wrap;gap:10px}
+.gameHub .homePrimary,.gameHub .homeSecondary{border-radius:16px;padding:12px 20px;font-size:18px;border:3px solid #fff;cursor:pointer;transition:transform .08s}
+.gameHub .homePrimary{background:linear-gradient(180deg,#ff6b6b,#e03b4b);color:#fff;box-shadow:0 5px 0 #a3222f;text-shadow:0 2px 0 rgba(0,0,0,.2)}
+.gameHub .homeSecondary{background:linear-gradient(180deg,#ffe38a,#ffc94a);color:#5a3a1a;box-shadow:0 5px 0 #c79a1c}
+.gameHub .homePrimary:active,.gameHub .homeSecondary:active{transform:translateY(3px)}
+.gameHub .hubPartner{background:rgba(255,255,255,.92);border:3px solid #fff;border-radius:20px;box-shadow:0 6px 0 #a9c0e4;color:#2c3a74;backdrop-filter:none;z-index:2}
+.gameHub .hubPartner>span{font:18px 'Jua',sans-serif;color:#2c3a74}.gameHub .hubPartner b{color:#6a76a8;font-size:13px}
+.gameHub .hubPartner button{background:#2c3a74;color:#fff;border:0;border-radius:999px;padding:6px 14px;font-size:13px;margin-top:6px;cursor:pointer;text-decoration:none}
+.gameHub .sceneMotion{background:rgba(44,58,116,.85);color:#fff;border:2px solid #fff;font:13px 'Jua',sans-serif}
+.gameHub .cupInvitation{background:linear-gradient(90deg,#e03b4b,#ff7a59);border:3px solid #fff;border-radius:20px;color:#fff;box-shadow:0 5px 0 #a3222f;margin-top:16px}
+.gameHub .cupInvitation b{color:#fff;font-size:19px}.gameHub .cupInvitation p{color:#ffe9e4}
+.gameHub .cupDate{background:#fff;color:#e03b4b;font:18px 'Jua',sans-serif;border-radius:14px}
+.gameHub .hubMetrics{background:none;border:0;gap:10px;margin:16px 0}
+.gameHub .hubMetrics>div{position:relative;background:#fff;border:3px solid #fff;border-radius:18px;padding:12px 12px 12px 62px;box-shadow:0 5px 0 #c3d3ec;min-height:64px}
+.gameHub .hubMetrics>div:nth-child(1){box-shadow:0 5px 0 #ff9aa6}.gameHub .hubMetrics>div:nth-child(2){box-shadow:0 5px 0 #ffcf6b}.gameHub .hubMetrics>div:nth-child(3){box-shadow:0 5px 0 #9fc3ff}.gameHub .hubMetrics>div:nth-child(4){box-shadow:0 5px 0 #b9a6ff}
+.gameHub .hubMetrics .hubIco,.gameHub .hubMetrics>div>.ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:44px;height:44px}
+.gameHub .hubMetrics small{color:#6a76a8;font-size:12px;margin-bottom:2px}.gameHub .hubMetrics b{color:#2c3a74;font-size:24px}.gameHub .hubMetrics b span{font-size:13px;color:#6a76a8}
+.gameHub .hubFeature{border:4px solid #fff;border-radius:24px;box-shadow:0 7px 0 #a9c0e4;min-height:230px;background-size:cover;background-position:center}
+.gameHub .hubFeature.action{background-image:linear-gradient(90deg,rgba(60,20,20,.82),rgba(60,20,20,.35) 60%,rgba(0,0,0,0)),url(img/st_volcano.webp)}
+.gameHub .hubFeature.tactical{background-image:linear-gradient(90deg,rgba(28,24,70,.85),rgba(28,24,70,.35) 60%,rgba(0,0,0,0)),url(img/st_star.webp)}
+.gameHub .hubFeature>span{font:14px 'Jua',sans-serif;letter-spacing:0;color:#ffe38a}.gameHub .hubFeature h2{font-size:32px;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.3)}
+.gameHub .hubFeature p{color:#fff;font-size:13px;opacity:.95}.gameHub .hubFeature>b{background:#ffc94a;color:#5a3a1a;border-radius:999px;padding:6px 16px;box-shadow:0 4px 0 #c79a1c;font-size:15px}
+.gameHub .hubSectionTitle h2{color:#2c3a74;font-size:24px}.gameHub .hubSectionTitle button,.gameHub .hubSettings button{color:#c2334a;font:14px 'Jua',sans-serif}
+.gameHub .hubTileGrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.gameHub .hubTile{background:#fff;border:3px solid #fff;border-radius:20px;box-shadow:0 5px 0 #c3d3ec;color:#2c3a74;padding:12px;transition:transform .08s}
+.gameHub .hubTile:hover{transform:translateY(-2px);border-color:#ffe38a}.gameHub .hubTile:active{transform:translateY(2px)}
+.gameHub .hubTileIcon{width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:#eef5ff;border-radius:16px;color:#2c3a74}
+.gameHub .hubTileIcon .hubIco{width:52px;height:52px}.gameHub .hubTileIcon .ic{width:30px;height:30px}
+.gameHub .hubTile b{font-size:17px;color:#2c3a74}.gameHub .hubTile small{font-size:12px;color:#6a76a8}.gameHub .hubTile>i{color:#c2334a;font-style:normal}
+.gameHub .hubStone,.gameHub .hubSettings{background:#fff;border:3px solid #fff;border-radius:18px;box-shadow:0 4px 0 #c3d3ec;color:#2c3a74}
+.gameHub .hubSettings{padding:10px 14px;margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.gameHub .hubIco{image-rendering:pixelated}
+@media(max-width:700px){.gameHub .sceneMotion{top:8px;right:8px;bottom:auto;min-height:0;padding:5px 10px;font-size:11px}.gameHub .hubHero{min-height:0;padding:14px;padding-top:40px;flex-direction:column;align-items:stretch}.gameHub .hubSign{max-width:none;border-width:40px 22px 26px 22px}.gameHub .hubMetrics{grid-template-columns:1fr 1fr}.gameHub .hubFeatured{grid-template-columns:1fr}.gameHub .hubPartner{width:auto;flex-direction:row;gap:10px;align-self:stretch}.gameHub .hubPartner img{width:72px;height:72px}}
 </style>
 </head>
 <body>
@@ -3789,9 +3835,11 @@ function packTile(){const m=S.meta;if(m.packs>0)return packChooser();
  toast('카드팩이 없어요. 오늘의 훈련을 하거나 코인 100개를 모으면 받을 수 있어요!');}
 
 // ---- 트레이너 방(허브) ----
+// 2026-11-27 게임다운 메인(사용자: '인공지능틱 초록 디자인이 싫다') — GPT 아이콘 img/ico_<기능>.webp, 못 불러오면 원래 아이콘
+function hubIco(k,ic){return `<img class=hubIco src="${SV_IMG}ico_${k}.webp" alt="" onerror="this.outerHTML=I('${ic||'star'}')">`;}
 function renderHub(){S.screen='hub';S.inMini=0;const m=S.meta;if(!codeValid())return renderGate();ensureSeason();const done=m.train.daily===today(),partner=bestPartner();
- const tiles=FEAT.filter(f=>m.unl[f.k]).map(f=>{const extra={raid:raidTileText(),surv:`티켓 ${miniSt().tk}/${MINI_TK} · 별 ${SV_STAGES.reduce((s,_,i)=>s+svStars(i),0)}/15`,pack:m.packs+'팩 · '+m.coins+'코인',dex:ownCount()+'종 수집',garden:gardenHint(m),league:'배지 '+Object.keys(m.gyms).length+'/9',mini:'직접 조작 · 보스 패턴',grow:'학습 기록과 성장',map:'배운 단원 선택',deck:m.deck.length+'장 편성'}[f.k]||f.ds;return `<button class=hubTile data-f=${f.k}><span class=hubTileIcon>${I(f.ic)}</span><span><b>${f.k==='mini'?'보스 아레나':f.n}</b><small>${esc(extra)}</small></span><i>↗</i></button>`;}).join('');
- $('#view').innerHTML=`<div class=hubShell>${hudHTML()}<div class=hubWrap>${giftBanner()}<section class=hubHero><div><span class=homeEyebrow>${esc(m.name)}, 오늘도 반가워요!</span><h1>우리의 다음 모험은<br>어디로 갈까요?</h1><p>${done?'오늘의 훈련을 마쳤어요. 이제 좋아하는 모험을 골라요.':'한 문제씩 풀다 보면, 어느새 어제보다 멀리 와 있을 거예요.'}</p><div class=landingActions><button class=homePrimary id=tTrain>${done?'오늘의 훈련 · 다시 도전':'오늘의 훈련 시작'} →</button><button class=homeSecondary id=cupOpen>대회 라운지</button></div></div>${sunnyScene([partner])}${sceneMotionControl()}<div class=hubPartner>${monImg(partner,'art')}<span>${esc(m.name)}</span><b>Lv.${lvOf(m.xp).lv} / ${esc(semName(m.gs))}</b><button id=hPartner>파트너 변경</button></div></section><aside class=cupInvitation><span class=cupDate>12월</span><div><b>우리 학년 트레이너 컵</b><p>함께 준비하고, 서로 응원하는 도전. 일정과 규칙은 선생님이 안내해요.</p></div></aside><div class=hubMetrics><div><small>학습 기록</small><b>${fmt(m.stats.c)}<span> 정답</span></b></div><div><small>나의 도감</small><b>${ownCount()}<span> 종</span></b></div><div><small>리그 배지</small><b>${Object.keys(m.gyms).length}<span> / 9</span></b></div><div><small>오늘의 진행</small><b>${done?'완료':'오늘도 한 걸음'}</b></div></div><section class=hubFeatured><button class="hubFeature action" id=homeAction><span>내 포켓몬과 직접 뛰어요</span><h2>보스 아레나</h2><p>이동 · 조준 · 스킬 · 회피<br>내가 모은 포켓몬과 보스에 도전해요.</p>${monImg(448,'art','',false)}<b>액션 플레이 →</b></button><button class="hubFeature tactical" id=arcadeOpen><span>나만의 팀을 만들어요</span><h2>수학 아케이드</h2><p>균열 원정과 데일리 챌린지<br>나만의 팀과 강화 조합을 완성하세요.</p>${monImg(445,'art','',false)}<b>전략 플레이 →</b></button></section>${adaptivePanel()}<div class=hubSectionTitle><h2>트레이너의 활동</h2><button id=hUpd>업데이트 소식 ↗</button></div><div class=hubTileGrid>${tiles}</div><details class=hubStone><summary>나의 석산 · 학습으로 쌓은 성장 보기</summary>${stonePanel(m)}</details><div class=hubSettings><span>${esc(semName(m.gs))} · 배운 단원까지만 출제</span><button id=hUnit>배운 단원 변경</button><button id=hCode>학년 코드 변경</button></div>${fanFooter()}</div></div>`;
+ const tiles=FEAT.filter(f=>m.unl[f.k]).map(f=>{const extra={raid:raidTileText(),surv:`티켓 ${miniSt().tk}/${MINI_TK} · 별 ${SV_STAGES.reduce((s,_,i)=>s+svStars(i),0)}/15`,pack:m.packs+'팩 · '+m.coins+'코인',dex:ownCount()+'종 수집',garden:gardenHint(m),league:'배지 '+Object.keys(m.gyms).length+'/9',mini:'직접 조작 · 보스 패턴',grow:'학습 기록과 성장',map:'배운 단원 선택',deck:m.deck.length+'장 편성'}[f.k]||f.ds;return `<button class=hubTile data-f=${f.k}><span class=hubTileIcon>${hubIco(f.k,f.ic)}</span><span><b>${f.k==='mini'?'보스 아레나':f.n}</b><small>${esc(extra)}</small></span><i>↗</i></button>`;}).join('');
+ $('#view').innerHTML=`<div class="hubShell gameHub">${hudHTML()}<div class=hubWrap>${giftBanner()}<section class=hubHero><div class=hubSign><span class=homeEyebrow>${esc(m.name)}, 오늘도 반가워요!</span><h1>우리의 다음 모험은<br>어디로 갈까요?</h1><p>${done?'오늘의 훈련을 마쳤어요. 이제 좋아하는 모험을 골라요.':'한 문제씩 풀다 보면, 어느새 어제보다 멀리 와 있을 거예요.'}</p><div class=landingActions><button class=homePrimary id=tTrain>${done?'오늘의 훈련 · 다시 도전':'오늘의 훈련 시작'} →</button><button class=homeSecondary id=cupOpen>대회 라운지</button></div></div>${sunnyScene([partner])}${sceneMotionControl()}<div class=hubPartner>${monImg(partner,'art')}<span>${esc(m.name)}</span><b>Lv.${lvOf(m.xp).lv} / ${esc(semName(m.gs))}</b><button id=hPartner>파트너 변경</button></div></section><aside class=cupInvitation><span class=cupDate>12월</span><div><b>우리 학년 트레이너 컵</b><p>함께 준비하고, 서로 응원하는 도전. 일정과 규칙은 선생님이 안내해요.</p></div></aside><div class=hubMetrics><div>${hubIco('grow','chart')}<small>학습 기록</small><b>${fmt(m.stats.c)}<span> 정답</span></b></div><div>${hubIco('dex','dex')}<small>나의 도감</small><b>${ownCount()}<span> 종</span></b></div><div>${hubIco('league','medal')}<small>리그 배지</small><b>${Object.keys(m.gyms).length}<span> / 9</span></b></div><div>${hubIco('season','calendar')}<small>오늘의 진행</small><b>${done?'완료':'오늘도 한 걸음'}</b></div></div><section class=hubFeatured><button class="hubFeature action" id=homeAction><span>내 포켓몬과 직접 뛰어요</span><h2>보스 아레나</h2><p>이동 · 조준 · 스킬 · 회피<br>내가 모은 포켓몬과 보스에 도전해요.</p>${monImg(448,'art','',false)}<b>액션 플레이 →</b></button><button class="hubFeature tactical" id=arcadeOpen><span>나만의 팀을 만들어요</span><h2>수학 아케이드</h2><p>균열 원정과 데일리 챌린지<br>나만의 팀과 강화 조합을 완성하세요.</p>${monImg(445,'art','',false)}<b>전략 플레이 →</b></button></section>${adaptivePanel()}<div class=hubSectionTitle><h2>트레이너의 활동</h2><button id=hUpd>업데이트 소식 ↗</button></div><div class=hubTileGrid>${tiles}</div><details class=hubStone><summary>나의 석산 · 학습으로 쌓은 성장 보기</summary>${stonePanel(m)}</details><div class=hubSettings><span>${esc(semName(m.gs))} · 배운 단원까지만 출제</span><button id=hUnit>배운 단원 변경</button><button id=hCode>학년 코드 변경</button></div>${fanFooter()}</div></div>`;
  $('#view').scrollTop=0;bindHud();bindSceneMotion();$('#tTrain').onclick=()=>startTraining();$('#cupOpen').onclick=()=>renderCup();$('#arcadeOpen').onclick=()=>renderArcade();$('#homeAction').onclick=()=>renderMiniHome();$('#hPartner').onclick=()=>partnerPicker(()=>renderHub());$('#hCode').onclick=()=>renderGate(true);$('#hUnit').onclick=()=>askUnit(()=>renderHub(),true);$('#hUpd').onclick=()=>showUpdates(null,true);const gb=$('#giftBanner');if(gb)gb.onclick=()=>{const u=UPDATES.find(x=>x.gift);showGift(u,()=>showUpdates(()=>renderHub(),false,true));};const support=$('#supportOpen');if(support)support.onclick=()=>supportCode();$('#stonePanel').onclick=()=>stoneInfo();
  $('#view').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{const k=b.dataset.f;if(m.unlNew[k]){delete m.unlNew[k];autoSave();}NAV[k]();});
  if(m.uMax&&m.uMax<20&&m.uMaxAt&&dayDiff(m.uMaxAt,today())>=14&&!CO&&!modalOpen())setTimeout(()=>{if(S.screen==='hub'&&!modalOpen())askUnit(()=>renderHub(),true);},900);
